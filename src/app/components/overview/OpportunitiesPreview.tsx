@@ -1,6 +1,7 @@
-import { ArrowLeft } from 'lucide-react';
+import { useRef } from 'react';
+import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router';
-import { OpportunityCard } from '../opportunities/OpportunityCard';
+import { OpportunityCardCompact } from '../opportunities/OpportunityCardCompact';
 
 const opportunities = [
   {
@@ -63,6 +64,15 @@ const opportunities = [
 
 export function OpportunitiesPreview() {
   const navigate = useNavigate();
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (!scrollRef.current) return;
+    const cardWidth = scrollRef.current.offsetWidth * 0.42;
+    // In RTL, scrollLeft is negative (or inverted). Use scrollBy with appropriate direction.
+    const amount = direction === 'right' ? -cardWidth : cardWidth;
+    scrollRef.current.scrollBy({ left: amount, behavior: 'smooth' });
+  };
 
   return (
     <div>
@@ -71,24 +81,57 @@ export function OpportunitiesPreview() {
         <h3 className="text-[20px] text-[#0B1A3A]" style={{ fontWeight: 600 }}>
           فرص استثمارية جديدة
         </h3>
-        <button 
-          onClick={() => navigate('/opportunities')}
-          className="flex items-center gap-1 text-[13px] text-[#2563EB] hover:gap-2 transition-all" 
-          style={{ fontWeight: 500 }}
-        >
-          <span>عرض الكل</span>
-          <ArrowLeft className="w-4 h-4" strokeWidth={2} />
-        </button>
+        <div className="flex items-center gap-3">
+          {/* Navigation Arrows */}
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => scroll('right')}
+              className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[#F1F4F9] transition-colors"
+              style={{ border: '1px solid #E5E7EB' }}
+            >
+              <ChevronRight className="w-4 h-4 text-[#6B7280]" strokeWidth={2} />
+            </button>
+            <button
+              onClick={() => scroll('left')}
+              className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[#F1F4F9] transition-colors"
+              style={{ border: '1px solid #E5E7EB' }}
+            >
+              <ChevronLeft className="w-4 h-4 text-[#6B7280]" strokeWidth={2} />
+            </button>
+          </div>
+          <button
+            onClick={() => navigate('/opportunities')}
+            className="flex items-center gap-1 text-[13px] text-[#2563EB] hover:gap-2 transition-all"
+            style={{ fontWeight: 500 }}
+          >
+            <span>عرض الكل</span>
+            <ArrowLeft className="w-4 h-4" strokeWidth={2} />
+          </button>
+        </div>
       </div>
 
-      {/* Opportunities Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-6">
+      {/* Carousel */}
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto scrollbar-hide"
+        style={{
+          scrollSnapType: 'x mandatory',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
+      >
         {opportunities.map((opp) => (
-          <OpportunityCard
+          <div
             key={opp.id}
-            {...opp}
-            onClick={() => navigate(`/opportunities/${opp.id}`)}
-          />
+            className="flex-shrink-0"
+            style={{ width: 'calc((100% - 32px) / 2.5)', scrollSnapAlign: 'start' }}
+          >
+            <OpportunityCardCompact
+              {...opp}
+              onClick={() => navigate(`/opportunities/${opp.id}`)}
+            />
+          </div>
         ))}
       </div>
     </div>

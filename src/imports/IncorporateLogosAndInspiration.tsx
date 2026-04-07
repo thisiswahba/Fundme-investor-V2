@@ -1,5 +1,5 @@
 import svgPaths from "./svg-mfgo8murq1";
-import imgImageFundMe from "figma:asset/6b8eb299ed24c5060e85849675d69a160839c7b3.png";
+import imgImageFundMe from "../assets/6b8eb299ed24c5060e85849675d69a160839c7b3.png";
 
 function EmptyOverviewPage1() {
   return (

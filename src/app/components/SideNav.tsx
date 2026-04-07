@@ -1,6 +1,6 @@
 import { Home, BarChart3, Briefcase, Wallet, FileText, Settings, LogOut, ChevronLeft } from 'lucide-react';
 import { useState } from 'react';
-import fundmeLogo from 'figma:asset/6b8eb299ed24c5060e85849675d69a160839c7b3.png';
+import fundmeLogo from '../../assets/6b8eb299ed24c5060e85849675d69a160839c7b3.png';
 
 interface NavItemProps {
   icon: React.ReactNode;

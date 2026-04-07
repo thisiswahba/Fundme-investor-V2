@@ -1,6 +1,6 @@
 import { Outlet, NavLink } from 'react-router';
 import { Bell, User } from 'lucide-react';
-import fundmeLogo from 'figma:asset/6b8eb299ed24c5060e85849675d69a160839c7b3.png';
+import fundmeLogo from '../../assets/6b8eb299ed24c5060e85849675d69a160839c7b3.png';
 
 export function Layout() {
   const navItems = [
