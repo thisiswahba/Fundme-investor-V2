@@ -12,10 +12,10 @@ export function OpportunityDetailPage() {
   const opportunity = {
     id: id,
     title: 'تمويل مشروع سكني - الدمام',
-    description: 'مشروع لبناء مجمع سكني فاخر في حي النخيل بمدينة الدمام، يتضمن ٤٥ وحدة سكنية بمواصفات عالية الجودة.',
+    description: 'مشروع لبناء مجمع سكني فاخر في حي النخيل بمدينة الدمام، يتضمن 45 وحدة سكنية بمواصفات عالية الجودة.',
     roi: 11.5,
     risk: 'B' as const,
-    duration: '١٨ شهر',
+    duration: '18 شهر',
     fundingProgress: 68,
     targetAmount: 500000,
     raisedAmount: 340000,
@@ -24,9 +24,9 @@ export function OpportunityDetailPage() {
     borrowerName: 'شركة النخيل العقارية',
     borrowerDescription: 'شركة عقارية رائدة مع سجل حافل في تطوير المشاريع السكنية',
     repaymentSchedule: [
-      { month: 'الشهر ٦', amount: 15000 },
-      { month: 'الشهر ١٢', amount: 20000 },
-      { month: 'الشهر ١٨', amount: 25000 },
+      { month: 'الشهر 6', amount: 15000 },
+      { month: 'الشهر 12', amount: 20000 },
+      { month: 'الشهر 18', amount: 25000 },
     ],
   };
 

@@ -5,7 +5,6 @@ import { EmptyActiveInvestments } from '../components/overview/EmptyActiveInvest
 import { EmptyTransactionsSection } from '../components/overview/EmptyTransactionsSection';
 import { OpportunitiesPreview } from '../components/overview/OpportunitiesPreview';
 import { WelcomeGuideCard } from '../components/overview/WelcomeGuideCard';
-import { VIPUpgradeWidget } from '../components/overview/VIPUpgradeWidget';
 import { Link } from 'react-router';
 import { TrendingUp } from 'lucide-react';
 
@@ -13,18 +12,18 @@ export function EmptyOverviewPage() {
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 md:pb-8">
       {/* Page Header */}
-      <div className="flex items-start justify-between gap-6 mb-8">
+      <div className="flex items-start justify-between gap-6 mb-6">
         <div>
-          <h1 className="text-[32px] lg:text-[42px] leading-tight mb-3" style={{ color: '#002E83', fontWeight: 700, letterSpacing: '-0.02em' }}>
+          <h1 className="text-[28px] lg:text-[36px] leading-tight mb-2" style={{ color: '#002E83', fontWeight: 700, letterSpacing: '-0.02em' }}>
             مرحباً، أحمد 👋
           </h1>
-          <p className="text-[14px] lg:text-[15px] leading-relaxed" style={{ color: 'rgba(0,0,0,0.7)', fontWeight: 400 }}>
+          <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(0,0,0,0.6)', fontWeight: 400 }}>
             استثمر في فرص مختارة بعناية، وتابع أداء محفظتك، واستمتع بعوائد مجزية
           </p>
         </div>
         <Link
           to="/opportunities"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[12px] transition-all hover:scale-105 flex-shrink-0"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all hover:scale-105 flex-shrink-0"
           style={{
             background: 'linear-gradient(135deg, #0D82F9 0%, #002E83 100%)',
             color: '#FFFFFF',
@@ -38,29 +37,24 @@ export function EmptyOverviewPage() {
         </Link>
       </div>
 
-      {/* Two-Column: Welcome Guide (left) + Wallet & KPIs (right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="lg:col-span-1 order-2 lg:order-1">
-          <WelcomeGuideCard />
-        </div>
-        <div className="lg:col-span-2 order-1 lg:order-2 flex flex-col gap-6">
+      {/* Wallet + Onboarding Guide */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
+        <div className="lg:col-span-2 order-2 lg:order-2 flex flex-col gap-5">
           <EmptyHeroSection />
           <EmptyKPISummary />
         </div>
-      </div>
-
-      {/* VIP Upgrade */}
-      <div className="mb-8">
-        <VIPUpgradeWidget />
+        <div className="lg:col-span-1 order-1 lg:order-1">
+          <WelcomeGuideCard />
+        </div>
       </div>
 
       {/* Opportunities Carousel */}
-      <div className="mb-8">
+      <div className="mb-6">
         <OpportunitiesPreview />
       </div>
 
-      {/* Performance + Active Investments — side by side */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      {/* Performance + Active Investments */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
         <EmptyPerformanceSection />
         <EmptyActiveInvestments />
       </div>

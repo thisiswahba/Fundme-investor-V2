@@ -7,21 +7,24 @@ import { RepaymentsSection } from '../components/overview/RepaymentsSection';
 import { SmartInsightSection } from '../components/overview/SmartInsightSection';
 import { TransactionsSection } from '../components/overview/TransactionsSection';
 
+// Toggle this to preview VIP theme
+const isVIP = true;
+
 export function OverviewPage() {
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 md:pb-8">
       {/* Hero Section */}
-      <div className="mb-8">
-        <HeroSection />
+      <div className="mb-6">
+        <HeroSection isVIP={isVIP} />
       </div>
 
       {/* KPI Summary */}
-      <div className="mb-8">
+      <div className="mb-6">
         <KPISummary />
       </div>
 
       {/* Performance Chart + Smart Insight */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
         <div className="lg:col-span-2">
           <PerformanceSection />
         </div>
@@ -31,13 +34,13 @@ export function OverviewPage() {
       </div>
 
       {/* Active Investments + Repayments */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
         <ActiveInvestmentsSection />
         <RepaymentsSection />
       </div>
 
       {/* Opportunities Preview */}
-      <div className="mb-8">
+      <div className="mb-6">
         <OpportunitiesPreview />
       </div>
 

@@ -92,10 +92,10 @@ export function OpportunityCardCompact({
 
         {/* 2. NET RETURN — dominant metric */}
         <div className="mb-3">
-          <div className="text-[24px] text-[#10B981] leading-none" style={{ fontWeight: 700 }}>
+          <div className="text-[30px] text-[#10B981] leading-none" style={{ fontWeight: 800 }}>
             {formatPercentage(returnValue)}
           </div>
-          <div className="text-[9px] text-[#9CA3AF] mt-1" style={{ fontWeight: 500 }}>
+          <div className="text-[10px] text-[#9CA3AF] mt-1.5" style={{ fontWeight: 500 }}>
             صافي العائد
           </div>
         </div>
@@ -120,8 +120,8 @@ export function OpportunityCardCompact({
           </div>
 
           {/* 5. FUNDING SUMMARY — compact single line */}
-          <div className="text-[11px] text-[#6B7280] mb-3">
-            <span style={{ fontWeight: 600, color: '#0B1A3A' }}>{formatSAR(fundedAmount)}</span>
+          <div className="text-[12px] text-[#6B7280] mb-3">
+            <span style={{ fontWeight: 700, color: '#0B1A3A' }}>{formatSAR(fundedAmount)}</span>
             <span className="mx-1">/</span>
             <span>{formatSAR(totalAmount)}</span>
           </div>

@@ -1,14 +1,19 @@
 import { Link } from 'react-router';
-import { Wallet, TrendingUp, PieChart, CheckCircle2, Check } from 'lucide-react';
+import { Wallet, TrendingUp, PieChart, CheckCircle2, Check, Rocket } from 'lucide-react';
 
-const completedSteps = 1;
-const progressPercent = 65;
+interface WelcomeGuideCardProps {
+  completedSteps?: number;
+}
 
-const upcomingHints: Record<number, string> = {
-  2: 'سيتم تفعيل هذه الخطوة بعد أول استثمار',
-};
+export function WelcomeGuideCard({ completedSteps = 1 }: WelcomeGuideCardProps) {
+  const totalSteps = 3;
+  const isAllComplete = completedSteps >= totalSteps;
+  const progressPercent = Math.round((completedSteps / totalSteps) * 100);
 
-export function WelcomeGuideCard() {
+  const upcomingHints: Record<number, string> = {
+    2: 'سيتم تفعيل هذه الخطوة بعد أول استثمار',
+  };
+
   const steps = [
     {
       icon: Wallet,
@@ -39,6 +44,46 @@ export function WelcomeGuideCard() {
     },
   ];
 
+  // Completed state
+  if (isAllComplete) {
+    return (
+      <div
+        className="rounded-2xl p-6 h-full flex flex-col items-center justify-center text-center"
+        style={{
+          background: 'linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%)',
+          border: '1px solid rgba(16, 185, 129, 0.2)',
+        }}
+      >
+        <div
+          className="w-14 h-14 rounded-full flex items-center justify-center mb-4"
+          style={{ background: 'rgba(16, 185, 129, 0.15)' }}
+        >
+          <Rocket className="w-7 h-7 text-[#10B981]" strokeWidth={2} />
+        </div>
+        <h3 className="text-[18px] text-[#0B1A3A] mb-2" style={{ fontWeight: 700 }}>
+          أنت جاهز للاستثمار!
+        </h3>
+        <p className="text-[13px] text-[#6B7280] mb-5 max-w-[260px] leading-relaxed">
+          أكملت جميع الخطوات بنجاح. ابدأ باستكشاف الفرص المتاحة
+        </p>
+        <Link
+          to="/opportunities"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all hover:scale-105"
+          style={{
+            background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+            color: '#FFFFFF',
+            fontWeight: 600,
+            fontSize: '14px',
+            boxShadow: '0 6px 16px rgba(16, 185, 129, 0.3)',
+          }}
+        >
+          <TrendingUp className="w-4 h-4" strokeWidth={2.5} />
+          <span>استكشف الفرص</span>
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div
       className="bg-white rounded-2xl p-6 h-full"
@@ -50,24 +95,24 @@ export function WelcomeGuideCard() {
       {/* Header */}
       <div className="flex items-center gap-3">
         <div
-          className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+          className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
           style={{ background: 'linear-gradient(135deg, #0D82F9 0%, #002E83 100%)' }}
         >
           <CheckCircle2 className="w-5 h-5 text-white" strokeWidth={2.5} />
         </div>
         <div className="flex-1">
-          <h3 className="text-[18px] text-[#0B1A3A]" style={{ fontWeight: 700 }}>
+          <h3 className="text-[17px] text-[#0B1A3A]" style={{ fontWeight: 700 }}>
             ابدأ رحلتك الاستثمارية
           </h3>
-          <p className="text-[13px] text-[#6B7280] mt-1">
+          <p className="text-[12px] text-[#6B7280] mt-0.5">
             اتبع هذه الخطوات البسيطة لبدء الاستثمار
           </p>
         </div>
       </div>
 
-      {/* Progress — inline bar + percentage */}
-      <div className="flex items-center gap-3 mt-4 mb-6">
-        <div className="flex-1 h-[9px] rounded-full bg-[#EDF0F7] overflow-hidden">
+      {/* Progress */}
+      <div className="flex items-center gap-3 mt-4 mb-5">
+        <div className="flex-1 h-[8px] rounded-full bg-[#EDF0F7] overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-700"
             style={{
@@ -76,13 +121,13 @@ export function WelcomeGuideCard() {
             }}
           />
         </div>
-        <span className="text-[13px] text-[#0B1A3A] flex-shrink-0" style={{ fontWeight: 700 }}>
+        <span className="text-[12px] text-[#0B1A3A] flex-shrink-0" style={{ fontWeight: 700 }}>
           %{progressPercent}
         </span>
       </div>
 
       {/* Steps */}
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {steps.map((step, index) => {
           const Icon = step.icon;
           const isCompleted = index < completedSteps;
@@ -92,21 +137,18 @@ export function WelcomeGuideCard() {
           return (
             <div
               key={index}
-              className="flex items-start gap-3 p-4 rounded-xl transition-all"
+              className="flex items-start gap-3 p-3.5 rounded-xl transition-all"
               style={{
                 background: isCurrent ? '#EBF2FF' : '#F9FAFB',
                 border: isCurrent
                   ? '1.5px solid rgba(13, 130, 249, 0.3)'
                   : '1px solid transparent',
-                boxShadow: isCurrent
-                  ? '0 2px 8px rgba(13, 130, 249, 0.1)'
-                  : 'none',
                 opacity: isUpcoming ? 0.5 : 1,
               }}
             >
               {/* Icon */}
               <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{
                   background: isCompleted
                     ? 'rgba(16, 185, 129, 0.12)'
@@ -116,44 +158,32 @@ export function WelcomeGuideCard() {
                 }}
               >
                 {isCompleted ? (
-                  <Check className="w-5 h-5 text-[#10B981]" strokeWidth={2.5} />
+                  <Check className="w-4 h-4 text-[#10B981]" strokeWidth={2.5} />
                 ) : (
-                  <Icon
-                    className="w-5 h-5"
-                    style={{ color: step.color }}
-                    strokeWidth={2}
-                  />
+                  <Icon className="w-4 h-4" style={{ color: step.color }} strokeWidth={2} />
                 )}
               </div>
 
               {/* Content */}
-              <div className="flex-1">
-                <h4
-                  className="text-[14px] mb-0.5"
-                  style={{
-                    fontWeight: 600,
-                    color: '#0B1A3A',
-                  }}
-                >
-                  {isCompleted && (
-                    <span className="text-[#10B981] ml-1">✓</span>
-                  )}
+              <div className="flex-1 min-w-0">
+                <h4 className="text-[13px] mb-0.5" style={{ fontWeight: 600, color: '#0B1A3A' }}>
+                  {isCompleted && <span className="text-[#10B981] ml-1">✓</span>}
                   {step.title}
                 </h4>
-                <p className="text-[12px] text-[#6B7280] leading-relaxed">
+                <p className="text-[11px] text-[#6B7280] leading-relaxed">
                   {step.description}
                 </p>
                 {isCurrent && (
                   <Link
                     to={step.link}
-                    className="inline-flex items-center gap-1 text-[12px] hover:underline mt-2"
+                    className="inline-flex items-center gap-1 text-[11px] hover:underline mt-1.5"
                     style={{ color: '#0D82F9', fontWeight: 700 }}
                   >
                     {step.action} ←
                   </Link>
                 )}
                 {isUpcoming && upcomingHints[index] && (
-                  <p className="text-[11px] text-[#9CA3AF] mt-1.5" style={{ fontStyle: 'italic' }}>
+                  <p className="text-[10px] text-[#9CA3AF] mt-1" style={{ fontStyle: 'italic' }}>
                     {upcomingHints[index]}
                   </p>
                 )}
@@ -161,24 +191,20 @@ export function WelcomeGuideCard() {
 
               {/* Step indicator */}
               <div
-                className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-1"
+                className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
                 style={{
                   background: isCompleted
                     ? 'rgba(16, 185, 129, 0.12)'
                     : isCurrent
                       ? 'rgba(13, 130, 249, 0.12)'
                       : step.bgColor,
-                  color: isCompleted
-                    ? '#10B981'
-                    : isCurrent
-                      ? '#0D82F9'
-                      : step.color,
+                  color: isCompleted ? '#10B981' : isCurrent ? '#0D82F9' : step.color,
                   fontWeight: 700,
-                  fontSize: '13px',
+                  fontSize: '12px',
                 }}
               >
                 {isCompleted ? (
-                  <Check className="w-3.5 h-3.5" strokeWidth={3} />
+                  <Check className="w-3 h-3" strokeWidth={3} />
                 ) : (
                   index + 1
                 )}

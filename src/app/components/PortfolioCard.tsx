@@ -70,7 +70,7 @@ export function PortfolioCard() {
               الاستثمارات
             </div>
             <div className="text-[18px] text-white" style={{ fontWeight: 600 }}>
-              ٨ صفقات نشطة
+              8 صفقات نشطة
             </div>
           </div>
 

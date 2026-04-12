@@ -124,10 +124,10 @@ export function OpportunityCard({
 
         {/* 2. NET RETURN — dominant */}
         <div className="mb-3 mt-3">
-          <div className="text-[28px] text-[#10B981] leading-none" style={{ fontWeight: 700 }}>
+          <div className="text-[36px] text-[#10B981] leading-none" style={{ fontWeight: 800 }}>
             {formatPercentage(returnValue)}
           </div>
-          <div className="text-[10px] text-[#9CA3AF] mt-1" style={{ fontWeight: 500 }}>
+          <div className="text-[12px] text-[#9CA3AF] mt-1.5" style={{ fontWeight: 500 }}>
             صافي العائد
           </div>
         </div>
@@ -136,9 +136,9 @@ export function OpportunityCard({
         <div className="flex items-center gap-2 mb-4 flex-wrap">
           <RiskBadge grade={risk} size="sm" />
           <span className="text-[10px] text-[#CBD5E1]">·</span>
-          <span className="text-[12px] text-[#6B7280]" style={{ fontWeight: 500 }}>{financingType}</span>
+          <span className="text-[13px] text-[#6B7280]" style={{ fontWeight: 500 }}>{financingType}</span>
           <span className="text-[10px] text-[#CBD5E1]">·</span>
-          <span className="text-[12px] text-[#6B7280]" style={{ fontWeight: 500 }}>{tenor}</span>
+          <span className="text-[13px] text-[#6B7280]" style={{ fontWeight: 500 }}>{tenor}</span>
         </div>
 
         {/* Urgency indicator */}
@@ -161,8 +161,8 @@ export function OpportunityCard({
           </div>
 
           {/* 5. FUNDING SUMMARY */}
-          <div className="text-[12px] text-[#6B7280] mb-4">
-            <span style={{ fontWeight: 600, color: '#0B1A3A' }}>{formatSAR(fundedAmount)}</span>
+          <div className="text-[14px] text-[#6B7280] mb-4">
+            <span style={{ fontWeight: 700, color: '#0B1A3A' }}>{formatSAR(fundedAmount)}</span>
             <span className="mx-1">/</span>
             <span>{formatSAR(totalAmount)}</span>
           </div>

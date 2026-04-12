@@ -6,8 +6,13 @@ import { OpportunitiesPage } from "./pages/OpportunitiesPage";
 import { PortfolioPage } from "./pages/PortfolioPage";
 import { WalletPage } from "./pages/WalletPage";
 import { OpportunityDetailPage } from "./pages/OpportunityDetailPage";
+import { OnboardingPage } from "./pages/onboarding";
 
 export const router = createBrowserRouter([
+  {
+    path: "/onboarding",
+    Component: OnboardingPage,
+  },
   {
     path: "/",
     Component: Layout,

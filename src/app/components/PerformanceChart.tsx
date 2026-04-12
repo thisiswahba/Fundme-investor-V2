@@ -39,7 +39,7 @@ export function PerformanceChart() {
         </div>
         <div className="bg-[#F5F7FA] rounded-full px-4 py-2">
           <span className="text-[12px] text-[#002E83]" style={{ fontWeight: 500 }}>
-            ٦ أشهر
+            6 أشهر
           </span>
         </div>
       </div>

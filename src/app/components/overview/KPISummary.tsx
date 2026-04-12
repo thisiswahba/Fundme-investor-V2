@@ -20,7 +20,7 @@ export function KPISummary() {
     {
       icon: Activity,
       label: 'الاستثمارات النشطة',
-      value: '١٢ صفقة',
+      value: '12 صفقة',
       iconBg: '#FEF3C7',
       iconColor: '#F59E0B',
     },

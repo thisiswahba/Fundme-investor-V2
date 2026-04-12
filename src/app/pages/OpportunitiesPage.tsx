@@ -1,47 +1,47 @@
 import { useState } from 'react';
-import { ArrowRight, ArrowLeft, SlidersHorizontal, ChevronDown, Star, TrendingUp, Lightbulb, Zap, Crown, ArrowLeft as ArrowL, Shield } from 'lucide-react';
+import { ArrowRight, ArrowLeft, SlidersHorizontal, ChevronDown, TrendingUp, Lightbulb, Zap, Crown, ArrowLeft as ArrowL, Shield } from 'lucide-react';
 import { OpportunityCard } from '../components/opportunities/OpportunityCard';
 import { Link } from 'react-router';
 
 const opportunities = [
   {
     id: 1, borrowerName: 'شركة البركة التجارية', opportunityId: 'FM-0001-309',
-    financingType: 'تمويل الفواتير', roi: 11.5, risk: 'B' as const, tenor: '٢٠ شهر',
+    financingType: 'تمويل الفواتير', roi: 11.5, risk: 'B' as const, tenor: '20 شهر',
     fundingProgress: 68, totalAmount: 500000, fundedAmount: 340000,
     categoryIcon: 'invoice' as const, gradientTone: 'linear-gradient(135deg, #001d5a 0%, #0D82F9 100%)',
     urgency: 'تبقى 32% فقط' as string | undefined, recommended: false,
   },
   {
     id: 2, borrowerName: 'مؤسسة الأفق للتجزئة', opportunityId: 'FM-0002-412',
-    financingType: 'تمويل رأس المال', roi: 13.2, risk: 'C' as const, tenor: '٢٠ شهر',
+    financingType: 'تمويل رأس المال', roi: 13.2, risk: 'C' as const, tenor: '20 شهر',
     fundingProgress: 42, totalAmount: 350000, fundedAmount: 147000,
     categoryIcon: 'capital' as const, gradientTone: 'linear-gradient(135deg, #001d5a 0%, #1e40af 100%)',
     urgency: 'طلب عالي' as string | undefined, recommended: true,
   },
   {
     id: 3, borrowerName: 'الشركة الصناعية المتقدمة', opportunityId: 'FM-0003-578',
-    financingType: 'تمويل المعدات', roi: 9.8, risk: 'A' as const, tenor: '٢٤ شهر',
+    financingType: 'تمويل المعدات', roi: 9.8, risk: 'A' as const, tenor: '24 شهر',
     fundingProgress: 85, totalAmount: 750000, fundedAmount: 637500,
     categoryIcon: 'equipment' as const, gradientTone: 'linear-gradient(135deg, #001d5a 0%, #0c4a6e 100%)',
     urgency: 'تبقى 15% فقط' as string | undefined, recommended: true,
   },
   {
     id: 4, borrowerName: 'شركة النقل السريع', opportunityId: 'FM-0004-221',
-    financingType: 'تمويل التوسع', roi: 14.5, risk: 'C' as const, tenor: '٢٠ شهر',
+    financingType: 'تمويل التوسع', roi: 14.5, risk: 'C' as const, tenor: '20 شهر',
     fundingProgress: 29, totalAmount: 450000, fundedAmount: 130500,
     categoryIcon: 'expansion' as const, gradientTone: 'linear-gradient(135deg, #001d5a 0%, #075985 100%)',
     urgency: undefined, recommended: true,
   },
   {
     id: 5, borrowerName: 'مطاعم النخبة السريعة', opportunityId: 'FM-0005-887',
-    financingType: 'تمويل التوسع', roi: 12.8, risk: 'B' as const, tenor: '٢٠ شهر',
+    financingType: 'تمويل التوسع', roi: 12.8, risk: 'B' as const, tenor: '20 شهر',
     fundingProgress: 55, totalAmount: 600000, fundedAmount: 330000,
     categoryIcon: 'food' as const, gradientTone: 'linear-gradient(135deg, #001d5a 0%, #0369a1 100%)',
     urgency: 'سينتهي قريبًا' as string | undefined, recommended: false,
   },
   {
     id: 6, borrowerName: 'شركة التقنية التعليمية', opportunityId: 'FM-0006-134',
-    financingType: 'تمويل الابتكار', roi: 16.2, risk: 'D' as const, tenor: '٢٤ شهر',
+    financingType: 'تمويل الابتكار', roi: 16.2, risk: 'D' as const, tenor: '24 شهر',
     fundingProgress: 18, totalAmount: 400000, fundedAmount: 72000,
     categoryIcon: 'innovation' as const, gradientTone: 'linear-gradient(135deg, #001d5a 0%, #1e3a8a 100%)',
     urgency: undefined, recommended: false,
@@ -61,7 +61,6 @@ export function OpportunitiesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
-  const recommended = opportunities.filter(o => o.recommended);
   let filtered = selectedRisk === 'all' ? opportunities : opportunities.filter(o => o.risk === selectedRisk);
   if (sortBy === 'roi') filtered = [...filtered].sort((a, b) => b.roi - a.roi);
   if (sortBy === 'risk') filtered = [...filtered].sort((a, b) => riskOrder[a.risk] - riskOrder[b.risk]);
@@ -144,19 +143,6 @@ export function OpportunitiesPage() {
               <circle cx="140" cy="40" r="12" fill="#80FF00" opacity="0.1" />
             </svg>
           </div>
-        </div>
-      </div>
-
-      {/* Recommended Section */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-4">
-          <Star className="w-5 h-5 text-[#F59E0B]" fill="#F59E0B" strokeWidth={0} />
-          <h2 className="text-[18px] text-[#0B1A3A]" style={{ fontWeight: 700 }}>موصى به لك</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {recommended.map((opp) => (
-            <OpportunityCard key={opp.id} {...opp} badge="موصى به لك" urgency={opp.urgency} />
-          ))}
         </div>
       </div>
 
@@ -247,7 +233,7 @@ export function OpportunitiesPage() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {current.map((opp) => (
           <OpportunityCard key={opp.id} {...opp} urgency={opp.urgency} />
         ))}

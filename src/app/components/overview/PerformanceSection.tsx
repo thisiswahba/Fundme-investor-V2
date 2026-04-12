@@ -4,10 +4,10 @@ import { useState, useId } from 'react';
 
 const dataByPeriod = {
   '1M': [
-    { month: 'أسبوع ١', value: 440000, id: '1m-week1' },
-    { month: 'أسبوع ٢', value: 455000, id: '1m-week2' },
-    { month: 'أسبوع ٣', value: 465000, id: '1m-week3' },
-    { month: 'أسبوع ٤', value: 485000, id: '1m-week4' },
+    { month: 'أسبوع 1', value: 440000, id: '1m-week1' },
+    { month: 'أسبوع 2', value: 455000, id: '1m-week2' },
+    { month: 'أسبوع 3', value: 465000, id: '1m-week3' },
+    { month: 'أسبوع 4', value: 485000, id: '1m-week4' },
   ],
   '6M': [
     { month: 'يناير', value: 350000, id: '6m-jan' },

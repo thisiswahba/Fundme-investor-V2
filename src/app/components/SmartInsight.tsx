@@ -39,7 +39,7 @@ export function SmartInsight() {
         {/* Insight Content */}
         <div className="mb-4">
           <div className="text-[13px] text-[#002E83] mb-2" style={{ fontWeight: 500, lineHeight: '1.6' }}>
-            لديك رصيد خامل بقيمة <span style={{ fontWeight: 700 }}>{formatSAR(45000)}</span>. استثمرها في الصناديق المتوازنة لتحقيق عائد متوقع <span className="text-[#2D8A00]" style={{ fontWeight: 700 }}>+٩٪</span> سنوياً.
+            لديك رصيد خامل بقيمة <span style={{ fontWeight: 700 }}>{formatSAR(45000)}</span>. استثمرها في الصناديق المتوازنة لتحقيق عائد متوقع <span className="text-[#2D8A00]" style={{ fontWeight: 700 }}>+9%</span> سنوياً.
           </div>
         </div>
 

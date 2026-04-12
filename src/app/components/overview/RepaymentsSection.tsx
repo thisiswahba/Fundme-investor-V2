@@ -5,13 +5,13 @@ const repayments = [
   {
     title: 'تمويل مشروع عقاري',
     amount: 8500,
-    date: 'خلال ٣ أيام',
+    date: 'خلال 3 أيام',
     type: 'upcoming',
   },
   {
     title: 'صندوق التجزئة',
     amount: 12300,
-    date: 'خلال ٧ أيام',
+    date: 'خلال 7 أيام',
     type: 'upcoming',
   },
   {

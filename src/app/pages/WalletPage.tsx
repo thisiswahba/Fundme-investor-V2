@@ -1,19 +1,20 @@
 import { formatSAR } from '../utils/currency';
-import { Wallet, Plus, ArrowDownToLine, Building, CreditCard, Download } from 'lucide-react';
+import { Wallet, Plus, ArrowDownToLine, Download, Crown } from 'lucide-react';
 import { StatusBadge } from '../components/ui/StatusBadge';
 
 const walletBalance = 45000;
 const investmentLimit = 500000;
 const investmentUsed = 440000;
 const limitProgress = (investmentUsed / investmentLimit) * 100;
+const isNearLimit = limitProgress >= 80;
 
 const transactions = [
   {
     type: 'deposit',
     title: 'إيداع من حساب بنكي',
-    details: 'البنك الأهلي •••• ١٢٣٤',
+    details: 'البنك الأهلي •••• 1234',
     amount: 100000,
-    date: '٦ أبريل ٢٠٢٦، ٣:٤٥م',
+    date: '6 أبريل 2026، 3:45م',
     status: 'completed' as const,
   },
   {
@@ -21,7 +22,7 @@ const transactions = [
     title: 'استثمار في مشروع عقاري',
     details: 'تمويل مشروع سكني - الدمام',
     amount: -50000,
-    date: '٦ أبريل ٢٠٢٦، ١٠:٣٠ص',
+    date: '6 أبريل 2026، 10:30ص',
     status: 'completed' as const,
   },
   {
@@ -29,15 +30,15 @@ const transactions = [
     title: 'عائد استثماري',
     details: 'صندوق التجزئة الإلكترونية',
     amount: 8500,
-    date: '٥ أبريل ٢٠٢٦، ٩:١٥ص',
+    date: '5 أبريل 2026، 9:15ص',
     status: 'completed' as const,
   },
   {
     type: 'withdrawal',
     title: 'سحب إلى حساب بنكي',
-    details: 'بنك الراجحي •••• ٥٦٧٨',
+    details: 'بنك الراجحي •••• 5678',
     amount: -25000,
-    date: '٣ أبريل ٢٠٢٦، ٢:٢٠م',
+    date: '3 أبريل 2026، 2:20م',
     status: 'processing' as const,
   },
   {
@@ -45,7 +46,7 @@ const transactions = [
     title: 'عائد استثماري',
     details: 'مشروع صناعي - جدة',
     amount: 6800,
-    date: '٢ أبريل ٢٠٢٦، ١١:٠٠ص',
+    date: '2 أبريل 2026، 11:00ص',
     status: 'completed' as const,
   },
 ];
@@ -54,8 +55,8 @@ export function WalletPage() {
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 md:pb-8">
       {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-[28px] text-[#0B1A3A] mb-2" style={{ fontWeight: 700 }}>
+      <div className="mb-6">
+        <h1 className="text-[28px] text-[#0B1A3A] mb-1" style={{ fontWeight: 700 }}>
           المحفظة المالية
         </h1>
         <p className="text-[14px] text-[#6B7280]">
@@ -63,18 +64,18 @@ export function WalletPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
         {/* Wallet Balance Card */}
-        <div 
+        <div
           className="lg:col-span-2 relative rounded-2xl p-8 overflow-hidden"
           style={{
             background: 'linear-gradient(135deg, #0B1A3A 0%, #1E3A5F 100%)',
           }}
         >
           {/* Glow effect */}
-          <div 
-            className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-20 blur-3xl" 
-            style={{ background: 'radial-gradient(circle, #2563EB 0%, transparent 70%)' }} 
+          <div
+            className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-20 blur-3xl"
+            style={{ background: 'radial-gradient(circle, #2563EB 0%, transparent 70%)' }}
           />
 
           <div className="relative">
@@ -94,16 +95,16 @@ export function WalletPage() {
 
             {/* Quick Actions */}
             <div className="flex items-center gap-3">
-              <button 
+              <button
                 className="flex items-center gap-2 px-5 py-3 rounded-xl bg-white hover:bg-gray-50 transition-all"
                 style={{ fontWeight: 600 }}
               >
                 <Plus className="w-4 h-4" strokeWidth={2} />
                 <span className="text-[13px] text-[#0B1A3A]">إضافة أموال</span>
               </button>
-              <button 
+              <button
                 className="flex items-center gap-2 px-5 py-3 rounded-xl transition-all"
-                style={{ 
+                style={{
                   background: 'rgba(255, 255, 255, 0.1)',
                   backdropFilter: 'blur(10px)',
                   fontWeight: 600,
@@ -117,12 +118,12 @@ export function WalletPage() {
         </div>
 
         {/* Investment Limit Card */}
-        <div className="bg-white rounded-2xl p-6" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
-          <h3 className="text-[16px] text-[#0B1A3A] mb-5" style={{ fontWeight: 600 }}>
+        <div className="bg-white rounded-2xl p-6 flex flex-col" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+          <h3 className="text-[16px] text-[#0B1A3A] mb-4" style={{ fontWeight: 600 }}>
             حد الاستثمار
           </h3>
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-3">
+          <div className="mb-3">
+            <div className="flex items-center justify-between mb-2.5">
               <span className="text-[13px] text-[#6B7280]">المستخدم</span>
               <span className="text-[15px] text-[#0B1A3A]" style={{ fontWeight: 700 }}>
                 {formatSAR(investmentUsed)}
@@ -133,7 +134,9 @@ export function WalletPage() {
                 className="h-full rounded-full transition-all"
                 style={{
                   width: `${limitProgress}%`,
-                  background: 'linear-gradient(90deg, #2563EB 0%, #1D4ED8 100%)',
+                  background: isNearLimit
+                    ? 'linear-gradient(90deg, #F59E0B 0%, #D97706 100%)'
+                    : 'linear-gradient(90deg, #2563EB 0%, #1D4ED8 100%)',
                 }}
               />
             </div>
@@ -141,62 +144,46 @@ export function WalletPage() {
               متبقي {formatSAR(investmentLimit - investmentUsed)} من {formatSAR(investmentLimit)}
             </div>
           </div>
-          <div className="text-[11px] text-[#6B7280] leading-relaxed">
-            الحد الأقصى للاستثمار وفقاً لتصنيفك كمستثمر
-          </div>
-        </div>
-      </div>
 
-      {/* Top-up Options */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-2xl p-6" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-[#EFF6FF] flex items-center justify-center">
-              <Building className="w-6 h-6 text-[#2563EB]" strokeWidth={2} />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-[16px] text-[#0B1A3A] mb-1.5" style={{ fontWeight: 600 }}>
-                تحويل بنكي
-              </h3>
-              <p className="text-[13px] text-[#6B7280] mb-4">
-                حول من حسابك البنكي باستخدام رقم IBAN
+          {isNearLimit ? (
+            <div
+              className="mt-auto rounded-xl p-3.5"
+              style={{ background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', border: '1px solid rgba(245, 158, 11, 0.2)' }}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Crown className="w-4 h-4 text-[#D97706]" strokeWidth={2} />
+                <span className="text-[12px] text-[#92400E]" style={{ fontWeight: 600 }}>
+                  اقتربت من الحد الأقصى
+                </span>
+              </div>
+              <p className="text-[11px] text-[#92400E]/70 mb-3 leading-relaxed">
+                ارفع حد الاستثمار واحصل على فرص حصرية
               </p>
-              <button 
-                className="text-[13px] text-[#2563EB] hover:underline" 
-                style={{ fontWeight: 600 }}
+              <button
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg transition-all hover:scale-[1.02]"
+                style={{
+                  background: 'linear-gradient(135deg, #D4AF37 0%, #FFD700 100%)',
+                  color: '#002E83',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                  boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)',
+                }}
               >
-                عرض تفاصيل الحساب
+                <Crown className="w-3.5 h-3.5" strokeWidth={2.5} />
+                <span>ترقية إلى VIP</span>
               </button>
             </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-6" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-[#F3E8FF] flex items-center justify-center">
-              <CreditCard className="w-6 h-6 text-[#8B5CF6]" strokeWidth={2} />
+          ) : (
+            <div className="text-[11px] text-[#6B7280] leading-relaxed mt-auto">
+              الحد الأقصى للاستثمار وفقاً لتصنيفك كمستثمر
             </div>
-            <div className="flex-1">
-              <h3 className="text-[16px] text-[#0B1A3A] mb-1.5" style={{ fontWeight: 600 }}>
-                الدفع ببطاقة
-              </h3>
-              <p className="text-[13px] text-[#6B7280] mb-4">
-                أضف أموال فوراً باستخدام بطاقة الائتمان
-              </p>
-              <button 
-                className="text-[13px] text-[#8B5CF6] hover:underline" 
-                style={{ fontWeight: 600 }}
-              >
-                إضافة بطاقة جديدة
-              </button>
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
       {/* Transactions History */}
       <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
-        <div className="p-6 border-b border-[#F1F4F9] flex items-center justify-between">
+        <div className="px-6 pt-5 pb-4 flex items-center justify-between">
           <h2 className="text-[18px] text-[#0B1A3A]" style={{ fontWeight: 600 }}>
             سجل العمليات
           </h2>
@@ -211,14 +198,14 @@ export function WalletPage() {
           {transactions.map((transaction, index) => (
             <div
               key={index}
-              className="p-5 hover:bg-[#F9FAFB] transition-colors cursor-pointer"
+              className="px-6 py-4 hover:bg-[#F9FAFB] transition-colors cursor-pointer"
             >
               <div className="flex items-start gap-4">
                 {/* Icon */}
-                <div 
+                <div
                   className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center ${
-                    transaction.amount > 0 
-                      ? 'bg-[#ECFDF5]' 
+                    transaction.amount > 0
+                      ? 'bg-[#ECFDF5]'
                       : transaction.type === 'withdrawal'
                       ? 'bg-[#FEF2F2]'
                       : 'bg-[#F1F4F9]'
@@ -253,7 +240,7 @@ export function WalletPage() {
                       </div>
                     </div>
                     <div className="text-left flex flex-col items-end gap-2">
-                      <div 
+                      <div
                         className={`text-[16px] ${
                           transaction.amount > 0 ? 'text-[#10B981]' : 'text-[#0B1A3A]'
                         }`}

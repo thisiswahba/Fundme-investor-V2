@@ -35,7 +35,7 @@ export function SmartInsightSection() {
           <span style={{ fontWeight: 700 }}>{formatSAR(45000)}</span>
           {'. '}
           استثمرها في الفرص ذات التصنيف A-B لتحقيق عائد متوقع{' '}
-          <span className="text-[#10B981]" style={{ fontWeight: 700 }}>+١٢٪</span>
+          <span className="text-[#10B981]" style={{ fontWeight: 700 }}>+12%</span>
           {' '}سنوياً.
         </p>
       </div>
