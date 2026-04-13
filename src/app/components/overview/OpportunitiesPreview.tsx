@@ -100,7 +100,7 @@ export function OpportunitiesPreview() {
             </button>
           </div>
           <button
-            onClick={() => navigate('/opportunities')}
+            onClick={() => navigate('/app/opportunities')}
             className="flex items-center gap-1 text-[13px] text-[#2563EB] hover:gap-2 transition-all"
             style={{ fontWeight: 500 }}
           >
@@ -129,7 +129,7 @@ export function OpportunitiesPreview() {
           >
             <OpportunityCardCompact
               {...opp}
-              onClick={() => navigate(`/opportunities/${opp.id}`)}
+              onClick={() => navigate(`/app/opportunities/${opp.id}`)}
             />
           </div>
         ))}

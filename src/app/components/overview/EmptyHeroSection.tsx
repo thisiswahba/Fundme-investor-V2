@@ -52,7 +52,7 @@ export function EmptyHeroSection() {
         {/* CTA Buttons */}
         <div className="flex gap-3 mt-1">
           <Link
-            to="/wallet"
+            to="/app/wallet"
             className="inline-flex items-center gap-2 px-5 py-3 rounded-xl transition-all hover:scale-105"
             style={{
               background: 'linear-gradient(135deg, #80FF00 0%, #65CC00 100%)',

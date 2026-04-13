@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ArrowRight, ArrowLeft, SlidersHorizontal, ChevronDown, TrendingUp, Lightbulb, Zap, Crown, ArrowLeft as ArrowL, Shield } from 'lucide-react';
 import { OpportunityCard } from '../components/opportunities/OpportunityCard';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 const opportunities = [
   {
@@ -55,6 +55,7 @@ const sortLabels: Record<SortKey, string> = {
 const riskOrder = { A: 1, B: 2, C: 3, D: 4, E: 5 };
 
 export function OpportunitiesPage() {
+  const navigate = useNavigate();
   const [selectedRisk, setSelectedRisk] = useState<string>('all');
   const [sortBy, setSortBy] = useState<SortKey>('default');
   const [sortOpen, setSortOpen] = useState(false);
@@ -117,7 +118,7 @@ export function OpportunitiesPage() {
               متوسط العائد الحالي <span className="text-[#80FF00]" style={{ fontWeight: 700 }}>{avgRoi}%</span> — اختر من فرص مدروسة بعناية ومخاطر محسوبة
             </p>
             <Link
-              to="/opportunities"
+              to="/app/opportunities"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[12px] transition-all hover:scale-105"
               style={{
                 background: 'linear-gradient(135deg, #80FF00 0%, #65CC00 100%)',
@@ -235,7 +236,7 @@ export function OpportunitiesPage() {
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {current.map((opp) => (
-          <OpportunityCard key={opp.id} {...opp} urgency={opp.urgency} />
+          <OpportunityCard key={opp.id} {...opp} urgency={opp.urgency} onClick={() => navigate(`/app/opportunities/${opp.id}`)} />
         ))}
       </div>
 

@@ -25,7 +25,7 @@ export function EmptyActiveInvestments() {
           ابدأ باستكشاف الفرص الاستثمارية المتاحة وقم بأول استثمار لك
         </p>
         <Link
-          to="/opportunities"
+          to="/app/opportunities"
           className="inline-flex items-center gap-2 px-5 h-[45px] rounded-[20px] transition-all hover:scale-105"
           style={{
             background: '#002E83',

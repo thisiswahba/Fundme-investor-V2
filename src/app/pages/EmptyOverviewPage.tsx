@@ -22,7 +22,7 @@ export function EmptyOverviewPage() {
           </p>
         </div>
         <Link
-          to="/opportunities"
+          to="/app/opportunities"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all hover:scale-105 flex-shrink-0"
           style={{
             background: 'linear-gradient(135deg, #0D82F9 0%, #002E83 100%)',

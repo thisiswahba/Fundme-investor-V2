@@ -29,7 +29,7 @@ export function WelcomeGuideCard({ completedSteps = 1 }: WelcomeGuideCardProps) 
       title: 'استكشف الفرص',
       description: 'تصفح الفرص الاستثمارية المتاحة',
       action: 'عرض الفرص',
-      link: '/opportunities',
+      link: '/app/opportunities',
       color: '#002E83',
       bgColor: 'rgba(0, 46, 131, 0.1)',
     },
@@ -38,7 +38,7 @@ export function WelcomeGuideCard({ completedSteps = 1 }: WelcomeGuideCardProps) 
       title: 'نوّع محفظتك',
       description: 'استثمر في عدة فرص لتقليل المخاطر',
       action: 'تعرف على المزيد',
-      link: '/opportunities',
+      link: '/app/opportunities',
       color: '#10B981',
       bgColor: 'rgba(16, 185, 129, 0.1)',
     },
@@ -67,7 +67,7 @@ export function WelcomeGuideCard({ completedSteps = 1 }: WelcomeGuideCardProps) 
           أكملت جميع الخطوات بنجاح. ابدأ باستكشاف الفرص المتاحة
         </p>
         <Link
-          to="/opportunities"
+          to="/app/opportunities"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all hover:scale-105"
           style={{
             background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',

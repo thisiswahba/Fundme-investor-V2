@@ -10,11 +10,15 @@ import { OnboardingPage } from "./pages/onboarding";
 
 export const router = createBrowserRouter([
   {
+    path: "/",
+    Component: OnboardingPage,
+  },
+  {
     path: "/onboarding",
     Component: OnboardingPage,
   },
   {
-    path: "/",
+    path: "/app",
     Component: Layout,
     children: [
       { index: true, Component: EmptyOverviewPage },
