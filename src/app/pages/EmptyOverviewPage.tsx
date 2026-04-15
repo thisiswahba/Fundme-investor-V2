@@ -7,18 +7,29 @@ import { OpportunitiesPreview } from '../components/overview/OpportunitiesPrevie
 import { WelcomeGuideCard } from '../components/overview/WelcomeGuideCard';
 import { Link } from 'react-router';
 import { TrendingUp } from 'lucide-react';
+import { usePersona } from '../demoPersona';
+import { useI18n } from '../i18n';
 
 export function EmptyOverviewPage() {
+  const { persona } = usePersona();
+  const { lang } = useI18n();
+  const isAr = lang === 'ar';
+  const firstName = isAr
+    ? persona.profile.nameAr.split(' ')[0]
+    : persona.profile.nameEn.split(' ')[0];
+
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 md:pb-8">
       {/* Page Header */}
       <div className="flex items-start justify-between gap-6 mb-6">
         <div>
           <h1 className="text-[28px] lg:text-[36px] leading-tight mb-2" style={{ color: '#002E83', fontWeight: 700, letterSpacing: '-0.02em' }}>
-            مرحباً، أحمد 👋
+            {isAr ? `مرحباً، ${firstName} 👋` : `Welcome, ${firstName} 👋`}
           </h1>
           <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(0,0,0,0.6)', fontWeight: 400 }}>
-            استثمر في فرص مختارة بعناية، وتابع أداء محفظتك، واستمتع بعوائد مجزية
+            {isAr
+              ? 'استثمر في فرص مختارة بعناية، وتابع أداء محفظتك، واستمتع بعوائد مجزية'
+              : 'Invest in curated opportunities, track your portfolio, and enjoy rewarding returns'}
           </p>
         </div>
         <Link
@@ -44,7 +55,7 @@ export function EmptyOverviewPage() {
           <EmptyKPISummary />
         </div>
         <div className="lg:col-span-1 order-1 lg:order-1">
-          <WelcomeGuideCard />
+          <WelcomeGuideCard completedSteps={persona.onboarding.completedSteps} />
         </div>
       </div>
 

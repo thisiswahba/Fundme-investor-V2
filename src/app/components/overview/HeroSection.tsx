@@ -1,19 +1,22 @@
 import { TrendingUp, Wallet, PieChart, Target, Crown } from 'lucide-react';
 import { formatSAR, formatPercentage } from '../../utils/currency';
+import { usePersona } from '../../demoPersona';
 
 interface HeroSectionProps {
   isVIP?: boolean;
 }
 
 export function HeroSection({ isVIP = false }: HeroSectionProps) {
+  const { persona } = usePersona();
+  const p = persona.portfolio;
   const data = {
-    totalPortfolio: 485000,
-    monthlyGrowth: 8.4,
-    totalInvested: 440000,
-    realizedReturns: 45000,
-    averageReturn: 12.3,
-    activeInvestments: 12,
-    remainingLimit: 560000,
+    totalPortfolio: p.totalValue,
+    monthlyGrowth: p.monthlyGrowth,
+    totalInvested: p.totalInvested,
+    realizedReturns: p.realizedReturns,
+    averageReturn: p.averageReturn,
+    activeInvestments: p.activeInvestments,
+    remainingLimit: p.remainingLimit,
   };
 
   return (

@@ -1,19 +1,31 @@
 import { useState, useRef, useEffect } from 'react';
-import { Outlet, NavLink } from 'react-router';
-import { Bell, User, ChevronDown, Settings, LogOut, UserCircle, Globe } from 'lucide-react';
-import fundmeLogo from '../../assets/6b8eb299ed24c5060e85849675d69a160839c7b3.png';
+import { Outlet, NavLink, useNavigate } from 'react-router';
+import { Bell, User, ChevronDown, Settings, LogOut, UserCircle, Globe, Users, FlaskConical } from 'lucide-react';
+import logoLight from '../../assets/logo-light.png';
+import logoDark from '../../assets/logo-dark.png';
 import { useI18n } from '../i18n';
+import { usePersona, type PersonaId } from '../demoPersona';
 
 export function Layout() {
   const { lang, setLang, t, dir } = useI18n();
+  const { persona, personaId, setPersonaId } = usePersona();
+  const navigate = useNavigate();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [personaSwitcherOpen, setPersonaSwitcherOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const personaRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on outside click
+  const isAr = lang === 'ar';
+  const userName = isAr ? persona.profile.nameAr : persona.profile.nameEn;
+
+  // Close dropdowns on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setUserMenuOpen(false);
+      }
+      if (personaRef.current && !personaRef.current.contains(e.target as Node)) {
+        setPersonaSwitcherOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClick);
@@ -28,14 +40,27 @@ export function Layout() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC]" dir={dir}>
+    <div className={`min-h-screen ${personaId === 'vip' ? 'bg-[#080D19]' : 'bg-[#F7F9FC]'}`} dir={dir}>
       {/* Top Navigation */}
-      <nav className="bg-white border-b border-[#E5E7EB] sticky top-0 z-50">
+      <nav className={`${personaId === 'vip' ? 'bg-[#0B111E] border-white/[0.06]' : 'bg-white border-[#E5E7EB]'} border-b sticky top-0 z-50`}>
         <div className="max-w-[1400px] mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <div className="flex items-center gap-2">
-              <img src={fundmeLogo} alt="FundMe" className="h-12 w-auto" />
+            <div className="flex items-center">
+              {personaId === 'vip' ? (
+                <div
+                  className="flex items-center justify-center px-3 py-1.5 rounded-xl"
+                  style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
+                  }}
+                >
+                  <img src={logoLight} alt="FundMe" className="h-6 w-auto" />
+                </div>
+              ) : (
+                <img src={logoDark} alt="FundMe" className="h-7 w-auto" />
+              )}
             </div>
 
             {/* Navigation Tabs */}
@@ -48,8 +73,8 @@ export function Layout() {
                   className={({ isActive }) =>
                     `px-4 py-2 rounded-lg text-[14px] transition-all ${
                       isActive
-                        ? 'bg-[#0B1A3A] text-white'
-                        : 'text-[#6B7280] hover:bg-[#F1F4F9] hover:text-[#0B1A3A]'
+                        ? personaId === 'vip' ? 'bg-white/10 text-white' : 'bg-[#0B1A3A] text-white'
+                        : personaId === 'vip' ? 'text-white/40 hover:bg-white/[0.06] hover:text-white/70' : 'text-[#6B7280] hover:bg-[#F1F4F9] hover:text-[#0B1A3A]'
                     }`
                   }
                   style={{ fontWeight: 500 }}
@@ -64,16 +89,18 @@ export function Layout() {
               {/* Language Toggle */}
               <button
                 onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
-                className="flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] text-[#64748B] hover:bg-[#F8FAFC] transition-colors"
-                style={{ fontWeight: 500, border: '1px solid #E5E7EB' }}
+                className={`flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] transition-colors ${
+                  personaId === 'vip' ? 'text-white/40 hover:bg-white/[0.06]' : 'text-[#64748B] hover:bg-[#F8FAFC]'
+                }`}
+                style={{ fontWeight: 500, border: personaId === 'vip' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E5E7EB' }}
               >
                 <Globe className="w-3.5 h-3.5" strokeWidth={1.5} />
                 {lang === 'ar' ? 'EN' : 'ع'}
               </button>
 
               {/* Notifications */}
-              <button className="relative p-2 hover:bg-[#F1F4F9] rounded-lg transition-colors">
-                <Bell className="w-5 h-5 text-[#6B7280]" strokeWidth={1.5} />
+              <button className={`relative p-2 rounded-lg transition-colors ${personaId === 'vip' ? 'hover:bg-white/[0.06]' : 'hover:bg-[#F1F4F9]'}`}>
+                <Bell className={`w-5 h-5 ${personaId === 'vip' ? 'text-white/40' : 'text-[#6B7280]'}`} strokeWidth={1.5} />
                 <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#16A34A] rounded-full" />
               </button>
 
@@ -81,13 +108,13 @@ export function Layout() {
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 p-1.5 pr-3 hover:bg-[#F1F4F9] rounded-lg transition-colors"
+                  className={`flex items-center gap-2 p-1.5 pr-3 rounded-lg transition-colors ${personaId === 'vip' ? 'hover:bg-white/[0.06]' : 'hover:bg-[#F1F4F9]'}`}
                 >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1D4ED8] to-[#1E40AF] flex items-center justify-center">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${personaId === 'vip' ? 'bg-gradient-to-br from-[#6366F1] to-[#4F46E5]' : 'bg-gradient-to-br from-[#1D4ED8] to-[#1E40AF]'}`}>
                     <User className="w-4 h-4 text-white" strokeWidth={1.5} />
                   </div>
-                  <span className="hidden lg:block text-[14px] text-[#0B1A3A]" style={{ fontWeight: 500 }}>
-                    {t('user.name')}
+                  <span className={`hidden lg:block text-[14px] ${personaId === 'vip' ? 'text-white/80' : 'text-[#0B1A3A]'}`} style={{ fontWeight: 500 }}>
+                    {userName}
                   </span>
                   <ChevronDown
                     className={`hidden lg:block w-3.5 h-3.5 text-[#94A3B8] transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`}
@@ -107,14 +134,14 @@ export function Layout() {
                   >
                     {/* User info */}
                     <div className="px-4 py-3 border-b" style={{ borderColor: '#F1F5F9' }}>
-                      <div className="text-[13px] text-[#0F172A]" style={{ fontWeight: 600 }}>{t('user.name')}</div>
-                      <div className="text-[11px] text-[#94A3B8]">ahmed@example.com</div>
+                      <div className="text-[13px] text-[#0F172A]" style={{ fontWeight: 600 }}>{userName}</div>
+                      <div className="text-[11px] text-[#94A3B8]">{persona.profile.email}</div>
                     </div>
 
                     {/* Menu items */}
                     <div className="py-1">
                       <button
-                        onClick={() => setUserMenuOpen(false)}
+                        onClick={() => { setUserMenuOpen(false); navigate('/app/profile'); }}
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] text-[#334155] hover:bg-[#F8FAFC] transition-colors"
                         style={{ fontWeight: 500 }}
                       >
@@ -175,6 +202,94 @@ export function Layout() {
             </NavLink>
           ))}
         </div>
+      </div>
+
+      {/* ─── Demo Persona Switcher (floating) ─── */}
+      <div
+        ref={personaRef}
+        className="fixed bottom-6 z-[100] md:bottom-6"
+        style={dir === 'rtl' ? { left: 24 } : { right: 24 }}
+      >
+        {/* Expanded panel */}
+        {personaSwitcherOpen && (
+          <div
+            className="absolute bottom-14 w-[280px] rounded-2xl overflow-hidden mb-2"
+            style={{
+              background: 'white',
+              boxShadow: '0 8px 40px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08)',
+              border: '1px solid #E5E7EB',
+              ...(dir === 'rtl' ? { left: 0 } : { right: 0 }),
+            }}
+          >
+            <div className="px-4 py-3 border-b" style={{ borderColor: '#F1F5F9', background: '#F8FAFC' }}>
+              <div className="flex items-center gap-2">
+                <FlaskConical className="w-3.5 h-3.5 text-[#6366F1]" strokeWidth={2} />
+                <span className="text-[12px] text-[#334155]" style={{ fontWeight: 700 }}>
+                  Demo Personas
+                </span>
+              </div>
+            </div>
+            <div className="p-2">
+              {([
+                { id: 'vip' as PersonaId, label: 'VIP Investor', labelAr: 'مستثمر VIP', desc: 'Premium dashboard, high-value portfolio, exclusive access', descAr: 'لوحة متميزة، محفظة عالية القيمة، وصول حصري', color: '#6366F1' },
+                { id: 'completed' as PersonaId, label: 'Regular Investor', labelAr: 'مستثمر عادي', desc: 'Active portfolio, funded wallet, full data', descAr: 'محفظة نشطة، رصيد متوفر، بيانات كاملة', color: '#16A34A' },
+                { id: 'new' as PersonaId, label: 'New Investor', labelAr: 'مستثمر جديد', desc: 'First login, empty state, guided onboarding', descAr: 'أول دخول، حالة فارغة، إعداد موجّه', color: '#3B82F6' },
+              ]).map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => { setPersonaId(p.id); setPersonaSwitcherOpen(false); }}
+                  className="w-full flex items-start gap-3 p-3 rounded-xl transition-all cursor-pointer text-left"
+                  style={{
+                    background: personaId === p.id ? `${p.color}0D` : 'transparent',
+                    border: personaId === p.id ? `1.5px solid ${p.color}30` : '1.5px solid transparent',
+                  }}
+                  dir={dir}
+                >
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                    style={{ background: `${p.color}15` }}
+                  >
+                    <Users className="w-4 h-4" style={{ color: p.color }} strokeWidth={2} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] text-[#0F172A]" style={{ fontWeight: 600 }}>
+                      {isAr ? p.labelAr : p.label}
+                    </div>
+                    <div className="text-[11px] text-[#94A3B8] leading-relaxed mt-0.5">
+                      {isAr ? p.descAr : p.desc}
+                    </div>
+                  </div>
+                  {personaId === p.id && (
+                    <div
+                      className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-1"
+                      style={{ background: p.color }}
+                    >
+                      <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                        <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Toggle button */}
+        <button
+          onClick={() => setPersonaSwitcherOpen(!personaSwitcherOpen)}
+          className="flex items-center gap-2 h-11 px-4 rounded-full transition-all hover:scale-105 cursor-pointer"
+          style={{
+            background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
+            boxShadow: '0 4px 16px rgba(99,102,241,0.35), 0 2px 4px rgba(0,0,0,0.1)',
+            color: 'white',
+          }}
+        >
+          <FlaskConical className="w-4 h-4" strokeWidth={2} />
+          <span className="text-[12px]" style={{ fontWeight: 600 }}>
+            {personaId === 'vip' ? 'VIP' : personaId === 'completed' ? (isAr ? 'عادي' : 'Regular') : (isAr ? 'جديد' : 'New')}
+          </span>
+        </button>
       </div>
     </div>
   );

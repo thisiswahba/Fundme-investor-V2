@@ -1,22 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { formatSAR } from '../utils/currency';
 import { useI18n } from '../i18n';
+import { usePersona } from '../demoPersona';
 import {
   Wallet, Plus, ArrowDownToLine, Building2, CreditCard, Download,
   ArrowUpRight, ArrowDownRight, Briefcase, TrendingUp, MoreHorizontal,
   Shield, Clock, Filter, ChevronDown, Trash2, Star, X, CheckCircle,
   AlertCircle, Loader2,
 } from 'lucide-react';
-
-// ─── Data ────────────────────────────────────────────────────────────────────
-
-const wallet = {
-  available: 45000,
-  pending: 8500,
-  total: 53500,
-  lastTransaction: 'إيداع ١٠٠,٠٠٠ ﷼ — ٦ أبريل',
-  lastTransactionEn: 'Deposit 100,000 SAR — Apr 6',
-};
 
 const bankAccounts = [
   { id: 1, bank: 'البنك الأهلي', bankEn: 'Al Ahli Bank', iban: 'SA•••• •••• •••• ١٢٣٤', primary: true },
@@ -394,7 +385,9 @@ const bankDetails = {
 };
 
 function AddFundsModal({ open, onClose, isAr }: { open: boolean; onClose: () => void; isAr: boolean }) {
-  const [step, setStep] = useState<'method' | 'bank' | 'card' | 'cardProcessing' | 'success'>('method');
+  const { persona } = usePersona();
+  const wallet = { available: persona.wallet.available };
+  const [step, setStep] = useState<'method' | 'bank' | 'card' | 'cardProcessing' | 'success'>('bank');
   const [amount, setAmount] = useState('');
   const [copied, setCopied] = useState('');
   const [cardNumber, setCardNumber] = useState('');
@@ -402,7 +395,7 @@ function AddFundsModal({ open, onClose, isAr }: { open: boolean; onClose: () => 
   const [cardCvv, setCardCvv] = useState('');
 
   useEffect(() => {
-    if (open) { setStep('method'); setAmount(''); setCopied(''); setCardNumber(''); setCardExpiry(''); setCardCvv(''); }
+    if (open) { setStep('bank'); setAmount(''); setCopied(''); setCardNumber(''); setCardExpiry(''); setCardCvv(''); }
   }, [open]);
 
   const copyToClipboard = (text: string, field: string) => {
@@ -429,82 +422,56 @@ function AddFundsModal({ open, onClose, isAr }: { open: boolean; onClose: () => 
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(15, 23, 42, 0.5)', backdropFilter: 'blur(4px)' }} onClick={(e) => { if (e.target === e.currentTarget && step !== 'cardProcessing') onClose(); }}>
       <div className="bg-white w-full max-w-[500px] rounded-[20px] overflow-hidden" style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.15)' }} dir={isAr ? 'rtl' : 'ltr'}>
 
-        {/* ── Header ── */}
-        {(step === 'method' || step === 'bank' || step === 'card') && (
-          <>
-            {/* Method/Bank: branded full header */}
-            {(step === 'method' || step === 'bank') && (
-              <div className="relative h-[110px] overflow-hidden" style={{ background: 'linear-gradient(155deg, #0F2A44 0%, #1D4ED8 100%)' }}>
-                <div className="absolute inset-0 pointer-events-none">
-                  <div className="absolute -top-8 -left-8 w-28 h-28 rounded-full opacity-[0.06]" style={{ backgroundColor: '#fff' }} />
-                  <div className="absolute bottom-[-15px] right-[-10px] w-32 h-32 rounded-full opacity-[0.04]" style={{ backgroundColor: '#fff' }} />
-                </div>
-                <div className="relative flex flex-col items-center justify-center h-full">
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-2" style={{ backgroundColor: 'rgba(255,255,255,0.12)' }}>
-                    {step === 'method' ? <Plus className="w-5 h-5 text-white" strokeWidth={1.5} /> : <Building2 className="w-5 h-5 text-white" strokeWidth={1.5} />}
-                  </div>
-                  <div className="text-[14px] text-white" style={{ fontWeight: 600 }}>
-                    {step === 'method' ? (isAr ? 'إضافة أموال' : 'Add Funds') : (isAr ? 'تحويل بنكي' : 'Bank Transfer')}
-                  </div>
-                </div>
-                <button onClick={onClose} className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                  <X className="w-4 h-4 text-white/70" strokeWidth={1.5} />
-                </button>
-                {step === 'bank' && (
-                  <button onClick={() => setStep('method')} className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                    <ArrowDownRight className="w-4 h-4 text-white/70 rotate-90" strokeWidth={1.5} />
-                  </button>
-                )}
+        {/* ── Header — always visible ── */}
+        {(step === 'bank' || step === 'card') && (
+          <div className="relative h-[100px] overflow-hidden" style={{ background: 'linear-gradient(155deg, #0B1F3A 0%, #143766 100%)' }}>
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute -top-8 -left-8 w-28 h-28 rounded-full opacity-[0.06]" style={{ backgroundColor: '#fff' }} />
+              <div className="absolute bottom-[-15px] right-[-10px] w-32 h-32 rounded-full opacity-[0.04]" style={{ backgroundColor: '#fff' }} />
+            </div>
+            <div className="relative flex flex-col items-center justify-center h-full">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-2" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
+                <Plus className="w-5 h-5 text-white" strokeWidth={1.5} />
               </div>
-            )}
-            {/* Card: compact white header */}
-            {step === 'card' && (
-              <div className="flex items-center justify-between h-[72px] px-6 border-b" style={{ borderColor: '#F1F5F9' }}>
-                <button onClick={() => setStep('method')} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[#F8FAFC] transition-colors">
-                  <ArrowDownRight className="w-4 h-4 text-[#94A3B8] rotate-90" strokeWidth={1.5} />
-                </button>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#EFF6FF' }}>
-                    <CreditCard className="w-4 h-4 text-[#1D4ED8]" strokeWidth={1.5} />
-                  </div>
-                  <span className="text-[15px] text-[#0F172A]" style={{ fontWeight: 700 }}>{isAr ? 'الدفع بالبطاقة' : 'Card Payment'}</span>
-                </div>
-                <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[#F8FAFC] transition-colors">
-                  <X className="w-4 h-4 text-[#94A3B8]" strokeWidth={1.5} />
-                </button>
+              <div className="text-[14px] text-white" style={{ fontWeight: 600 }}>
+                {isAr ? 'إضافة أموال' : 'Add Funds'}
               </div>
-            )}
-          </>
+            </div>
+            <button onClick={onClose} className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center rounded-full cursor-pointer" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
+              <X className="w-4 h-4 text-white/70" strokeWidth={1.5} />
+            </button>
+          </div>
+        )}
+
+        {/* ── Tabs ── */}
+        {(step === 'bank' || step === 'card') && (
+          <div className="flex border-b" style={{ borderColor: '#E8ECF2' }}>
+            <button
+              onClick={() => setStep('bank')}
+              className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-[13px] border-b-2 -mb-px transition-all cursor-pointer ${step === 'bank' ? 'border-[#3B82F6] text-[#0F172A]' : 'border-transparent text-[#94A3B8] hover:text-[#64748B]'}`}
+              style={{ fontWeight: step === 'bank' ? 600 : 500 }}
+            >
+              <Building2 className="w-4 h-4" strokeWidth={1.5} />
+              {isAr ? 'تحويل بنكي' : 'Bank Transfer'}
+              <span className="text-[9px] px-1.5 py-0.5 rounded-md" style={{ background: '#EFF6FF', color: '#3B82F6', fontWeight: 600 }}>
+                {isAr ? 'مجاني' : 'Free'}
+              </span>
+            </button>
+            <button
+              onClick={() => setStep('card')}
+              className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-[13px] border-b-2 -mb-px transition-all cursor-pointer ${step === 'card' ? 'border-[#3B82F6] text-[#0F172A]' : 'border-transparent text-[#94A3B8] hover:text-[#64748B]'}`}
+              style={{ fontWeight: step === 'card' ? 600 : 500 }}
+            >
+              <CreditCard className="w-4 h-4" strokeWidth={1.5} />
+              {isAr ? 'بطاقة ائتمان' : 'Credit Card'}
+              <span className="text-[9px] px-1.5 py-0.5 rounded-md" style={{ background: '#F0FDF4', color: '#2BB673', fontWeight: 600 }}>
+                {isAr ? 'فوري' : 'Instant'}
+              </span>
+            </button>
+          </div>
         )}
 
         <div className="px-6 py-6">
-
-          {/* ── Method selection ── */}
-          {step === 'method' && (
-            <div className="space-y-3">
-              <button onClick={() => setStep('bank')} className="w-full flex items-center gap-4 p-4 rounded-[14px] text-right transition-all hover:shadow-md hover:border-[#DBEAFE] active:scale-[0.99]" style={{ border: '1px solid #E5E7EB' }}>
-                <div className="w-11 h-11 rounded-[12px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#EFF6FF' }}>
-                  <Building2 className="w-5 h-5 text-[#1D4ED8]" strokeWidth={1.5} />
-                </div>
-                <div className="flex-1">
-                  <div className="text-[14px] text-[#0F172A]" style={{ fontWeight: 600 }}>{isAr ? 'تحويل بنكي' : 'Bank Transfer'}</div>
-                  <div className="text-[11px] text-[#94A3B8] mt-0.5">{isAr ? 'يصل خلال ١-٢ يوم عمل' : '1-2 business days'}</div>
-                </div>
-                <div className="text-[10px] text-[#1D4ED8] px-2 py-1 rounded-full flex-shrink-0" style={{ backgroundColor: '#EFF6FF', fontWeight: 600 }}>{isAr ? 'مجاني' : 'Free'}</div>
-              </button>
-
-              <button onClick={() => setStep('card')} className="w-full flex items-center gap-4 p-4 rounded-[14px] text-right transition-all hover:shadow-md hover:border-[#E2E8F0] active:scale-[0.99]" style={{ border: '1px solid #E5E7EB' }}>
-                <div className="w-11 h-11 rounded-[12px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#F8FAFC' }}>
-                  <CreditCard className="w-5 h-5 text-[#64748B]" strokeWidth={1.5} />
-                </div>
-                <div className="flex-1">
-                  <div className="text-[14px] text-[#0F172A]" style={{ fontWeight: 600 }}>{isAr ? 'بطاقة ائتمان' : 'Credit / Debit Card'}</div>
-                  <div className="text-[11px] text-[#94A3B8] mt-0.5">{isAr ? 'إيداع فوري — Visa / Mastercard' : 'Instant — Visa / Mastercard'}</div>
-                </div>
-                <div className="text-[10px] text-[#16A34A] px-2 py-1 rounded-full flex-shrink-0" style={{ backgroundColor: '#F0FDF4', fontWeight: 600 }}>{isAr ? 'فوري' : 'Instant'}</div>
-              </button>
-            </div>
-          )}
 
           {/* ── Bank Transfer ── */}
           {step === 'bank' && (
@@ -742,6 +709,14 @@ function AddFundsModal({ open, onClose, isAr }: { open: boolean; onClose: () => 
 export function WalletPage() {
   const { t, lang } = useI18n();
   const isAr = lang === 'ar';
+  const { persona } = usePersona();
+  const wallet = {
+    available: persona.wallet.available,
+    pending: persona.wallet.pending,
+    total: persona.wallet.total,
+    lastTransaction: persona.wallet.lastTransactionAr,
+    lastTransactionEn: persona.wallet.lastTransactionEn,
+  };
   const [filter, setFilter] = useState('all');
   const [addBankOpen, setAddBankOpen] = useState(false);
   const [addFundsOpen, setAddFundsOpen] = useState(false);
@@ -753,49 +728,71 @@ export function WalletPage() {
   ];
 
   return (
-    <div className="max-w-[1200px] mx-auto px-6 py-8 pb-24 md:pb-8">
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 md:pb-8">
 
-      {/* ═══ 1. WALLET OVERVIEW — Hero ═══ */}
-      <section className="relative rounded-[16px] overflow-hidden p-8 mb-8" style={{ backgroundColor: '#0F2A44' }}>
-        {/* Decorative */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-10 -left-10 w-48 h-48 rounded-full opacity-[0.06]" style={{ backgroundColor: '#1D4ED8' }} />
-          <div className="absolute bottom-0 right-0 w-64 h-64 rounded-full opacity-[0.04]" style={{ backgroundColor: '#fff' }} />
-          <svg className="absolute bottom-0 left-0 w-full h-16 opacity-[0.04]" viewBox="0 0 800 60" fill="none">
-            <path d="M0 50 Q200 20 400 35 T800 20" stroke="white" strokeWidth="1" />
-          </svg>
-        </div>
+      {/* ═══ 1. WALLET OVERVIEW — Hero (matches overview wallet) ═══ */}
+      <section
+        className="relative rounded-[20px] overflow-hidden mb-8"
+        style={{ background: 'linear-gradient(135deg, #0B1F3A 0%, #0F2A4D 50%, #143766 100%)' }}
+      >
+        {/* Decorative circle */}
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] rounded-full"
+          style={{ border: '1px solid rgba(255,255,255,0.06)' }}
+        />
 
-        <div className="relative">
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <div className="text-[12px] text-white/50 mb-2" style={{ fontWeight: 500 }}>
-                {isAr ? 'الرصيد المتاح' : 'Available Balance'}
-              </div>
-              <div className="text-[44px] text-white leading-none mb-3" style={{ fontWeight: 700, letterSpacing: '-0.03em' }}>
-                {formatSAR(wallet.available)}
-              </div>
-              <div className="flex items-center gap-4 text-[11px]">
-                <span className="text-white/40">
-                  {isAr ? 'معلق' : 'Pending'}: <span className="text-white/70" style={{ fontWeight: 600 }}>{formatSAR(wallet.pending)}</span>
-                </span>
-                <span className="w-px h-3" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                <span className="text-white/40">
-                  {isAr ? 'آخر عملية' : 'Last'}: <span className="text-white/70" style={{ fontWeight: 500 }}>{isAr ? wallet.lastTransaction : wallet.lastTransactionEn}</span>
-                </span>
-              </div>
+        <div className="relative flex flex-col items-start gap-4 p-6 lg:p-8">
+          {/* Wallet Icon + Label */}
+          <div className="flex items-center gap-2.5">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center"
+              style={{ background: 'rgba(255, 255, 255, 0.1)', border: '1px solid rgba(255, 255, 255, 0.12)' }}
+            >
+              <Wallet className="w-5 h-5 text-white" strokeWidth={2} />
             </div>
+            <span className="text-[14px] text-white/80" style={{ fontWeight: 500 }}>
+              {isAr ? 'المحفظة' : 'Wallet'}
+            </span>
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-3">
-            <button onClick={() => setAddFundsOpen(true)} className="flex items-center gap-2 h-11 px-6 rounded-[10px] bg-white text-[#0F172A] transition-all hover:shadow-lg active:scale-[0.98]" style={{ fontWeight: 600 }}>
-              <Plus className="w-4 h-4" strokeWidth={1.5} />
-              <span className="text-[13px]">{isAr ? 'إضافة أموال' : 'Add Funds'}</span>
+          {/* Balance */}
+          <div
+            className="text-[56px] lg:text-[64px] leading-none text-white"
+            dir="ltr"
+            style={{ fontWeight: 700, letterSpacing: '-0.03em' }}
+          >
+            {formatSAR(wallet.available)}
+          </div>
+
+          {/* CTA Buttons */}
+          <div className="flex gap-3 mt-1">
+            <button
+              onClick={() => setAddFundsOpen(true)}
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl transition-all hover:scale-105 cursor-pointer"
+              style={{
+                background: 'linear-gradient(135deg, #1D4ED8 0%, #2563EB 100%)',
+                color: '#FFFFFF',
+                fontWeight: 600,
+                fontSize: '14px',
+                boxShadow: '0 4px 16px rgba(37, 99, 235, 0.3)',
+              }}
+            >
+              <Plus className="w-4 h-4" strokeWidth={2.5} />
+              <span>{isAr ? 'إضافة أموال' : 'Add Funds'}</span>
             </button>
-            <button className="flex items-center gap-2 h-11 px-5 rounded-[10px] text-white/90 transition-all hover:bg-white/15 active:scale-[0.98]" style={{ backgroundColor: 'rgba(255,255,255,0.08)', fontWeight: 500 }}>
-              <ArrowDownToLine className="w-4 h-4" strokeWidth={1.5} />
-              <span className="text-[13px]">{isAr ? 'سحب' : 'Withdraw'}</span>
+
+            <button
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl transition-all hover:scale-105 cursor-pointer"
+              style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#FFFFFF',
+                fontWeight: 600,
+                fontSize: '14px',
+              }}
+            >
+              <ArrowDownToLine className="w-4 h-4" strokeWidth={2.5} />
+              <span>{isAr ? 'سحب' : 'Withdraw'}</span>
             </button>
           </div>
         </div>

@@ -502,6 +502,7 @@ export function OpportunityDetailPage() {
   const { t } = useI18n();
   const [amount, setAmount] = useState(5000);
   const [chartTab, setChartTab] = useState<'returns' | 'growth'>('returns');
+  const [sectionTab, setSectionTab] = useState<'overview' | 'returns' | 'risk' | 'borrower'>('overview');
   const [modalOpen, setModalOpen] = useState(false);
   const [invested, setInvested] = useState(false);
   const [investedAmount, setInvestedAmount] = useState(0);
@@ -512,11 +513,11 @@ export function OpportunityDetailPage() {
   const grades = ['E', 'D', 'C', 'B', 'A'];
 
   return (
-    <div className="max-w-[1336px] mx-auto px-6 py-8 pb-24 md:pb-8">
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 md:pb-8">
 
       {/* Back button */}
       <button
-        onClick={() => navigate('/opportunities')}
+        onClick={() => navigate('/app/opportunities')}
         className="flex items-center gap-1.5 text-[14px] text-[#64748B] hover:text-[#0F172A] mb-6 transition-colors"
         style={{ fontWeight: 500 }}
       >
@@ -528,7 +529,7 @@ export function OpportunityDetailPage() {
       <div className="flex gap-6">
 
         {/* ─── MAIN COLUMN (right in RTL) ─── */}
-        <div className="flex-1 min-w-0 space-y-6">
+        <div className="flex-1 min-w-0">
 
           {/* HERO CARD — gradient with pattern art */}
           <div className="relative rounded-2xl overflow-hidden p-8" style={{ background: 'linear-gradient(155deg, #001D5A 0%, #0D82F9 100%)', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
@@ -620,6 +621,35 @@ export function OpportunityDetailPage() {
             </div>
           </div>
 
+          {/* ═══ SECTION TABS ═══ */}
+          <div className="flex items-center gap-1 mt-6 mb-6 border-b" style={{ borderColor: '#E8ECF2' }}>
+            {([
+              { key: 'overview' as const, label: 'نظرة عامة', labelEn: 'Overview' },
+              { key: 'returns' as const, label: 'العوائد والدفعات', labelEn: 'Returns & Payments' },
+              { key: 'risk' as const, label: 'المخاطر', labelEn: 'Risk Assessment' },
+              { key: 'borrower' as const, label: 'المقترض والمستندات', labelEn: 'Borrower & Docs' },
+            ] as const).map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setSectionTab(tab.key)}
+                className={`px-4 py-3 text-[13px] border-b-2 -mb-px transition-all ${
+                  sectionTab === tab.key
+                    ? 'border-[#3B82F6] text-[#0F172A]'
+                    : 'border-transparent text-[#94A3B8] hover:text-[#64748B]'
+                }`}
+                style={{ fontWeight: sectionTab === tab.key ? 600 : 500 }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* ═══ TAB CONTENT ═══ */}
+          <div className="space-y-6">
+
+          {/* ── OVERVIEW TAB ── */}
+          {sectionTab === 'overview' && (
+          <>
           {/* WHY THIS OPPORTUNITY — 3 colored cards */}
           <div>
             <h2 className="text-[18px] text-[#0F172A] mb-6" style={{ fontWeight: 700 }}>{t('opp.whyThis')}</h2>
@@ -672,6 +702,12 @@ export function OpportunityDetailPage() {
             </div>
           </div>
 
+          </>
+          )}
+
+          {/* ── RETURNS TAB ── */}
+          {sectionTab === 'returns' && (
+          <>
           {/* EXPECTED RETURNS & PAYMENTS SUMMARY */}
           <div className="bg-white rounded-[16px] p-6" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
             <h2 className="text-[18px] text-[#0F172A] mb-6" style={{ fontWeight: 700 }}>{t('opp.expectedReturns')}</h2>
@@ -889,6 +925,12 @@ export function OpportunityDetailPage() {
             })()}
           </div>
 
+          </>
+          )}
+
+          {/* ── RISK TAB ── */}
+          {sectionTab === 'risk' && (
+          <>
           {/* RISK ASSESSMENT */}
           <div className="bg-white rounded-2xl p-6" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
             <h2 className="text-[20px] text-[#0F172A] mb-6" style={{ fontWeight: 700 }}>{t('opp.riskAssessment')}</h2>
@@ -953,6 +995,12 @@ export function OpportunityDetailPage() {
             </div>
           </div>
 
+          </>
+          )}
+
+          {/* ── BORROWER TAB ── */}
+          {sectionTab === 'borrower' && (
+          <>
           {/* BORROWER INFO */}
           <div className="bg-white rounded-2xl p-6" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
             <h2 className="text-[20px] text-[#0F172A] mb-4" style={{ fontWeight: 700 }}>{t('opp.borrowerInfo')}</h2>
@@ -991,6 +1039,10 @@ export function OpportunityDetailPage() {
               ))}
             </div>
           </div>
+          </>
+          )}
+
+          </div>{/* end tab content space-y-6 */}
         </div>
 
         {/* ─── SIDEBAR ─── */}
@@ -1055,7 +1107,7 @@ export function OpportunityDetailPage() {
                 عرض استثماراتي
               </button>
               <button
-                onClick={() => navigate('/opportunities')}
+                onClick={() => navigate('/app/opportunities')}
                 className="w-full h-10 rounded-[12px] text-[13px] text-[#64748B] transition-colors hover:bg-[#F8FAFC]"
                 style={{ fontWeight: 500, border: '1px solid #E5E7EB' }}
               >

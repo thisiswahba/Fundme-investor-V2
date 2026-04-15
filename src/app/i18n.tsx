@@ -13,7 +13,7 @@ const translations: Record<string, Record<Lang, string>> = {
   // Nav
   'nav.overview': { ar: 'نظرة عامة', en: 'Overview' },
   'nav.opportunities': { ar: 'الفرص', en: 'Opportunities' },
-  'nav.portfolio': { ar: 'المحفظة', en: 'Portfolio' },
+  'nav.portfolio': { ar: 'استثماراتي', en: 'My Investments' },
   'nav.wallet': { ar: 'المحفظة المالية', en: 'Wallet' },
 
   // User menu
@@ -163,6 +163,23 @@ const translations: Record<string, Record<Lang, string>> = {
   'status.active': { ar: 'نشط', en: 'Active' },
   'status.completed': { ar: 'مكتمل', en: 'Completed' },
   'status.late': { ar: 'متأخر', en: 'Late' },
+
+  // Login
+  'login.portal': { ar: 'بوابة المستثمر', en: 'Investor Portal' },
+  'login.title': { ar: 'تسجيل الدخول إلى حسابك', en: 'Sign in to your account' },
+  'login.subtitle': { ar: 'ادخل إلى لوحة استثماراتك بأمان.', en: 'Access your investment dashboard securely.' },
+  'login.nationalId': { ar: 'رقم الهوية الوطنية', en: 'National ID' },
+  'login.nationalIdPlaceholder': { ar: '1XXXXXXXXX', en: '1XXXXXXXXX' },
+  'login.password': { ar: 'كلمة المرور', en: 'Password' },
+  'login.passwordPlaceholder': { ar: 'أدخل كلمة المرور', en: 'Enter your password' },
+  'login.forgot': { ar: 'نسيت كلمة المرور؟', en: 'Forgot password?' },
+  'login.submit': { ar: 'تسجيل الدخول', en: 'Sign In' },
+  'login.secure': { ar: 'وصول آمن إلى حسابك الاستثماري', en: 'Secure access to your investment account' },
+  'login.noAccount': { ar: 'ليس لديك حساب؟', en: "Don't have an account?" },
+  'login.createAccount': { ar: 'إنشاء حساب', en: 'Create one' },
+  'login.privacy': { ar: 'سياسة الخصوصية', en: 'Privacy Policy' },
+  'login.terms': { ar: 'الشروط والأحكام', en: 'Terms of Service' },
+  'login.support': { ar: 'الدعم', en: 'Support' },
 
   // Lang
   'lang.ar': { ar: 'العربية', en: 'العربية' },

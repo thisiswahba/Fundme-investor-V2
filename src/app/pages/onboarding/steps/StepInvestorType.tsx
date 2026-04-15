@@ -1,4 +1,5 @@
 import { useOnboarding, type InvestorType } from "../OnboardingContext";
+import { useNavigate } from "react-router";
 import { User, Building2, ArrowLeft } from "lucide-react";
 import { motion } from "motion/react";
 
@@ -27,6 +28,7 @@ const TYPES: {
 
 export function StepInvestorType() {
   const { data, updateData, next } = useOnboarding();
+  const navigate = useNavigate();
 
   function handleSelect(type: InvestorType) {
     updateData({ investorType: type });
@@ -89,6 +91,16 @@ export function StepInvestorType() {
         <span>متابعة</span>
         <ArrowLeft className="size-4" />
       </button>
+
+      <p className="text-center text-sm text-gray-500 mt-4">
+        لديك حساب؟{" "}
+        <button
+          onClick={() => navigate("/login")}
+          className="text-[#315FDB] font-medium hover:underline cursor-pointer"
+        >
+          تسجيل الدخول
+        </button>
+      </p>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ArrowRight, ArrowLeft, SlidersHorizontal, ChevronDown, TrendingUp, Lightbulb, Zap, Crown, ArrowLeft as ArrowL, Shield } from 'lucide-react';
-import { OpportunityCard } from '../components/opportunities/OpportunityCard';
+import { OpportunityCardCompact } from '../components/opportunities/OpportunityCardCompact';
 import { Link, useNavigate } from 'react-router';
 
 const opportunities = [
@@ -236,7 +236,7 @@ export function OpportunitiesPage() {
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {current.map((opp) => (
-          <OpportunityCard key={opp.id} {...opp} urgency={opp.urgency} onClick={() => navigate(`/app/opportunities/${opp.id}`)} />
+          <OpportunityCardCompact key={opp.id} {...opp} patternIndex={opp.id % 3} onClick={() => navigate(`/app/opportunities/${opp.id}`)} />
         ))}
       </div>
 

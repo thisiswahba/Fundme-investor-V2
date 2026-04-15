@@ -29,7 +29,6 @@ export function formatSAR(
 ): string {
   const {
     decimals = 2,
-    showCurrency = true,
     compact = false,
   } = options;
 
@@ -47,10 +46,9 @@ export function formatSAR(
   }
 
   const formatted = formatWithSeparators(value, compact ? 1 : decimals);
-  const currency = showCurrency ? ' ﷼' : '';
   const sign = amount < 0 ? '-' : '';
 
-  return `${sign}${formatted}${suffix}${currency}`;
+  return `${sign}${formatted}${suffix}`;
 }
 
 /**
