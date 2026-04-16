@@ -40,27 +40,14 @@ export function Layout() {
   ];
 
   return (
-    <div className={`min-h-screen ${personaId === 'vip' ? 'bg-[#080D19]' : 'bg-[#F7F9FC]'}`} dir={dir}>
+    <div className="min-h-screen bg-[#06111F] fundme-dark" dir={dir}>
       {/* Top Navigation */}
-      <nav className={`${personaId === 'vip' ? 'bg-[#0B111E] border-white/[0.06]' : 'bg-white border-[#E5E7EB]'} border-b sticky top-0 z-50`}>
+      <nav className="border-b sticky top-0 z-50" style={{ background: '#08162A', borderColor: 'rgba(255,255,255,0.08)' }}>
         <div className="max-w-[1400px] mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center">
-              {personaId === 'vip' ? (
-                <div
-                  className="flex items-center justify-center px-3 py-1.5 rounded-xl"
-                  style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)',
-                  }}
-                >
-                  <img src={logoLight} alt="FundMe" className="h-6 w-auto" />
-                </div>
-              ) : (
-                <img src={logoDark} alt="FundMe" className="h-7 w-auto" />
-              )}
+              <img src={logoLight} alt="FundMe" className="h-14 w-auto" />
             </div>
 
             {/* Navigation Tabs */}
@@ -73,8 +60,8 @@ export function Layout() {
                   className={({ isActive }) =>
                     `px-4 py-2 rounded-lg text-[14px] transition-all ${
                       isActive
-                        ? personaId === 'vip' ? 'bg-white/10 text-white' : 'bg-[#0B1A3A] text-white'
-                        : personaId === 'vip' ? 'text-white/40 hover:bg-white/[0.06] hover:text-white/70' : 'text-[#6B7280] hover:bg-[#F1F4F9] hover:text-[#0B1A3A]'
+                        ? 'bg-white/10 text-white'
+                        : 'text-white/40 hover:bg-white/[0.06] hover:text-white/70'
                     }`
                   }
                   style={{ fontWeight: 500 }}
@@ -89,18 +76,16 @@ export function Layout() {
               {/* Language Toggle */}
               <button
                 onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
-                className={`flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] transition-colors ${
-                  personaId === 'vip' ? 'text-white/40 hover:bg-white/[0.06]' : 'text-[#64748B] hover:bg-[#F8FAFC]'
-                }`}
-                style={{ fontWeight: 500, border: personaId === 'vip' ? '1px solid rgba(255,255,255,0.08)' : '1px solid #E5E7EB' }}
+                className="flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] text-white/40 hover:bg-white/[0.06] transition-colors"
+                style={{ fontWeight: 500, border: '1px solid rgba(255,255,255,0.08)' }}
               >
                 <Globe className="w-3.5 h-3.5" strokeWidth={1.5} />
                 {lang === 'ar' ? 'EN' : 'ع'}
               </button>
 
               {/* Notifications */}
-              <button className={`relative p-2 rounded-lg transition-colors ${personaId === 'vip' ? 'hover:bg-white/[0.06]' : 'hover:bg-[#F1F4F9]'}`}>
-                <Bell className={`w-5 h-5 ${personaId === 'vip' ? 'text-white/40' : 'text-[#6B7280]'}`} strokeWidth={1.5} />
+              <button className="relative p-2 rounded-lg transition-colors hover:bg-white/[0.06]">
+                <Bell className="w-5 h-5 text-white/40" strokeWidth={1.5} />
                 <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#16A34A] rounded-full" />
               </button>
 
@@ -108,12 +93,12 @@ export function Layout() {
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className={`flex items-center gap-2 p-1.5 pr-3 rounded-lg transition-colors ${personaId === 'vip' ? 'hover:bg-white/[0.06]' : 'hover:bg-[#F1F4F9]'}`}
+                  className="flex items-center gap-2 p-1.5 pr-3 rounded-lg transition-colors hover:bg-white/[0.06]"
                 >
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${personaId === 'vip' ? 'bg-gradient-to-br from-[#6366F1] to-[#4F46E5]' : 'bg-gradient-to-br from-[#1D4ED8] to-[#1E40AF]'}`}>
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-[#1D4ED8] to-[#1E40AF]">
                     <User className="w-4 h-4 text-white" strokeWidth={1.5} />
                   </div>
-                  <span className={`hidden lg:block text-[14px] ${personaId === 'vip' ? 'text-white/80' : 'text-[#0B1A3A]'}`} style={{ fontWeight: 500 }}>
+                  <span className="hidden lg:block text-[14px] text-white/80" style={{ fontWeight: 500 }}>
                     {userName}
                   </span>
                   <ChevronDown
@@ -183,7 +168,7 @@ export function Layout() {
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[#E5E7EB] px-2 py-2 z-50">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 px-2 py-2 z-50" style={{ background: '#08162A', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="flex items-center justify-around">
           {navItems.map((item) => (
             <NavLink
@@ -192,7 +177,7 @@ export function Layout() {
               end={item.to === '/app'}
               className={({ isActive }) =>
                 `flex-1 flex flex-col items-center gap-1 py-2 px-3 rounded-lg transition-all ${
-                  isActive ? 'bg-[#0B1A3A] text-white' : 'text-[#6B7280]'
+                  isActive ? 'bg-white/10 text-white' : 'text-white/40'
                 }`
               }
             >

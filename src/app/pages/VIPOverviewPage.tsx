@@ -10,6 +10,7 @@ import { usePersona } from '../demoPersona';
 import { useI18n } from '../i18n';
 import { formatSAR, formatPercentage, formatChartValue } from '../utils/currency';
 import { VIPOpportunitiesPreview } from '../components/overview/VIPOpportunitiesPreview';
+import AutoInvestBannerDark from '../components/AutoInvestBannerDark';
 import {
   FundMeHeroCard, FundMeButton, InfoTile, VIPBadge,
   colors, darkCardStyle,
@@ -316,6 +317,11 @@ export function VIPOverviewPage() {
       {/* Header */}
       <div className="mb-4">
         <VIPHeaderSection />
+      </div>
+
+      {/* Auto Invest Banner */}
+      <div className="mb-4">
+        <AutoInvestBannerDark />
       </div>
 
       {/* Metrics */}

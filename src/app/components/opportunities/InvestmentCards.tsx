@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 /* ── Types ── */
 interface CardData {
@@ -114,6 +114,58 @@ function IconEquipment() {
   );
 }
 
+/* ── Countdown ── */
+
+function Countdown({ days }: { days: number }) {
+  const target = useRef(Date.now() + days * 24 * 60 * 60 * 1000);
+  const [remaining, setRemaining] = useState(() => calcRemaining(target.current));
+
+  useEffect(() => {
+    const id = setInterval(() => setRemaining(calcRemaining(target.current)), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const units = [
+    { value: remaining.d, label: 'يوم' },
+    { value: remaining.h, label: 'ساعة' },
+    { value: remaining.m, label: 'دقيقة' },
+    { value: remaining.s, label: 'ثانية' },
+  ];
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, direction: 'rtl' }}>
+      <span style={{ fontSize: 11, color: '#64748b', fontWeight: 500, marginLeft: 4 }}>يفتح خلال</span>
+      {units.map((u, i) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{
+            minWidth: 36, height: 38, borderRadius: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            background: '#f1f5f9', border: '1px solid #e8ecf2',
+          }}>
+            <span style={{
+              fontSize: 16, fontWeight: 800, color: '#f1f5f9', lineHeight: 1,
+              fontFamily: "'IBM Plex Mono', monospace", fontVariantNumeric: 'tabular-nums',
+            }}>
+              {String(u.value).padStart(2, '0')}
+            </span>
+            <span style={{ fontSize: 7, color: '#64748b', fontWeight: 600, marginTop: 1 }}>{u.label}</span>
+          </div>
+          {i < units.length - 1 && <span style={{ fontSize: 14, fontWeight: 700, color: '#cbd5e1', marginTop: -6 }}>:</span>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function calcRemaining(target: number) {
+  const diff = Math.max(0, target - Date.now());
+  return {
+    d: Math.floor(diff / (1000 * 60 * 60 * 24)),
+    h: Math.floor((diff / (1000 * 60 * 60)) % 24),
+    m: Math.floor((diff / (1000 * 60)) % 60),
+    s: Math.floor((diff / 1000) % 60),
+  };
+}
+
 const iconMap = { invoice: IconInvoice, capital: IconCapital, equipment: IconEquipment };
 const patternMap = [PatternBars, PatternCircles, PatternGrid];
 const coverGradients = [
@@ -146,14 +198,14 @@ function Card({ data, index }: { data: CardData; index: number }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        background: 'white',
+        background: '#0C1C34',
         borderRadius: 20,
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        border: '1px solid #e2e8f0',
-        boxShadow: hovered ? '0 8px 32px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06)' : '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        boxShadow: hovered ? '0 8px 32px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06)' : '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.3)',
         transform: hovered ? 'translateY(-6px)' : 'translateY(0)',
         transition: 'transform 0.5s cubic-bezier(.4,0,.2,1), box-shadow 0.5s cubic-bezier(.4,0,.2,1)',
         cursor: 'pointer',
@@ -218,23 +270,22 @@ function Card({ data, index }: { data: CardData; index: number }) {
           ) : (
             <span style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600, color: '#7c3aed', background: '#f5f3ff', border: '1px solid #ddd6fe' }}>قريباً</span>
           )}
-          <span style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 500, color: '#64748b', background: '#f8fafc', border: '1px solid #e2e8f0' }}>{data.financingType}</span>
-          <span style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 500, color: '#64748b', background: '#f8fafc', border: '1px solid #e2e8f0' }}>{data.tenor}</span>
+          <span style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 500, color: '#64748b', background: '#0A1A30', border: '1px solid rgba(255,255,255,0.08)' }}>{data.financingType}</span>
+          <span style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 500, color: '#64748b', background: '#0A1A30', border: '1px solid rgba(255,255,255,0.08)' }}>{data.tenor}</span>
         </div>
 
         {/* State block — exact fixed height, pushed to bottom */}
         <div style={{ marginTop: 'auto', height: 62, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
           {data.comingSoon ? (
-            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 14, padding: '12px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 500 }}>يفتح خلال</span>
-              <span style={{ fontSize: 24, fontWeight: 700, color: '#1e293b' }}>{data.daysToLaunch} أيام</span>
+            <div style={{ borderRadius: 14, padding: '6px 0', display: 'flex', justifyContent: 'center' }}>
+              <Countdown days={data.daysToLaunch || 5} />
             </div>
           ) : (
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
                 <div>
-                  <span style={{ fontSize: 20, fontWeight: 700, color: '#1e293b' }}>{fmt(data.funded)}</span>
-                  <span style={{ fontSize: 12, color: '#94a3b8', marginRight: 4 }}> / {fmt(data.goal)} ر.س</span>
+                  <span style={{ fontSize: 20, fontWeight: 700, color: '#f1f5f9' }}>{fmt(data.funded)}</span>
+                  <span style={{ fontSize: 12, color: '#64748b', marginRight: 4 }}> / {fmt(data.goal)} ر.س</span>
                 </div>
                 <span style={{ fontSize: 13, fontWeight: 700, color: '#0d9488', fontFamily: "'IBM Plex Mono', monospace" }}>{data.fundingPct}%</span>
               </div>
@@ -299,15 +350,15 @@ export default function InvestmentCards() {
       <div style={{ direction: 'rtl', fontFamily: "'IBM Plex Sans Arabic', sans-serif" }}>
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: '#0f172a', margin: 0 }}>فرص استثمارية جديدة</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 700, color: '#f1f5f9', margin: 0 }}>فرص استثمارية جديدة</h2>
           <button
             onMouseEnter={() => setViewAllHover(true)}
             onMouseLeave={() => setViewAllHover(false)}
             style={{
               display: 'flex', alignItems: 'center', gap: 6, padding: '8px 18px', borderRadius: 999,
-              border: `1px solid ${viewAllHover ? '#cbd5e1' : '#e2e8f0'}`, background: 'white',
-              fontSize: 13, fontWeight: 600, color: viewAllHover ? '#1e293b' : '#64748b', cursor: 'pointer',
-              boxShadow: viewAllHover ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+              border: `1px solid ${viewAllHover ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.08)'}`, background: '#0A1A30',
+              fontSize: 13, fontWeight: 600, color: viewAllHover ? '#f1f5f9' : '#94a3b8', cursor: 'pointer',
+              boxShadow: viewAllHover ? '0 2px 8px rgba(0,0,0,0.2)' : 'none',
               transition: 'all 0.2s',
             }}
           >

@@ -92,7 +92,7 @@ const chartData = [
 function ChartTip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-white rounded-md px-3 py-2 shadow-md border text-[11px]" style={{ borderColor: '#E5E7EB' }}>
+    <div className="bg-[#0C1C34] rounded-md px-3 py-2 shadow-md border text-[11px]" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
       <div className="text-[#64748B]">{label}</div>
       <div className="text-[#0F172A] font-semibold">{formatSAR(payload[0].value)}</div>
     </div>
@@ -205,7 +205,7 @@ function InvestModal({
       onClick={(e) => { if (e.target === e.currentTarget && !loading) onClose(); }}
     >
       <div
-        className="bg-white w-full max-w-[540px] rounded-[16px] overflow-hidden"
+        className="bg-[#0C1C34] w-full max-w-[540px] rounded-[16px] overflow-hidden"
         style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.15)' }}
         dir="rtl"
       >
@@ -315,7 +315,7 @@ function InvestModal({
                   <span className="text-[#16A34A]" style={{ fontWeight: 600 }}>{formatSAR(netReturn, { decimals: 0 })}</span>
                   <span className="text-[#94A3B8]">صافي الأرباح</span>
                 </div>
-                <div className="border-t pt-2.5" style={{ borderColor: '#E5E7EB' }}>
+                <div className="border-t pt-2.5" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
                   <div className="flex items-center justify-between text-[13px]">
                     <span className="text-[#0F172A]" style={{ fontWeight: 700 }}>{formatSAR(totalPayout, { decimals: 0 })}</span>
                     <span className="text-[#0F172A]" style={{ fontWeight: 600 }}>إجمالي المبلغ عند الاستحقاق</span>
@@ -462,7 +462,7 @@ function InvestModal({
             <button
               onClick={() => { step === 1 ? onClose() : setStep(step - 1); }}
               className="flex-1 h-12 rounded-[12px] text-[14px] text-[#64748B] transition-colors hover:bg-[#F8FAFC]"
-              style={{ fontWeight: 600, border: '1px solid #E5E7EB' }}
+              style={{ fontWeight: 600, border: '1px solid rgba(255,255,255,0.08)' }}
             >
               {step === 1 ? 'إلغاء' : 'رجوع'}
             </button>
@@ -538,7 +538,7 @@ export function OpportunityDetailPage() {
               {/* Soft glowing circles */}
               <div className="absolute w-[300px] h-[300px] rounded-full top-[-50px] left-[674px]" style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)' }} />
               <div className="absolute w-[400px] h-[400px] rounded-full top-[124px] left-[-100px]" style={{ background: 'radial-gradient(circle, rgba(13,130,249,0.3) 0%, transparent 70%)' }} />
-              <div className="absolute w-[200px] h-[200px] rounded-full bottom-[-60px] right-[200px]" style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%)' }} />
+              <div className="absolute w-[200px] h-[200px] rounded-full bottom-[-60px] right-[200px]" style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)' }} />
 
               {/* Dot grid pattern */}
               <svg className="absolute inset-0 w-full h-full opacity-[0.07]">
@@ -661,10 +661,10 @@ export function OpportunityDetailPage() {
               ].map((card, i) => (
                 <div
                   key={i}
-                  className="bg-white rounded-[14px] p-6 transition-all duration-200 hover:shadow-md cursor-default"
-                  style={{ border: '1px solid #E5E7EB', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}
+                  className="bg-[#0C1C34] rounded-[14px] p-6 transition-all duration-200 hover:shadow-md cursor-default"
+                  style={{ border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
                   onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#BFDBFE'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E5E7EB'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; }}
                 >
                   <div className="w-10 h-10 rounded-[12px] flex items-center justify-center mb-4" style={{ backgroundColor: '#EFF6FF' }}>
                     <card.icon className="w-5 h-5 text-[#1D4ED8]" strokeWidth={1.5} />
@@ -677,7 +677,7 @@ export function OpportunityDetailPage() {
           </div>
 
           {/* PROJECT DETAILS — inline metrics strip */}
-          <div className="bg-white rounded-[16px] p-6" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
+          <div className="bg-[#0C1C34] rounded-[16px] p-6" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
             <h2 className="text-[18px] text-[#0F172A] mb-5" style={{ fontWeight: 700 }}>{t('opp.projectDetails')}</h2>
             <div className="flex items-center">
               {[
@@ -709,7 +709,7 @@ export function OpportunityDetailPage() {
           {sectionTab === 'returns' && (
           <>
           {/* EXPECTED RETURNS & PAYMENTS SUMMARY */}
-          <div className="bg-white rounded-[16px] p-6" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
+          <div className="bg-[#0C1C34] rounded-[16px] p-6" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
             <h2 className="text-[18px] text-[#0F172A] mb-6" style={{ fontWeight: 700 }}>{t('opp.expectedReturns')}</h2>
 
             {/* 1. Total Returns — primary highlight */}
@@ -750,13 +750,13 @@ export function OpportunityDetailPage() {
           </div>
 
           {/* INVESTMENT INSIGHTS — Title → Tabs → Chart */}
-          <div className="bg-white rounded-[16px] p-6" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
+          <div className="bg-[#0C1C34] rounded-[16px] p-6" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
             {/* Title + Filter */}
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[18px] text-[#0F172A]" style={{ fontWeight: 700 }}>{t('opp.insights')}</h2>
               <select
                 className="h-8 px-3 rounded-lg text-[12px] text-[#64748B] bg-[#F8FAFC] outline-none cursor-pointer appearance-none pr-8"
-                style={{ fontWeight: 500, border: '1px solid #E5E7EB', backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%2394A3B8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'left 10px center' }}
+                style={{ fontWeight: 500, border: '1px solid rgba(255,255,255,0.08)', backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%2394A3B8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'left 10px center' }}
               >
                 <option>٦ أشهر</option>
                 <option>٣ أشهر</option>
@@ -809,7 +809,7 @@ export function OpportunityDetailPage() {
           </div>
 
           {/* MONTHLY REPAYMENT SCHEDULE */}
-          <div className="bg-white rounded-[16px] p-6" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
+          <div className="bg-[#0C1C34] rounded-[16px] p-6" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
             <h2 className="text-[18px] text-[#0F172A] mb-5" style={{ fontWeight: 700 }}>{t('opp.schedule')}</h2>
 
             {/* ── Next Payment highlight ── */}
@@ -932,7 +932,7 @@ export function OpportunityDetailPage() {
           {sectionTab === 'risk' && (
           <>
           {/* RISK ASSESSMENT */}
-          <div className="bg-white rounded-2xl p-6" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+          <div className="bg-[#0C1C34] rounded-2xl p-6" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>
             <h2 className="text-[20px] text-[#0F172A] mb-6" style={{ fontWeight: 700 }}>{t('opp.riskAssessment')}</h2>
             <div className="grid grid-cols-2 gap-6">
               {/* Credit rating */}
@@ -1002,7 +1002,7 @@ export function OpportunityDetailPage() {
           {sectionTab === 'borrower' && (
           <>
           {/* BORROWER INFO */}
-          <div className="bg-white rounded-2xl p-6" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+          <div className="bg-[#0C1C34] rounded-2xl p-6" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>
             <h2 className="text-[20px] text-[#0F172A] mb-4" style={{ fontWeight: 700 }}>{t('opp.borrowerInfo')}</h2>
             <div className="grid grid-cols-3 gap-4 mb-4">
               <div>
@@ -1022,11 +1022,11 @@ export function OpportunityDetailPage() {
           </div>
 
           {/* DOCUMENTS */}
-          <div className="bg-white rounded-2xl p-6" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+          <div className="bg-[#0C1C34] rounded-2xl p-6" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>
             <h2 className="text-[20px] text-[#0F172A] mb-4" style={{ fontWeight: 700 }}>{t('opp.documents')}</h2>
             <div className="grid grid-cols-2 gap-3">
               {opp.documents.map((doc, i) => (
-                <button key={i} className="flex items-center gap-3 p-4 rounded-xl hover:bg-[#F8FAFC] transition-colors text-right" style={{ border: '1px solid #E5E7EB' }}>
+                <button key={i} className="flex items-center gap-3 p-4 rounded-xl hover:bg-[#0A1A30] transition-colors text-right" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#EFF6FF' }}>
                     <FileText className="w-5 h-5 text-[#1D4ED8]" strokeWidth={1.5} />
                   </div>
@@ -1047,7 +1047,7 @@ export function OpportunityDetailPage() {
 
         {/* ─── SIDEBAR ─── */}
         <div className="hidden lg:block w-[380px] flex-shrink-0">
-          <div className="bg-white rounded-2xl p-8 sticky top-20" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+          <div className="bg-[#0C1C34] rounded-2xl p-8 sticky top-20" style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
 
           {invested ? (
             /* ═══ INVESTED STATE ═══ */
@@ -1109,7 +1109,7 @@ export function OpportunityDetailPage() {
               <button
                 onClick={() => navigate('/app/opportunities')}
                 className="w-full h-10 rounded-[12px] text-[13px] text-[#64748B] transition-colors hover:bg-[#F8FAFC]"
-                style={{ fontWeight: 500, border: '1px solid #E5E7EB' }}
+                style={{ fontWeight: 500, border: '1px solid rgba(255,255,255,0.08)' }}
               >
                 تصفح فرص أخرى
               </button>

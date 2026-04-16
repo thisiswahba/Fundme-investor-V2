@@ -111,9 +111,9 @@ function PerformanceChart() {
     <div
       className="rounded-xl p-5 lg:p-6"
       style={{
-        background: 'white',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
-        border: '1px solid #F1F5F9',
+        background: '#0C1C34',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.3)',
+        border: '1px solid rgba(255,255,255,0.08)',
       }}
     >
       {/* Header row */}
@@ -123,15 +123,15 @@ function PerformanceChart() {
             {isAr ? 'أداء المحفظة' : 'Portfolio Performance'}
           </h3>
         </div>
-        <div className="flex items-center gap-1 bg-[#F8FAFC] rounded-lg p-0.5" style={{ border: '1px solid #F1F5F9' }}>
+        <div className="flex items-center gap-1 bg-[#0A1A30] rounded-lg p-0.5" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
           {(['1M', '6M', '1Y'] as const).map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
               className={`px-2.5 py-1 rounded-md text-[11px] transition-all ${
                 period === p
-                  ? 'bg-white text-[#0F172A] shadow-sm'
-                  : 'text-[#94A3B8] hover:text-[#64748B]'
+                  ? 'bg-[#102344] text-[#f1f5f9] shadow-sm'
+                  : 'text-[#64748b] hover:text-[#94a3b8]'
               }`}
               style={{ fontWeight: 600 }}
             >
@@ -220,9 +220,9 @@ function ActiveInvestments() {
     <div
       className="rounded-xl p-5 lg:p-6"
       style={{
-        background: 'white',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
-        border: '1px solid #F1F5F9',
+        background: '#0C1C34',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.3)',
+        border: '1px solid rgba(255,255,255,0.08)',
       }}
     >
       <div className="flex items-center justify-between mb-4">
@@ -293,9 +293,9 @@ function RepaymentsCard() {
     <div
       className="rounded-xl p-5 lg:p-6"
       style={{
-        background: 'white',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
-        border: '1px solid #F1F5F9',
+        background: '#0C1C34',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.3)',
+        border: '1px solid rgba(255,255,255,0.08)',
       }}
     >
       <div className="flex items-center justify-between mb-4">
@@ -369,9 +369,9 @@ function RecentTransactions() {
     <div
       className="rounded-xl p-5 lg:p-6"
       style={{
-        background: 'white',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
-        border: '1px solid #F1F5F9',
+        background: '#0C1C34',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.3)',
+        border: '1px solid rgba(255,255,255,0.08)',
       }}
     >
       <div className="flex items-center justify-between mb-4">
@@ -436,7 +436,7 @@ export function OverviewPage() {
         <WalletCardSection />
       </div>
 
-      {/* B. Metrics Row */}
+{/* B. Metrics Row */}
       <div className="mb-5">
         <MetricsRow />
       </div>

@@ -63,7 +63,7 @@ const defaultInvestment = {
 };
 
 const riskColor: Record<string, string> = { A: '#3B82F6', B: '#14B8A6', C: '#F59E0B', D: '#EF4444' };
-const cardStyle = { background: 'white', border: '1px solid #E8ECF2', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' };
+const cardStyle = { background: '#0C1C34', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' };
 
 function statusBadge(status: string, isAr: boolean) {
   const map: Record<string, { label: string; bg: string; color: string; border: string }> = {

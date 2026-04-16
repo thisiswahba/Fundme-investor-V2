@@ -192,7 +192,7 @@ function AddBankModal({ open, onClose, isAr }: { open: boolean; onClose: () => v
       style={{ backgroundColor: 'rgba(15, 23, 42, 0.5)', backdropFilter: 'blur(4px)' }}
       onClick={(e) => { if (e.target === e.currentTarget && step !== 'loading') onClose(); }}
     >
-      <div className="bg-white w-full max-w-[480px] rounded-[20px] overflow-hidden" style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.15)' }} dir={isAr ? 'rtl' : 'ltr'}>
+      <div className="bg-[#0C1C34] w-full max-w-[480px] rounded-[20px] overflow-hidden" style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.15)' }} dir={isAr ? 'rtl' : 'ltr'}>
 
         {/* ── Form ── */}
         {step === 'form' && (
@@ -420,7 +420,7 @@ function AddFundsModal({ open, onClose, isAr }: { open: boolean; onClose: () => 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(15, 23, 42, 0.5)', backdropFilter: 'blur(4px)' }} onClick={(e) => { if (e.target === e.currentTarget && step !== 'cardProcessing') onClose(); }}>
-      <div className="bg-white w-full max-w-[500px] rounded-[20px] overflow-hidden" style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.15)' }} dir={isAr ? 'rtl' : 'ltr'}>
+      <div className="bg-[#0C1C34] w-full max-w-[500px] rounded-[20px] overflow-hidden" style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.15)' }} dir={isAr ? 'rtl' : 'ltr'}>
 
         {/* ── Header — always visible ── */}
         {(step === 'bank' || step === 'card') && (
@@ -709,7 +709,36 @@ function AddFundsModal({ open, onClose, isAr }: { open: boolean; onClose: () => 
 export function WalletPage() {
   const { t, lang } = useI18n();
   const isAr = lang === 'ar';
-  const { persona } = usePersona();
+  const { persona, personaId } = usePersona();
+  const isVIP = personaId === 'vip';
+
+  // Dark mode token helpers
+  const dk = {
+    card: isVIP ? '#0F1728' : 'white',
+    cardBorder: isVIP ? 'rgba(255,255,255,0.08)' : '#E5E7EB',
+    rowBorder: isVIP ? 'rgba(255,255,255,0.04)' : '#F8FAFC',
+    rowHover: isVIP ? 'rgba(255,255,255,0.03)' : '#FAFBFC',
+    sectionBorder: isVIP ? 'rgba(255,255,255,0.08)' : '#F1F5F9',
+    title: isVIP ? '#FFFFFF' : '#0F172A',
+    body: isVIP ? 'rgba(255,255,255,0.7)' : '#0F172A',
+    sub: isVIP ? 'rgba(255,255,255,0.4)' : '#94A3B8',
+    dim: isVIP ? 'rgba(255,255,255,0.2)' : '#CBD5E1',
+    muted: isVIP ? 'rgba(255,255,255,0.5)' : '#64748B',
+    iconBg: isVIP ? 'rgba(255,255,255,0.05)' : '#F8FAFC',
+    iconBgBlue: isVIP ? 'rgba(59,130,246,0.12)' : '#EFF6FF',
+    chipBg: isVIP ? 'rgba(255,255,255,0.08)' : 'transparent',
+    chipActiveBg: isVIP ? '#3B82F6' : '#0F172A',
+    chipBorder: isVIP ? 'rgba(255,255,255,0.08)' : '#F1F5F9',
+    btnOutline: isVIP ? 'rgba(96,165,250,0.2)' : '#DBEAFE',
+    btnOutlineText: isVIP ? '#93C5FD' : '#1D4ED8',
+    green: isVIP ? '#34D399' : '#16A34A',
+    greenBg: isVIP ? 'rgba(52,211,153,0.1)' : '#F0FDF4',
+    red: isVIP ? '#F87171' : '#DC2626',
+    redBg: isVIP ? 'rgba(248,113,113,0.1)' : '#FEF2F2',
+    blue: isVIP ? '#60A5FA' : '#1D4ED8',
+    blueBg: isVIP ? 'rgba(59,130,246,0.1)' : '#EFF6FF',
+    badgeBg: isVIP ? 'rgba(255,255,255,0.04)' : '#F8FAFC',
+  };
   const wallet = {
     available: persona.wallet.available,
     pending: persona.wallet.pending,
@@ -738,7 +767,7 @@ export function WalletPage() {
         {/* Decorative circle */}
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] rounded-full"
-          style={{ border: '1px solid rgba(255,255,255,0.06)' }}
+          style={{ border: '1px solid rgba(255,255,255,0.08)' }}
         />
 
         <div className="relative flex flex-col items-start gap-4 p-6 lg:p-8">
@@ -800,55 +829,52 @@ export function WalletPage() {
 
       {/* ═══ 2. BANK ACCOUNTS ═══ */}
       <section className="mb-8">
-        <div className="bg-white rounded-[16px] overflow-hidden" style={{ border: '1px solid #E5E7EB' }}>
-          {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: '#F1F5F9' }}>
+        <div className="rounded-[16px] overflow-hidden" style={{ background: dk.card, border: `1px solid ${dk.cardBorder}` }}>
+          <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: dk.sectionBorder }}>
             <div className="flex items-center gap-2">
-              <h2 className="text-[15px] text-[#0F172A]" style={{ fontWeight: 700 }}>{isAr ? 'الحسابات البنكية' : 'Bank Accounts'}</h2>
-              <span className="text-[11px] text-[#94A3B8] px-1.5 py-0.5 rounded" style={{ backgroundColor: '#F8FAFC', fontWeight: 500 }}>{bankAccounts.length}</span>
+              <h2 className="text-[15px]" style={{ fontWeight: 700, color: dk.title }}>{isAr ? 'الحسابات البنكية' : 'Bank Accounts'}</h2>
+              <span className="text-[11px] px-1.5 py-0.5 rounded" style={{ backgroundColor: dk.badgeBg, color: dk.sub, fontWeight: 500 }}>{bankAccounts.length}</span>
             </div>
             <button
               onClick={() => setAddBankOpen(true)}
-              className="flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11px] text-[#1D4ED8] hover:bg-[#EFF6FF] transition-colors"
-              style={{ fontWeight: 600, border: '1px solid #DBEAFE' }}
+              className="flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11px] transition-colors"
+              style={{ fontWeight: 600, border: `1px solid ${dk.btnOutline}`, color: dk.btnOutlineText }}
             >
               <Plus className="w-3 h-3" strokeWidth={2} />
               {isAr ? 'إضافة' : 'Add'}
             </button>
           </div>
 
-          {/* Account rows */}
           {bankAccounts.map((acc, i) => (
             <div
               key={acc.id}
-              className="flex items-center gap-3 px-5 h-[60px] hover:bg-[#FAFBFC] transition-colors"
-              style={{ borderBottom: i < bankAccounts.length - 1 ? '1px solid #F8FAFC' : 'none' }}
+              className="flex items-center gap-3 px-5 h-[60px] transition-colors"
+              style={{ borderBottom: i < bankAccounts.length - 1 ? `1px solid ${dk.rowBorder}` : 'none' }}
+              onMouseEnter={e => (e.currentTarget.style.background = dk.rowHover)}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
-              {/* Icon */}
-              <div className="w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: acc.primary ? '#EFF6FF' : '#F8FAFC' }}>
-                <Building2 className="w-4 h-4" style={{ color: acc.primary ? '#1D4ED8' : '#94A3B8' }} strokeWidth={1.5} />
+              <div className="w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: acc.primary ? dk.iconBgBlue : dk.iconBg }}>
+                <Building2 className="w-4 h-4" style={{ color: acc.primary ? dk.blue : dk.sub }} strokeWidth={1.5} />
               </div>
-              {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-[13px] text-[#0F172A] truncate" style={{ fontWeight: 600 }}>{isAr ? acc.bank : acc.bankEn}</span>
+                  <span className="text-[13px] truncate" style={{ fontWeight: 600, color: dk.body }}>{isAr ? acc.bank : acc.bankEn}</span>
                   {acc.primary && (
-                    <span className="text-[9px] text-[#1D4ED8] px-1.5 py-px rounded-full flex-shrink-0" style={{ backgroundColor: '#EFF6FF', fontWeight: 600 }}>
+                    <span className="text-[9px] px-1.5 py-px rounded-full flex-shrink-0" style={{ backgroundColor: dk.iconBgBlue, color: dk.blue, fontWeight: 600 }}>
                       {isAr ? 'أساسي' : 'Primary'}
                     </span>
                   )}
                 </div>
-                <div className="text-[11px] text-[#CBD5E1] mt-px font-mono">{acc.iban}</div>
+                <div className="text-[11px] mt-px font-mono" style={{ color: dk.dim }}>{acc.iban}</div>
               </div>
-              {/* Actions */}
               <div className="flex items-center gap-0.5 flex-shrink-0">
                 {!acc.primary && (
-                  <button className="w-7 h-7 rounded-md flex items-center justify-center hover:bg-[#F1F5F9] transition-colors" title={isAr ? 'تعيين كأساسي' : 'Set primary'}>
-                    <Star className="w-3 h-3 text-[#CBD5E1]" strokeWidth={1.5} />
+                  <button className="w-7 h-7 rounded-md flex items-center justify-center transition-colors" style={{ color: dk.dim }}>
+                    <Star className="w-3 h-3" strokeWidth={1.5} />
                   </button>
                 )}
-                <button className="w-7 h-7 rounded-md flex items-center justify-center hover:bg-[#FEF2F2] transition-colors" title={isAr ? 'حذف' : 'Remove'}>
-                  <Trash2 className="w-3 h-3 text-[#CBD5E1]" strokeWidth={1.5} />
+                <button className="w-7 h-7 rounded-md flex items-center justify-center transition-colors" style={{ color: dk.dim }}>
+                  <Trash2 className="w-3 h-3" strokeWidth={1.5} />
                 </button>
               </div>
             </div>
@@ -857,21 +883,19 @@ export function WalletPage() {
       </section>
 
       {/* ═══ 3. TRANSACTION HISTORY ═══ */}
-      <section className="bg-white rounded-[16px] overflow-hidden" style={{ border: '1px solid #E5E7EB' }}>
+      <section className="rounded-[16px] overflow-hidden" style={{ background: dk.card, border: `1px solid ${dk.cardBorder}` }}>
 
-        {/* Header */}
         <div className="px-6 pt-5 pb-3">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[16px] text-[#0F172A]" style={{ fontWeight: 700 }}>
+            <h2 className="text-[16px]" style={{ fontWeight: 700, color: dk.title }}>
               {isAr ? 'سجل العمليات' : 'Transaction History'}
             </h2>
-            <button className="h-7 px-3 rounded-md flex items-center gap-1.5 text-[11px] text-[#64748B] hover:bg-[#F8FAFC] transition-colors" style={{ fontWeight: 500, border: '1px solid #E5E7EB' }}>
+            <button className="h-7 px-3 rounded-md flex items-center gap-1.5 text-[11px] transition-colors" style={{ fontWeight: 500, border: `1px solid ${dk.cardBorder}`, color: dk.muted }}>
               <Download className="w-3 h-3" strokeWidth={1.5} />
               {isAr ? 'تصدير' : 'Export'}
             </button>
           </div>
 
-          {/* Filter chips */}
           <div className="flex items-center gap-1.5">
             {[
               { key: 'all', label: isAr ? 'الكل' : 'All' },
@@ -887,9 +911,9 @@ export function WalletPage() {
                 className="h-7 px-3 rounded-full text-[11px] transition-all"
                 style={{
                   fontWeight: filter === chip.key ? 600 : 400,
-                  backgroundColor: filter === chip.key ? '#0F172A' : 'transparent',
-                  color: filter === chip.key ? '#fff' : '#94A3B8',
-                  border: filter === chip.key ? 'none' : '1px solid #F1F5F9',
+                  backgroundColor: filter === chip.key ? dk.chipActiveBg : dk.chipBg,
+                  color: filter === chip.key ? '#fff' : dk.sub,
+                  border: filter === chip.key ? 'none' : `1px solid ${dk.chipBorder}`,
                 }}
               >
                 {chip.label}
@@ -898,8 +922,7 @@ export function WalletPage() {
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="h-px" style={{ backgroundColor: '#F1F5F9' }} />
+        <div className="h-px" style={{ backgroundColor: dk.sectionBorder }} />
 
         {/* Grouped transactions */}
         {groups.map((group) => {
@@ -910,58 +933,57 @@ export function WalletPage() {
 
           return (
             <div key={group.key}>
-              {/* Date group header */}
-              <div className="h-8 flex items-center px-6 text-[10px] uppercase tracking-wider text-[#CBD5E1]" style={{ fontWeight: 600 }}>
+              <div className="h-8 flex items-center px-6 text-[10px] uppercase tracking-wider" style={{ fontWeight: 600, color: dk.dim }}>
                 {group.label}
               </div>
 
-              {/* Transaction rows — compact */}
               {items.map((tx, i) => {
                 const { Icon, bg, color } = txIcon(tx.type);
                 const sc = statusChip(tx.status, isAr);
                 const isIncoming = tx.amount > 0;
 
+                // VIP-aware icon colors
+                const iconBg = isVIP
+                  ? (tx.type === 'deposit' || tx.type === 'return' ? dk.greenBg : tx.type === 'investment' ? dk.blueBg : dk.iconBg)
+                  : bg;
+                const iconColor = isVIP
+                  ? (tx.type === 'deposit' || tx.type === 'return' ? dk.green : tx.type === 'investment' ? dk.blue : dk.sub)
+                  : color;
+                const amountColor = isVIP
+                  ? (isIncoming ? dk.green : tx.type === 'withdrawal' ? dk.red : dk.blue)
+                  : txAmountColor(tx.type);
+
                 return (
                   <div
                     key={`${group.key}-${i}`}
-                    className="flex items-center gap-3 px-6 h-[60px] hover:bg-[#FAFBFC] transition-colors cursor-pointer"
-                    style={{ borderBottom: '1px solid #F8FAFC' }}
+                    className="flex items-center gap-3 px-6 h-[60px] transition-colors cursor-pointer"
+                    style={{ borderBottom: `1px solid ${dk.rowBorder}` }}
+                    onMouseEnter={e => (e.currentTarget.style.background = dk.rowHover)}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
-                    {/* Icon */}
-                    <div
-                      className="w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: bg }}
-                    >
-                      <Icon className="w-[15px] h-[15px]" style={{ color }} strokeWidth={1.5} />
+                    <div className="w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: iconBg }}>
+                      <Icon className="w-[15px] h-[15px]" style={{ color: iconColor }} strokeWidth={1.5} />
                     </div>
 
-                    {/* Title + detail + date */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-[13px] text-[#0F172A] truncate" style={{ fontWeight: 600 }}>
+                        <span className="text-[13px] truncate" style={{ fontWeight: 600, color: dk.body }}>
                           {isAr ? tx.title : tx.titleEn}
                         </span>
                         {tx.status !== 'completed' && (
-                          <span
-                            className="text-[9px] px-1.5 py-px rounded-full flex-shrink-0"
-                            style={{ backgroundColor: sc.bg, color: sc.color, fontWeight: 600 }}
-                          >
+                          <span className="text-[9px] px-1.5 py-px rounded-full flex-shrink-0" style={{ backgroundColor: isVIP ? 'rgba(245,158,11,0.1)' : sc.bg, color: isVIP ? '#FBBF24' : sc.color, fontWeight: 600 }}>
                             {sc.label}
                           </span>
                         )}
                       </div>
-                      <div className="text-[11px] text-[#CBD5E1] mt-px truncate">
+                      <div className="text-[11px] mt-px truncate" style={{ color: dk.dim }}>
                         {isAr ? tx.detail : tx.detailEn}
                         <span className="hidden sm:inline"> · {isAr ? tx.time : tx.timeEn}</span>
                       </div>
                     </div>
 
-                    {/* Amount — largest element */}
                     <div className="flex-shrink-0 text-left">
-                      <span
-                        className="text-[16px] tabular-nums"
-                        style={{ fontWeight: 700, color: txAmountColor(tx.type) }}
-                      >
+                      <span className="text-[16px] tabular-nums" style={{ fontWeight: 700, color: amountColor }}>
                         {isIncoming ? '+' : '-'}
                         <span className="text-[16px]">{formatSAR(Math.abs(tx.amount), { decimals: 0, showCurrency: false })}</span>
                         <span className="text-[11px] mr-0.5 opacity-60" style={{ fontWeight: 500 }}> ﷼</span>

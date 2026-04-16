@@ -2,30 +2,30 @@
 
 :root {
   --font-size: 16px;
-  
-  /* FundMe Premium Color System */
-  --background: #F7F9FC;
-  --foreground: #0B1A3A;
-  --card: #ffffff;
-  --card-foreground: #0B1A3A;
-  --popover: #ffffff;
-  --popover-foreground: #0B1A3A;
-  --primary: #0B1A3A;
-  --primary-foreground: #ffffff;
-  --secondary: #F1F4F9;
-  --secondary-foreground: #0B1A3A;
-  --muted: #E5E9F0;
-  --muted-foreground: #6B7280;
+
+  /* FundMe VIP Dark Mode — Premium Navy System */
+  --background: #06111F;
+  --foreground: rgba(255,255,255,0.96);
+  --card: #0C1C34;
+  --card-foreground: rgba(255,255,255,0.96);
+  --popover: #102344;
+  --popover-foreground: rgba(255,255,255,0.96);
+  --primary: rgba(255,255,255,0.96);
+  --primary-foreground: #06111F;
+  --secondary: #08162A;
+  --secondary-foreground: rgba(255,255,255,0.96);
+  --muted: #0A1A30;
+  --muted-foreground: rgba(255,255,255,0.46);
   --accent: #2563EB;
   --accent-foreground: #ffffff;
   --destructive: #EF4444;
   --destructive-foreground: #ffffff;
   --success: #10B981;
   --success-foreground: #ffffff;
-  --border: #E5E7EB;
+  --border: rgba(255,255,255,0.08);
   --input: transparent;
-  --input-background: #F9FAFB;
-  --switch-background: #D1D5DB;
+  --input-background: #0A1A30;
+  --switch-background: #102344;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   --font-weight-semibold: 600;
@@ -37,13 +37,13 @@
   --chart-4: #8B5CF6;
   --chart-5: #EF4444;
   --radius: 1rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #0B1A3A;
-  --sidebar-primary: #0B1A3A;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #F1F4F9;
-  --sidebar-accent-foreground: #0B1A3A;
-  --sidebar-border: #E5E7EB;
+  --sidebar: #08162A;
+  --sidebar-foreground: rgba(255,255,255,0.96);
+  --sidebar-primary: rgba(255,255,255,0.96);
+  --sidebar-primary-foreground: #06111F;
+  --sidebar-accent: #0A1A30;
+  --sidebar-accent-foreground: rgba(255,255,255,0.96);
+  --sidebar-border: rgba(255,255,255,0.08);
   --sidebar-ring: #2563EB;
 }
 
@@ -199,4 +199,70 @@
 .scrollbar-hide {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+/* ━━━ Dark scrollbar ━━━ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+
+/* ━━━ Global Dark Theme Overrides ━━━ */
+
+/* Surfaces */
+.fundme-dark .bg-white { background-color: #0C1C34 !important; }
+.fundme-dark .bg-\[\#F8FAFC\],
+.fundme-dark .bg-\[\#FAFBFC\],
+.fundme-dark .bg-\[\#F1F5F9\],
+.fundme-dark .bg-\[\#F7F9FC\],
+.fundme-dark .bg-\[\#F9FAFB\] { background-color: #0A1A30 !important; }
+
+/* Hover surfaces */
+.fundme-dark .hover\:bg-\[\#F8FAFC\]:hover,
+.fundme-dark .hover\:bg-\[\#F1F4F9\]:hover,
+.fundme-dark .hover\:bg-\[\#FAFBFC\]:hover,
+.fundme-dark .hover\:bg-\[\#EFF6FF\]:hover { background-color: #132B4A !important; }
+
+/* Text: primary */
+.fundme-dark .text-\[\#0F172A\],
+.fundme-dark .text-\[\#0B1A3A\],
+.fundme-dark .text-\[\#1E293B\],
+.fundme-dark .text-\[\#334155\] { color: rgba(255,255,255,0.96) !important; }
+
+/* Text: secondary */
+.fundme-dark .text-\[\#475569\],
+.fundme-dark .text-\[\#64748B\] { color: rgba(255,255,255,0.72) !important; }
+
+/* Text: muted/faint */
+.fundme-dark .text-\[\#94A3B8\] { color: rgba(255,255,255,0.46) !important; }
+.fundme-dark .text-\[\#CBD5E1\] { color: rgba(255,255,255,0.28) !important; }
+
+/* Borders */
+.fundme-dark .border-\[\#E5E7EB\],
+.fundme-dark .border-\[\#E8ECF2\],
+.fundme-dark .border-\[\#F1F5F9\],
+.fundme-dark .border-\[\#E2E8F0\] { border-color: rgba(255,255,255,0.08) !important; }
+
+/* Tinted semantic backgrounds */
+.fundme-dark .bg-\[\#F0FDF4\],
+.fundme-dark .bg-\[\#F0F7F4\] { background-color: rgba(43,182,115,0.12) !important; }
+.fundme-dark .bg-\[\#EFF6FF\] { background-color: rgba(59,130,246,0.12) !important; }
+.fundme-dark .bg-\[\#FEF2F2\],
+.fundme-dark .bg-\[\#FEF8F8\] { background-color: rgba(248,113,113,0.1) !important; }
+.fundme-dark .bg-\[\#FFFBEB\] { background-color: rgba(245,158,11,0.12) !important; }
+.fundme-dark .bg-\[\#F5F3FF\] { background-color: rgba(99,102,241,0.12) !important; }
+
+/* Chart */
+.fundme-dark .recharts-cartesian-grid line { stroke: rgba(255,255,255,0.06) !important; }
+.fundme-dark .recharts-text { fill: rgba(255,255,255,0.28) !important; }
+
+/* Wallet card gradient → VIP navy */
+.fundme-dark [style*="linear-gradient(145deg, #F0F5FF"] {
+  background: linear-gradient(145deg, #0C1C34 0%, #102344 60%, #0C1C34 100%) !important;
+}
+.fundme-dark [style*="border: 1px solid #DBEAFE"] { border-color: rgba(59,130,246,0.2) !important; }
+
+/* Mobile bottom nav */
+.fundme-dark .border-t.border-\[\#E5E7EB\] {
+  background-color: #08162A !important;
+  border-color: rgba(255,255,255,0.08) !important;
 }

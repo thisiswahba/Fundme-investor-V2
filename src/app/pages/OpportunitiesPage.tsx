@@ -76,13 +76,13 @@ export function OpportunitiesPage() {
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 md:pb-8">
       {/* Page Header */}
       <div className="mb-6">
-        <h1 className="text-[28px] text-[#0B1A3A] mb-2" style={{ fontWeight: 700 }}>
+        <h1 className="text-[28px] text-[#f1f5f9] mb-2" style={{ fontWeight: 700 }}>
           الفرص الاستثمارية
         </h1>
         <div className="flex items-center gap-2 text-[13px]">
-          <span className="text-[#0D82F9]" style={{ fontWeight: 600 }}>{opportunities.length} فرصة متاحة</span>
-          <span className="text-[#CBD5E1]">•</span>
-          <span className="text-[#6B7280]">متوسط العائد <span className="text-[#10B981]" style={{ fontWeight: 700 }}>{avgRoi}%</span></span>
+          <span className="text-[#60A5FA]" style={{ fontWeight: 600 }}>{opportunities.length} فرصة متاحة</span>
+          <span className="text-[#334155]">•</span>
+          <span className="text-[#94A3B8]">متوسط العائد <span className="text-[#10B981]" style={{ fontWeight: 700 }}>{avgRoi}%</span></span>
         </div>
       </div>
 
@@ -150,16 +150,16 @@ export function OpportunitiesPage() {
       {/* ===== 2. SMART INSIGHT BANNER ===== */}
       <div
         className="flex items-center gap-4 px-6 py-4 rounded-2xl mb-8"
-        style={{ background: 'linear-gradient(135deg, #EEF6FF 0%, #F0F7FF 100%)', border: '1px solid rgba(13, 130, 249, 0.12)' }}
+        style={{ background: '#0C1C34', border: '1px solid rgba(255,255,255,0.08)' }}
       >
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(13, 130, 249, 0.1)' }}>
-          <Lightbulb className="w-5 h-5 text-[#0D82F9]" strokeWidth={2} />
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#0A1A30', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <Lightbulb className="w-5 h-5 text-[#60A5FA]" strokeWidth={2} />
         </div>
         <div className="flex-1">
-          <p className="text-[14px] text-[#0B1A3A]" style={{ fontWeight: 600 }}>
+          <p className="text-[14px] text-[#f1f5f9]" style={{ fontWeight: 600 }}>
             الفرص ذات التصنيف A تنفد بسرعة
           </p>
-          <p className="text-[12px] text-[#6B7280] mt-0.5">
+          <p className="text-[12px] text-[#94A3B8] mt-0.5">
             لديك فرص بعائد أعلى من متوسط المحفظة — استكشفها قبل اكتمال التمويل
           </p>
         </div>
@@ -173,16 +173,16 @@ export function OpportunitiesPage() {
       </div>
 
       {/* ===== 3. FILTER SECTION ===== */}
-      <div className="rounded-2xl p-5 mb-6" style={{ background: '#F8FAFC', border: '1px solid #EDF0F7' }}>
+      <div className="rounded-2xl p-5 mb-6" style={{ background: '#0C1C34', border: '1px solid rgba(255,255,255,0.08)' }}>
         <div className="flex items-center gap-2 mb-3">
-          <Shield className="w-4 h-4 text-[#002E83]" strokeWidth={2} />
-          <span className="text-[14px] text-[#0B1A3A]" style={{ fontWeight: 700 }}>اختر الفرص المناسبة لك</span>
+          <Shield className="w-4 h-4 text-[#60A5FA]" strokeWidth={2} />
+          <span className="text-[14px] text-[#f1f5f9]" style={{ fontWeight: 700 }}>اختر الفرص المناسبة لك</span>
         </div>
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-3 flex-wrap">
             <div className="flex items-center gap-2 ml-2">
-              <SlidersHorizontal className="w-4 h-4 text-[#9CA3AF]" strokeWidth={2} />
-              <span className="text-[12px] text-[#9CA3AF]" style={{ fontWeight: 500 }}>تصفية حسب</span>
+              <SlidersHorizontal className="w-4 h-4 text-[#64748B]" strokeWidth={2} />
+              <span className="text-[12px] text-[#94A3B8]" style={{ fontWeight: 500 }}>تصفية حسب</span>
             </div>
             {['all', 'A', 'B', 'C', 'D'].map((risk) => (
               <button
@@ -190,10 +190,13 @@ export function OpportunitiesPage() {
                 onClick={() => handleRiskFilter(risk)}
                 className={`px-4 py-2 rounded-lg text-[13px] transition-all ${
                   selectedRisk === risk
-                    ? 'bg-[#002E83] text-white shadow-md'
-                    : 'bg-white text-[#6B7280] hover:bg-[#EDF0F7] border border-[#E5E9F0]'
+                    ? 'bg-[#2563EB] text-white shadow-md'
+                    : 'text-[#94A3B8] hover:bg-[#102344]'
                 }`}
-                style={{ fontWeight: selectedRisk === risk ? 700 : 500 }}
+                style={{
+                  fontWeight: selectedRisk === risk ? 700 : 500,
+                  ...(selectedRisk !== risk ? { background: '#0A1A30', border: '1px solid rgba(255,255,255,0.08)' } : {}),
+                }}
               >
                 {risk === 'all' ? 'جميع الفرص' : `تصنيف ${risk}`}
               </button>
@@ -202,19 +205,19 @@ export function OpportunitiesPage() {
           <div className="relative">
             <button
               onClick={() => setSortOpen(!sortOpen)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-[13px] text-[#0B1A3A] hover:bg-[#EDF0F7] transition-all border border-[#E5E9F0]"
-              style={{ fontWeight: 500 }}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] text-[#94A3B8] hover:bg-[#102344] transition-all"
+              style={{ fontWeight: 500, background: '#0A1A30', border: '1px solid rgba(255,255,255,0.08)' }}
             >
               <span>{sortLabels[sortBy]}</span>
-              <ChevronDown className={`w-4 h-4 transition-transform ${sortOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-4 h-4 text-[#64748B] transition-transform ${sortOpen ? 'rotate-180' : ''}`} />
             </button>
             {sortOpen && (
-              <div className="absolute top-full left-0 mt-2 bg-white rounded-xl py-2 z-20 min-w-[180px]" style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}>
+              <div className="absolute top-full left-0 mt-2 rounded-xl py-2 z-20 min-w-[180px]" style={{ background: '#0A1A30', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)' }}>
                 {(Object.keys(sortLabels) as SortKey[]).map((key) => (
                   <button
                     key={key}
                     onClick={() => { setSortBy(key); setSortOpen(false); }}
-                    className={`w-full text-right px-4 py-2.5 text-[13px] hover:bg-[#F1F4F9] transition-colors ${sortBy === key ? 'text-[#002E83]' : 'text-[#0B1A3A]'}`}
+                    className={`w-full text-right px-4 py-2.5 text-[13px] hover:bg-[#102344] transition-colors ${sortBy === key ? 'text-[#60A5FA]' : 'text-[#94A3B8]'}`}
                     style={{ fontWeight: sortBy === key ? 700 : 400 }}
                   >
                     {sortLabels[key]}
@@ -228,9 +231,9 @@ export function OpportunitiesPage() {
 
       {/* All Opportunities Title */}
       <div className="flex items-center gap-2 mb-5">
-        <TrendingUp className="w-5 h-5 text-[#002E83]" strokeWidth={2} />
-        <h2 className="text-[18px] text-[#0B1A3A]" style={{ fontWeight: 700 }}>جميع الفرص</h2>
-        <span className="text-[13px] text-[#9CA3AF] mr-1">({filtered.length})</span>
+        <TrendingUp className="w-5 h-5 text-[#60A5FA]" strokeWidth={2} />
+        <h2 className="text-[18px] text-[#f1f5f9]" style={{ fontWeight: 700 }}>جميع الفرص</h2>
+        <span className="text-[13px] text-[#64748B] mr-1">({filtered.length})</span>
       </div>
 
       {/* Grid */}
@@ -246,21 +249,21 @@ export function OpportunitiesPage() {
           <button
             onClick={() => { if (currentPage > 1) { setCurrentPage(currentPage - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); } }}
             disabled={currentPage === 1}
-            className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${currentPage > 1 ? 'bg-white hover:bg-[#F1F4F9] text-[#0B1A3A]' : 'bg-[#F1F4F9] text-[#CBD5E1] cursor-not-allowed'}`}
-            style={{ boxShadow: currentPage > 1 ? '0 2px 8px rgba(0, 0, 0, 0.08)' : 'none' }}
+            className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${currentPage > 1 ? 'text-[#f1f5f9] hover:bg-[#102344]' : 'text-[#334155] cursor-not-allowed'}`}
+            style={{ background: '#0A1A30', border: '1px solid rgba(255,255,255,0.08)', boxShadow: currentPage > 1 ? '0 2px 8px rgba(0,0,0,0.2)' : 'none' }}
           >
             <ArrowLeft className="w-6 h-6" strokeWidth={2} />
           </button>
-          <div className="flex items-center gap-3 px-6 py-3 bg-white rounded-xl" style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)' }}>
-            <span className="text-[16px] text-[#0B1A3A]" style={{ fontWeight: 700 }}>{currentPage}</span>
-            <span className="text-[16px] text-[#94A3B8]">/</span>
-            <span className="text-[16px] text-[#94A3B8]" style={{ fontWeight: 500 }}>{totalPages}</span>
+          <div className="flex items-center gap-3 px-6 py-3 rounded-xl" style={{ background: '#0C1C34', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+            <span className="text-[16px] text-[#f1f5f9]" style={{ fontWeight: 700 }}>{currentPage}</span>
+            <span className="text-[16px] text-[#475569]">/</span>
+            <span className="text-[16px] text-[#475569]" style={{ fontWeight: 500 }}>{totalPages}</span>
           </div>
           <button
             onClick={() => { if (currentPage < totalPages) { setCurrentPage(currentPage + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); } }}
             disabled={currentPage === totalPages}
-            className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${currentPage < totalPages ? 'bg-white hover:bg-[#F1F4F9] text-[#0B1A3A]' : 'bg-[#F1F4F9] text-[#CBD5E1] cursor-not-allowed'}`}
-            style={{ boxShadow: currentPage < totalPages ? '0 2px 8px rgba(0, 0, 0, 0.08)' : 'none' }}
+            className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${currentPage < totalPages ? 'text-[#f1f5f9] hover:bg-[#102344]' : 'text-[#334155] cursor-not-allowed'}`}
+            style={{ background: '#0A1A30', border: '1px solid rgba(255,255,255,0.08)', boxShadow: currentPage < totalPages ? '0 2px 8px rgba(0,0,0,0.2)' : 'none' }}
           >
             <ArrowRight className="w-6 h-6" strokeWidth={2} />
           </button>

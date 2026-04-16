@@ -254,7 +254,7 @@ export function LoginPage() {
               backdropFilter: "blur(20px)",
               WebkitBackdropFilter: "blur(20px)",
               boxShadow:
-                "0 1px 2px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.04), 0 12px 48px rgba(0,0,0,0.05)",
+                "0 1px 2px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.04), 0 12px 48px rgba(0,0,0,0.05)",
               border: "1px solid rgba(226,232,240,0.6)",
             }}
           >
