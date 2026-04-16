@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   User, Mail, Phone, Shield, ShieldCheck, CreditCard, Building2,
   Pencil, Plus, Trash2, FileText, Download, Lock, Smartphone,
@@ -8,7 +7,6 @@ import {
 } from 'lucide-react';
 import { usePersona } from '../demoPersona';
 import { useI18n } from '../i18n';
-import { VIPUpgradeModal } from '../components/VIPUpgradeModal';
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Shared Primitives
@@ -24,7 +22,7 @@ function SectionCard({ title, titleEn, action, children }: {
   return (
     <div
       className="rounded-2xl p-6"
-      style={{ background: '#0C1C34', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 1px 2px rgba(0,0,0,0.3)' }}
+      style={{ background: 'white', border: '1px solid #F1F5F9', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}
     >
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-[16px] text-[#0F172A]" style={{ fontWeight: 700 }}>
@@ -104,7 +102,7 @@ function EditButton({ label, labelEn }: { label: string; labelEn: string }) {
    1. Profile Header
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-function ProfileHeader({ onUpgrade }: { onUpgrade?: () => void }) {
+function ProfileHeader() {
   const { persona } = usePersona();
   const { lang } = useI18n();
   const isAr = lang === 'ar';
@@ -114,7 +112,7 @@ function ProfileHeader({ onUpgrade }: { onUpgrade?: () => void }) {
   return (
     <div
       className="rounded-2xl p-6"
-      style={{ background: '#0C1C34', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 1px 2px rgba(0,0,0,0.3)' }}
+      style={{ background: 'white', border: '1px solid #F1F5F9', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}
     >
       <div className="flex items-center gap-5">
         {/* Avatar */}
@@ -149,20 +147,8 @@ function ProfileHeader({ onUpgrade }: { onUpgrade?: () => void }) {
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex flex-col items-end gap-2 shrink-0">
-          <EditButton label="تعديل الملف" labelEn="Edit Profile" />
-          {!persona.profile.isVIP && onUpgrade && (
-            <button
-              onClick={onUpgrade}
-              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] transition-all hover:brightness-110 cursor-pointer"
-              style={{ background: 'linear-gradient(135deg, #6366F1, #7C3AED)', color: 'white', fontWeight: 600, boxShadow: '0 2px 8px rgba(99,102,241,0.25)' }}
-            >
-              <Crown className="w-3 h-3" strokeWidth={2} />
-              {isAr ? 'ترقية VIP' : 'Upgrade to VIP'}
-            </button>
-          )}
-        </div>
+        {/* Action */}
+        <EditButton label="تعديل الملف" labelEn="Edit Profile" />
       </div>
     </div>
   );
@@ -442,13 +428,11 @@ function PreferencesSection() {
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 export function ProfilePage() {
-  const [vipModalOpen, setVipModalOpen] = useState(false);
-
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 md:pb-8">
       {/* Header */}
       <div className="mb-6">
-        <ProfileHeader onUpgrade={() => setVipModalOpen(true)} />
+        <ProfileHeader />
       </div>
 
       {/* Two-column layout */}
@@ -467,8 +451,6 @@ export function ProfilePage() {
           <PreferencesSection />
         </div>
       </div>
-
-      <VIPUpgradeModal open={vipModalOpen} onClose={() => setVipModalOpen(false)} />
     </div>
   );
 }

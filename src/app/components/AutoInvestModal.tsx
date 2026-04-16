@@ -96,7 +96,7 @@ function SelectCard({ selected, onClick, children }: { selected: boolean; onClic
 function StepAmount({ amount, setAmount, isAr }: { amount: string; setAmount: (v: string) => void; isAr: boolean }) {
   return (
     <div>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.96)', marginBottom: 6 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
         {isAr ? 'الاستثمار التلقائي' : 'Auto Invest'}
       </h3>
       <p style={{ fontSize: 13, color: '#64748B', marginBottom: 24 }}>
@@ -116,8 +116,8 @@ function StepAmount({ amount, setAmount, isAr }: { amount: string; setAmount: (v
           autoFocus
           style={{
             width: '100%', height: 52, borderRadius: 12, paddingLeft: 52, paddingRight: 16,
-            fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.96)', outline: 'none',
-            border: '1px solid rgba(255,255,255,0.08)', background: '#0A1A30',
+            fontSize: 18, fontWeight: 700, color: '#0F172A', outline: 'none',
+            border: '1px solid #E2E8F0', background: '#F8FAFC',
             transition: 'all 0.2s',
           }}
           onFocus={e => { e.currentTarget.style.borderColor = '#3B82F6'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.1)'; e.currentTarget.style.background = 'white'; }}
@@ -142,7 +142,7 @@ function StepRisk({ selected, setSelected, isAr }: { selected: string[]; setSele
 
   return (
     <div>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.96)', marginBottom: 6 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
         {isAr ? 'مستوى المخاطر' : 'Risk Preference'}
       </h3>
       <p style={{ fontSize: 13, color: '#64748B', marginBottom: 24 }}>
@@ -156,7 +156,7 @@ function StepRisk({ selected, setSelected, isAr }: { selected: string[]; setSele
                 {g.key}
               </div>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.96)' }}>{isAr ? `تصنيف ${g.key}` : `Grade ${g.key}`}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{isAr ? `تصنيف ${g.key}` : `Grade ${g.key}`}</div>
                 <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 1 }}>{g.label}</div>
               </div>
             </div>
@@ -178,7 +178,7 @@ function StepDuration({ selected, setSelected, isAr }: { selected: string[]; set
 
   return (
     <div>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.96)', marginBottom: 6 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
         {isAr ? 'مدة الاستثمار' : 'Investment Duration'}
       </h3>
       <p style={{ fontSize: 13, color: '#64748B', marginBottom: 24 }}>
@@ -191,7 +191,7 @@ function StepDuration({ selected, setSelected, isAr }: { selected: string[]; set
               <div style={{ width: 32, height: 32, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', color: selected.includes(o.key) ? '#3B82F6' : '#94A3B8', background: selected.includes(o.key) ? '#EFF6FF' : '#F8FAFC' }}>
                 {o.icon}
               </div>
-              <span style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.96)' }}>{o.label}</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{o.label}</span>
             </div>
           </SelectCard>
         ))}
@@ -216,18 +216,18 @@ function StepReview({ amount, risks, durations, isAr }: { amount: string; risks:
 
   return (
     <div>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.96)', marginBottom: 6 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
         {isAr ? 'مراجعة المعايير' : 'Review Criteria'}
       </h3>
       <p style={{ fontSize: 13, color: '#64748B', marginBottom: 24 }}>
         {isAr ? 'تأكد من صحة معايير الاستثمار التلقائي' : 'Review your auto invest criteria'}
       </p>
 
-      <div style={{ background: '#0A1A30', borderRadius: 14, padding: 20, border: '1px solid #F1F5F9' }}>
+      <div style={{ background: '#F8FAFC', borderRadius: 14, padding: 20, border: '1px solid #F1F5F9' }}>
         {rows.map((r, i) => (
           <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: i < rows.length - 1 ? '1px solid #F1F5F9' : 'none' }}>
             <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 500 }}>{r.label}</span>
-            <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.96)', fontWeight: 700 }}>{r.value}</span>
+            <span style={{ fontSize: 14, color: '#0F172A', fontWeight: 700 }}>{r.value}</span>
           </div>
         ))}
       </div>
@@ -269,13 +269,13 @@ function StepVerify({ otp, setOtp, isAr }: { otp: string[]; setOtp: (v: string[]
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.96)', marginBottom: 6 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
         {isAr ? 'تحقق من هويتك' : 'Verify Your Identity'}
       </h3>
       <p style={{ fontSize: 13, color: '#64748B', marginBottom: 8 }}>
         {isAr ? 'أدخل رمز التحقق المرسل إلى جوالك' : 'Enter the OTP sent to your phone'}
       </p>
-      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.96)', fontWeight: 600, marginBottom: 28 }} dir="ltr">+966 5XX XXX XX8</p>
+      <p style={{ fontSize: 12, color: '#0F172A', fontWeight: 600, marginBottom: 28 }} dir="ltr">+966 5XX XXX XX8</p>
 
       <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginBottom: 20 }} dir="ltr">
         {otp.map((d, i) => (
@@ -292,7 +292,7 @@ function StepVerify({ otp, setOtp, isAr }: { otp: string[]; setOtp: (v: string[]
               width: 56, height: 56, borderRadius: 14, textAlign: 'center', fontSize: 22, fontWeight: 700,
               outline: 'none', transition: 'all 0.2s',
               border: d ? '2px solid #3B82F6' : '1px solid #E2E8F0',
-              background: d ? '#EFF6FF' : '#F8FAFC', color: 'rgba(255,255,255,0.96)',
+              background: d ? '#EFF6FF' : '#F8FAFC', color: '#0F172A',
             }}
           />
         ))}
@@ -300,7 +300,7 @@ function StepVerify({ otp, setOtp, isAr }: { otp: string[]; setOtp: (v: string[]
 
       <div style={{ fontSize: 12, color: '#94A3B8' }}>
         {countdown > 0 ? (
-          <span>{isAr ? 'إعادة الإرسال خلال' : 'Resend in'} <span style={{ fontWeight: 700, color: 'rgba(255,255,255,0.96)' }}>{countdown}</span> {isAr ? 'ثانية' : 's'}</span>
+          <span>{isAr ? 'إعادة الإرسال خلال' : 'Resend in'} <span style={{ fontWeight: 700, color: '#0F172A' }}>{countdown}</span> {isAr ? 'ثانية' : 's'}</span>
         ) : (
           <button onClick={() => setCountdown(60)} style={{ color: '#3B82F6', fontWeight: 600, cursor: 'pointer', background: 'none', border: 'none', fontSize: 12 }}>
             {isAr ? 'إعادة إرسال الرمز' : 'Resend code'}
@@ -318,7 +318,7 @@ function StepSuccess({ isAr, onClose }: { isAr: boolean; onClose: () => void }) 
       <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
         <CheckCircle className="w-8 h-8 text-[#2BB673]" strokeWidth={1.5} />
       </div>
-      <h3 style={{ fontSize: 20, fontWeight: 700, color: 'rgba(255,255,255,0.96)', marginBottom: 8 }}>
+      <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', marginBottom: 8 }}>
         {isAr ? 'تم تفعيل الاستثمار التلقائي' : 'Auto Invest Activated'}
       </h3>
       <p style={{ fontSize: 13, color: '#64748B', marginBottom: 32, lineHeight: 1.6 }}>
@@ -340,7 +340,7 @@ function StepSuccess({ isAr, onClose }: { isAr: boolean; onClose: () => void }) 
           onClick={onClose}
           style={{
             flex: 1, height: 46, borderRadius: 14, cursor: 'pointer',
-            background: '#0C1C34', color: '#64748B', border: '1px solid rgba(255,255,255,0.08)',
+            background: 'white', color: '#64748B', border: '1px solid #E2E8F0',
             fontSize: 14, fontWeight: 600,
           }}
         >
@@ -406,7 +406,7 @@ export function AutoInvestModal({ open, onClose }: AutoInvestModalProps) {
       onClick={e => { if (e.target === e.currentTarget && !verifying) onClose(); }}
     >
       <div
-        style={{ background: '#0C1C34', width: '100%', maxWidth: 480, borderRadius: 24, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.5)', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
+        style={{ background: 'white', width: '100%', maxWidth: 480, borderRadius: 24, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.15)', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
         dir={isAr ? 'rtl' : 'ltr'}
         onClick={e => e.stopPropagation()}
       >
@@ -418,11 +418,11 @@ export function AutoInvestModal({ open, onClose }: AutoInvestModalProps) {
                 <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(59,130,246,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Zap className="w-4 h-4 text-[#3B82F6]" strokeWidth={2} />
                 </div>
-                <span style={{ fontSize: 15, fontWeight: 700, color: 'rgba(255,255,255,0.96)' }}>
+                <span style={{ fontSize: 15, fontWeight: 700, color: '#0F172A' }}>
                   {isAr ? 'الاستثمار التلقائي' : 'Auto Invest'}
                 </span>
               </div>
-              <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 10, border: 'none', background: '#0A1A30', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 10, border: 'none', background: '#F8FAFC', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <X className="w-4 h-4 text-[#94A3B8]" strokeWidth={1.8} />
               </button>
             </div>
@@ -446,7 +446,7 @@ export function AutoInvestModal({ open, onClose }: AutoInvestModalProps) {
             {step > 1 ? (
               <button
                 onClick={handleBack}
-                style={{ height: 44, padding: '0 20px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)', background: '#0C1C34', color: '#64748B', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                style={{ height: 44, padding: '0 20px', borderRadius: 12, border: '1px solid #E2E8F0', background: 'white', color: '#64748B', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
               >
                 <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} />
                 {isAr ? 'رجوع' : 'Back'}

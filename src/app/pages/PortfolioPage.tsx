@@ -63,7 +63,7 @@ const sparkline = [{ v: 80 }, { v: 150 }, { v: 230 }, { v: 290 }, { v: 340 }, { 
    Shared styles
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-const cardStyle = { background: '#0C1C34', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' };
+const cardStyle = { background: 'white', border: '1px solid #E8ECF2', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' };
 const riskColor: Record<string, string> = { A: '#3B82F6', B: '#14B8A6', C: '#F59E0B', D: '#EF4444' };
 
 function statusBadge(status: string, isAr: boolean) {
@@ -86,7 +86,7 @@ function statusBadge(status: string, isAr: boolean) {
 function ChartTip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-[#0C1C34] rounded-lg px-3 py-2 text-[11px]" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.08)', border: '1px solid rgba(255,255,255,0.08)' }}>
+    <div className="bg-white rounded-lg px-3 py-2 text-[11px]" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.08)', border: '1px solid #E8ECF2' }}>
       <div className="text-[#94A3B8] mb-1" style={{ fontWeight: 500 }}>{label}</div>
       {payload.map((p: any) => (
         <div key={p.dataKey} className="flex items-center gap-1.5">
@@ -103,7 +103,7 @@ function ChartTip({ active, payload, label }: any) {
    1. Portfolio Hero — tiered hierarchy
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-function WalletSummaryCard() {
+function PortfolioHero() {
   const { lang } = useI18n();
   const isAr = lang === 'ar';
 
@@ -134,7 +134,7 @@ function WalletSummaryCard() {
             +{summary.monthlyChange}% {isAr ? 'هذا الشهر' : 'this month'}
           </span>
         </div>
-        <div className="text-[11px] text-[#94A3B8] mb-5" style={{ fontWeight: 500 }}>
+        <div className="text-[11px] text-[#94A3B8] mb-4" style={{ fontWeight: 500 }}>
           {isAr ? 'إجمالي قيمة المحفظة' : 'Portfolio value including returns'}
         </div>
         <div className="flex items-center gap-3">
@@ -156,23 +156,23 @@ function WalletSummaryCard() {
         </div>
       </div>
 
-      {/* Spacer — absorbs extra height */}
+      {/* Bottom spacer */}
       <div style={{ flex: 1 }} />
 
-      {/* Stat cards — pushed to bottom */}
+      {/* Stat cards inside wallet — pushed to bottom */}
       <div style={{ borderTop: '1px solid #E2E8F0', margin: '0 -28px', padding: '16px 28px 0' }}>
         <div className="grid grid-cols-3 gap-4">
-          <div className="rounded-xl p-4" style={{ background: '#0A1A30', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <div className="rounded-xl p-4" style={{ background: '#F8FAFC', border: '1px solid #F1F5F9' }}>
             <div className="text-[10px] text-[#94A3B8] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600 }}>{isAr ? 'نشطة' : 'Active'}</div>
             <div className="text-[18px] text-[#0F172A] leading-tight" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{formatSAR(summary.activeInvested, { decimals: 0 })}</div>
             <div className="text-[10px] text-[#94A3B8] mt-1">{summary.activeCount} {isAr ? 'صفقات' : 'deals'}</div>
           </div>
-          <div className="rounded-xl p-4" style={{ background: '#0A1A30', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <div className="rounded-xl p-4" style={{ background: '#F8FAFC', border: '1px solid #F1F5F9' }}>
             <div className="text-[10px] text-[#94A3B8] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600 }}>{isAr ? 'متوسط العائد' : 'Avg. Return'}</div>
             <div className="text-[18px] text-[#2BB673] leading-tight" style={{ fontWeight: 700 }}>{summary.avgReturn}%</div>
             <div className="text-[10px] text-[#94A3B8] mt-1">{isAr ? 'سنوياً' : 'annual'}</div>
           </div>
-          <div className="rounded-xl p-4" style={{ background: '#0A1A30', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <div className="rounded-xl p-4" style={{ background: '#F8FAFC', border: '1px solid #F1F5F9' }}>
             <div className="text-[10px] text-[#94A3B8] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600 }}>{isAr ? 'العوائد' : 'Returns'}</div>
             <div className="text-[18px] text-[#2BB673] leading-tight" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{formatSAR(summary.realizedReturns, { decimals: 0 })}</div>
             <div className="text-[10px] text-[#94A3B8] mt-1">{isAr ? 'محققة' : 'realized'}</div>
@@ -180,213 +180,6 @@ function WalletSummaryCard() {
         </div>
       </div>
     </div>
-  );
-}
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   1b. Auto Invest Vertical Card
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-function AutoInvestVertical({ onActivate }: { onActivate?: () => void }) {
-  const [active, setActive] = useState(false);
-  const [hov, setHov] = useState(false);
-  const [priHov, setPriHov] = useState(false);
-  const { lang } = useI18n();
-  const isAr = lang === 'ar';
-  const bc = active ? '#34d399' : '#60a5fa';
-  const ac = active ? '#5eead4' : '#93c5fd';
-  const fc = active ? 'rgba(52,211,153,0.10)' : 'rgba(96,165,250,0.10)';
-  const ni = active ? '#134e4a' : '#0f2847';
-  const sid = active ? 'va' : 'vi';
-
-  return (
-    <>
-      <style>{`
-        @keyframes aivDash{to{stroke-dashoffset:-32}}
-        @keyframes aivPulse{0%{r:7;opacity:0.4}100%{r:16;opacity:0}}
-        @keyframes aivIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-      `}</style>
-      <div
-        onMouseEnter={() => setHov(true)}
-        onMouseLeave={() => setHov(false)}
-        style={{
-          borderRadius: 20, position: 'relative', overflow: 'hidden', cursor: 'pointer', height: '100%', minHeight: 380,
-          display: 'flex', flexDirection: 'column', direction: isAr ? 'rtl' : 'ltr',
-          background: active
-            ? 'linear-gradient(165deg, #0a2e38 0%, #0f2847 35%, #132e5b 100%)'
-            : 'linear-gradient(165deg, #0f2847 0%, #132e5b 35%, #1a4a8a 100%)',
-          border: `1px solid ${active ? 'rgba(52,211,153,0.15)' : 'rgba(96,165,250,0.1)'}`,
-          boxShadow: hov
-            ? (active ? '0 20px 40px -10px rgba(13,148,136,0.15), 0 0 0 1px rgba(52,211,153,0.1)' : '0 20px 40px -10px rgba(15,40,71,0.3), 0 0 0 1px rgba(96,165,250,0.08)')
-            : '0 4px 20px -6px rgba(15,40,71,0.2)',
-          transform: hov ? 'translateY(-3px)' : 'translateY(0)',
-          transition: 'all 0.4s cubic-bezier(.4,0,.2,1)',
-          animation: 'aivIn 0.6s cubic-bezier(.4,0,.2,1)',
-        }}
-      >
-        {/* Texture */}
-        <div style={{ position: 'absolute', inset: 0, opacity: 0.02, pointerEvents: 'none', backgroundImage: `repeating-linear-gradient(-45deg, transparent, transparent 8px, ${bc} 8px, ${bc} 9px)` }} />
-        {/* Top-right glow */}
-        <div style={{ position: 'absolute', top: -30, right: -30, width: 140, height: 140, borderRadius: '50%', background: `radial-gradient(circle, ${active ? 'rgba(52,211,153,0.1)' : 'rgba(96,165,250,0.08)'} 0%, transparent 70%)`, filter: 'blur(25px)', pointerEvents: 'none' }} />
-        {/* Bottom glow */}
-        <div style={{ position: 'absolute', bottom: -20, left: '50%', transform: 'translateX(-50%)', width: 200, height: 100, borderRadius: '50%', background: `radial-gradient(circle, ${active ? 'rgba(52,211,153,0.06)' : 'rgba(96,165,250,0.05)'} 0%, transparent 70%)`, filter: 'blur(20px)', pointerEvents: 'none' }} />
-
-        {/* Content */}
-        <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', padding: '28px 26px 24px', minHeight: 380 }}>
-
-          {active ? (
-            <>
-              {/* Icon */}
-              <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <circle cx="10" cy="10" r="9" fill="#34d399" />
-                  <path d="M6 10.5 L9 13.5 L14 7.5" stroke="#0f2847" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                </svg>
-              </div>
-              {/* Title */}
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#ffffff', marginBottom: 20, lineHeight: 1.3 }}>
-                {isAr ? 'تم تفعيل الاستثمار التلقائي' : 'Auto Invest Active'}
-              </div>
-              {/* Stats */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 20 }}>
-                {[
-                  { label: isAr ? 'استثمارات تلقائية' : 'Auto investments', value: '12', color: '#34d399', size: 16 },
-                  { label: isAr ? 'آخر تنفيذ' : 'Last run', value: isAr ? 'قبل 3 ساعات' : '3 hours ago', color: 'rgba(255,255,255,0.7)', size: 13 },
-                  { label: isAr ? 'إجمالي المستثمر' : 'Total invested', value: '45,200 ر.س', color: 'rgba(255,255,255,0.8)', size: 13 },
-                ].map((s, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>{s.label}</span>
-                    <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: s.size, fontWeight: s.size === 16 ? 700 : 600, color: s.color }}>{s.value}</span>
-                  </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <>
-              {/* Icon */}
-              <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#60a5fa" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="rgba(96,165,250,0.1)" />
-                </svg>
-              </div>
-              {/* Title */}
-              <div style={{ fontSize: 20, fontWeight: 700, color: '#ffffff', marginBottom: 8, lineHeight: 1.3 }}>
-                {isAr ? 'الاستثمار التلقائي' : 'Auto Invest'}
-              </div>
-              {/* Desc */}
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 10 }}>
-                {isAr ? 'حدد معاييرك ودع النظام يستثمر تلقائيًا في الفرص المناسبة لك' : 'Set your criteria and let the system auto-invest in matching opportunities'}
-              </div>
-              {/* Subtext */}
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-                <span>{isAr ? 'بدون رسوم إضافية' : 'No extra fees'}</span>
-                <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
-                <span>{isAr ? 'تحكم كامل' : 'Full control'}</span>
-              </div>
-            </>
-          )}
-
-          {/* Illustration — flex child, bleeds to edges */}
-          <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', margin: '0 -26px', overflow: 'hidden', opacity: active ? 0.7 : 0.8 }}>
-            <svg viewBox="0 0 300 140" fill="none" style={{ width: '100%', height: 140 }}>
-              <defs>
-                <linearGradient id={`gfW-${sid}`} x1="0" y1="25" x2="0" y2="140" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stopColor={bc} stopOpacity="0.18" />
-                  <stop offset="100%" stopColor={bc} stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              {/* Dot grid */}
-              {Array.from({ length: 6 }).map((_, r) => Array.from({ length: 14 }).map((_, c) => (
-                <circle key={`${r}-${c}`} cx={12 + c * 21} cy={10 + r * 22} r="0.7" fill="rgba(255,255,255,0.04)" />
-              )))}
-              {/* Area fill */}
-              <polygon points="20,120 50,108 90,95 130,78 170,62 210,48 250,35 280,28 300,25 300,140 20,140" fill={`url(#gfW-${sid})`} opacity="0.6" />
-              {/* Graph line */}
-              <polyline points="20,120 50,108 90,95 130,78 170,62 210,48 250,35 280,28" stroke={bc} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.6" />
-              {/* Dashed flow */}
-              <path d="M30 125 Q80 110 120 88 T200 55 T280 35" stroke={ac} strokeWidth="1.2" strokeDasharray="4 4" fill="none" opacity="0.25" style={{ animation: 'aivDash 4s linear infinite' }} />
-              {/* Nodes */}
-              <circle cx="90" cy="95" r="3.5" fill={ni} stroke={bc} strokeWidth="1.5" />
-              <circle cx="250" cy="35" r="3.5" fill={ni} stroke={ac} strokeWidth="1.5" />
-              {/* Center node */}
-              <circle cx="170" cy="62" r="8" fill={fc} stroke={bc} strokeWidth="1.5" opacity="0.6" />
-              <circle cx="170" cy="62" r="4.5" fill={ni} stroke={bc} strokeWidth="1.8" />
-              <polygon points="168.5,59.5 168.5,64.5 172.5,62" fill={bc} opacity="0.9" />
-              {/* Connectors */}
-              <path d="M97 92 L162 66" stroke={bc} strokeWidth="0.8" opacity="0.2" />
-              <path d="M178 59 L242 38" stroke={ac} strokeWidth="0.8" opacity="0.2" />
-              {/* Decorative rects */}
-              <rect x="260" y="70" width="14" height="10" rx="3" stroke={ac} strokeWidth="0.7" fill={fc} opacity="0.5" transform="rotate(-6 267 75)" />
-              <rect x="30" y="75" width="11" height="8" rx="2" stroke={bc} strokeWidth="0.6" fill={fc} opacity="0.4" transform="rotate(4 35.5 79)" />
-              {/* Pulse rings — active only */}
-              {active && (
-                <>
-                  <circle cx="250" cy="35" r="7" stroke={ac} strokeWidth="1" fill="none" opacity="0.4" style={{ animation: 'aivPulse 2s ease-out infinite' }} />
-                  <circle cx="250" cy="35" r="11" stroke={ac} strokeWidth="0.6" fill="none" opacity="0.2" style={{ animation: 'aivPulse 2s ease-out infinite', animationDelay: '0.6s' }} />
-                </>
-              )}
-            </svg>
-          </div>
-
-          {/* CTA */}
-          <div style={{ paddingTop: 20 }}>
-            {active ? (
-              <>
-                <button
-                  onClick={e => { e.stopPropagation(); onActivate?.(); }}
-                  onMouseEnter={() => setPriHov(true)}
-                  onMouseLeave={() => setPriHov(false)}
-                  style={{
-                    width: '100%', padding: '12px 20px', borderRadius: 14, fontSize: 14, fontWeight: 700,
-                    color: '#34d399', cursor: 'pointer', transition: 'all 0.2s',
-                    background: priHov ? 'rgba(52,211,153,0.14)' : 'rgba(52,211,153,0.08)',
-                    border: `1px solid ${priHov ? 'rgba(52,211,153,0.3)' : 'rgba(52,211,153,0.18)'}`,
-                  }}
-                >
-                  {isAr ? 'تعديل الإعدادات' : 'Edit Settings'}
-                </button>
-                <button
-                  onClick={e => { e.stopPropagation(); setActive(false); }}
-                  style={{ width: '100%', paddingTop: 10, fontSize: 11, color: 'rgba(255,255,255,0.3)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center', transition: 'color 0.2s' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#f87171')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
-                >
-                  {isAr ? 'إيقاف التشغيل' : 'Deactivate'}
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={e => { e.stopPropagation(); setActive(true); onActivate?.(); }}
-                  onMouseEnter={() => setPriHov(true)}
-                  onMouseLeave={() => setPriHov(false)}
-                  style={{
-                    width: '100%', padding: '12px 20px', borderRadius: 14, fontSize: 14, fontWeight: 700,
-                    color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    background: 'linear-gradient(135deg, #2563eb, #3b82f6)',
-                    border: '1px solid rgba(96,165,250,0.25)',
-                    boxShadow: priHov ? '0 6px 24px -4px rgba(37,99,235,0.6)' : '0 4px 16px -4px rgba(37,99,235,0.5)',
-                    transform: priHov ? 'scale(1.02)' : 'scale(1)',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  {isAr ? 'تفعيل الاستثمار التلقائي' : 'Activate Auto Invest'}
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M9 1L3 9h4l-1 6 6-8H8l1-6z" /></svg>
-                </button>
-                <button
-                  onClick={e => e.stopPropagation()}
-                  style={{ width: '100%', paddingTop: 10, fontSize: 12, color: 'rgba(255,255,255,0.4)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center', transition: 'color 0.2s' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}
-                >
-                  {isAr ? 'كيف يعمل؟' : 'How it works?'}
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    </>
   );
 }
 
@@ -474,7 +267,7 @@ function AnalyticsSection() {
             {riskDistribution.map(d => {
               const pct = Math.round((d.amount / summary.totalPortfolio) * 100);
               return (
-                <div key={d.grade} className="flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: '#0A1A30' }}>
+                <div key={d.grade} className="flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: '#F8FAFC' }}>
                   <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.color }} />
                   <span className="w-6 text-[12px] text-[#0F172A]" style={{ fontWeight: 700 }}>{d.grade}</span>
                   <span className="flex-1 text-[12px] text-[#64748B]">{d.count} {isAr ? 'صفقات' : 'deals'}</span>
@@ -587,7 +380,7 @@ function InvestmentsTable() {
         {/* Header row — slightly tinted */}
         <div
           className="grid grid-cols-12 gap-4 px-6 h-[40px] items-center text-[10px] uppercase tracking-[0.06em] text-[#94A3B8]"
-          style={{ fontWeight: 600, background: '#0A1A30' }}
+          style={{ fontWeight: 600, background: '#FAFBFC' }}
         >
           <div className="col-span-4">{isAr ? 'الفرصة' : 'Opportunity'}</div>
           <div className="col-span-1 text-center">{isAr ? 'المخاطر' : 'Risk'}</div>
@@ -700,7 +493,7 @@ function RepaymentsSection() {
 
       {/* Summary row */}
       <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="p-4 rounded-xl" style={{ background: '#0A1A30' }}>
+        <div className="p-4 rounded-xl" style={{ background: '#F8FAFC' }}>
           <div className="text-[10px] text-[#94A3B8] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600 }}>{isAr ? 'الإجمالي' : 'Total Due'}</div>
           <div className="text-[18px] text-[#0F172A]" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{formatSAR(totalDue, { decimals: 0 })}</div>
         </div>
@@ -716,7 +509,7 @@ function RepaymentsSection() {
             {nextDue ? (isAr ? nextDue.nextPaymentRelAr : nextDue.nextPaymentRel) : '—'}
           </div>
         </div>
-        <div className="p-4 rounded-xl" style={{ background: '#0A1A30' }}>
+        <div className="p-4 rounded-xl" style={{ background: '#F8FAFC' }}>
           <div className="text-[10px] text-[#94A3B8] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600 }}>{isAr ? 'عدد الدفعات' : 'Count'}</div>
           <div className="text-[18px] text-[#0F172A]" style={{ fontWeight: 700 }}>{upcoming.length}</div>
         </div>
@@ -753,6 +546,123 @@ function RepaymentsSection() {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Auto Invest Vertical Card (dark self-contained widget)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+function AutoInvestVertical({ onActivate }: { onActivate?: () => void }) {
+  const [active, setActive] = useState(false);
+  const [hov, setHov] = useState(false);
+  const [priHov, setPriHov] = useState(false);
+  const { lang } = useI18n();
+  const isAr = lang === 'ar';
+  const bc = active ? '#34d399' : '#60a5fa';
+  const ac = active ? '#5eead4' : '#93c5fd';
+  const fc = active ? 'rgba(52,211,153,0.10)' : 'rgba(96,165,250,0.10)';
+  const ni = active ? '#134e4a' : '#0f2847';
+  const sid = active ? 'va' : 'vi';
+
+  return (
+    <>
+      <style>{`
+        @keyframes aivDash{to{stroke-dashoffset:-32}}
+        @keyframes aivPulse{0%{r:7;opacity:0.4}100%{r:16;opacity:0}}
+        @keyframes aivIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+      `}</style>
+      <div
+        onMouseEnter={() => setHov(true)}
+        onMouseLeave={() => setHov(false)}
+        style={{
+          borderRadius: 20, position: 'relative', overflow: 'hidden', cursor: 'pointer', height: '100%', minHeight: 380,
+          display: 'flex', flexDirection: 'column', direction: isAr ? 'rtl' : 'ltr',
+          background: active
+            ? 'linear-gradient(165deg, #0a2e38 0%, #0f2847 35%, #132e5b 100%)'
+            : 'linear-gradient(165deg, #0f2847 0%, #132e5b 35%, #1a4a8a 100%)',
+          border: `1px solid ${active ? 'rgba(52,211,153,0.15)' : 'rgba(96,165,250,0.1)'}`,
+          boxShadow: hov
+            ? (active ? '0 20px 40px -10px rgba(13,148,136,0.15), 0 0 0 1px rgba(52,211,153,0.1)' : '0 20px 40px -10px rgba(15,40,71,0.3), 0 0 0 1px rgba(96,165,250,0.08)')
+            : '0 4px 20px -6px rgba(15,40,71,0.2)',
+          transform: hov ? 'translateY(-3px)' : 'translateY(0)',
+          transition: 'all 0.4s cubic-bezier(.4,0,.2,1)',
+          animation: 'aivIn 0.6s cubic-bezier(.4,0,.2,1)',
+        }}
+      >
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.02, pointerEvents: 'none', backgroundImage: `repeating-linear-gradient(-45deg, transparent, transparent 8px, ${bc} 8px, ${bc} 9px)` }} />
+        <div style={{ position: 'absolute', top: -30, right: -30, width: 140, height: 140, borderRadius: '50%', background: `radial-gradient(circle, ${active ? 'rgba(52,211,153,0.1)' : 'rgba(96,165,250,0.08)'} 0%, transparent 70%)`, filter: 'blur(25px)', pointerEvents: 'none' }} />
+
+        <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', padding: '28px 26px 24px', minHeight: 380 }}>
+          {active ? (
+            <>
+              <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#34d399" /><path d="M6 10.5 L9 13.5 L14 7.5" stroke="#0f2847" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" /></svg>
+              </div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: '#ffffff', marginBottom: 20 }}>{isAr ? 'تم تفعيل الاستثمار التلقائي' : 'Auto Invest Active'}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 20 }}>
+                {[
+                  { label: isAr ? 'استثمارات تلقائية' : 'Auto investments', value: '12', color: '#34d399', size: 16 },
+                  { label: isAr ? 'آخر تنفيذ' : 'Last run', value: isAr ? 'قبل 3 ساعات' : '3 hours ago', color: 'rgba(255,255,255,0.7)', size: 13 },
+                  { label: isAr ? 'إجمالي المستثمر' : 'Total invested', value: '45,200 ر.س', color: 'rgba(255,255,255,0.8)', size: 13 },
+                ].map((s, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>{s.label}</span>
+                    <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: s.size, fontWeight: s.size === 16 ? 700 : 600, color: s.color }}>{s.value}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#60a5fa" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="rgba(96,165,250,0.1)" /></svg>
+              </div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: '#ffffff', marginBottom: 8 }}>{isAr ? 'الاستثمار التلقائي' : 'Auto Invest'}</div>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 10 }}>{isAr ? 'حدد معاييرك ودع النظام يستثمر تلقائيًا في الفرص المناسبة لك' : 'Set your criteria and let the system auto-invest in matching opportunities'}</div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+                <span>{isAr ? 'بدون رسوم إضافية' : 'No extra fees'}</span>
+                <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
+                <span>{isAr ? 'تحكم كامل' : 'Full control'}</span>
+              </div>
+            </>
+          )}
+
+          <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', margin: '0 -26px', overflow: 'hidden', opacity: active ? 0.7 : 0.8 }}>
+            <svg viewBox="0 0 300 140" fill="none" style={{ width: '100%', height: 140 }}>
+              <defs><linearGradient id={`gfW-${sid}`} x1="0" y1="25" x2="0" y2="140" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor={bc} stopOpacity="0.18" /><stop offset="100%" stopColor={bc} stopOpacity="0" /></linearGradient></defs>
+              {Array.from({ length: 6 }).map((_, r) => Array.from({ length: 14 }).map((_, c) => (<circle key={`${r}-${c}`} cx={12 + c * 21} cy={10 + r * 22} r="0.7" fill="rgba(255,255,255,0.04)" />)))}
+              <polygon points="20,120 50,108 90,95 130,78 170,62 210,48 250,35 280,28 300,25 300,140 20,140" fill={`url(#gfW-${sid})`} opacity="0.6" />
+              <polyline points="20,120 50,108 90,95 130,78 170,62 210,48 250,35 280,28" stroke={bc} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" opacity="0.6" />
+              <path d="M30 125 Q80 110 120 88 T200 55 T280 35" stroke={ac} strokeWidth="1.2" strokeDasharray="4 4" fill="none" opacity="0.25" style={{ animation: 'aivDash 4s linear infinite' }} />
+              <circle cx="90" cy="95" r="3.5" fill={ni} stroke={bc} strokeWidth="1.5" />
+              <circle cx="250" cy="35" r="3.5" fill={ni} stroke={ac} strokeWidth="1.5" />
+              <circle cx="170" cy="62" r="8" fill={fc} stroke={bc} strokeWidth="1.5" opacity="0.6" />
+              <circle cx="170" cy="62" r="4.5" fill={ni} stroke={bc} strokeWidth="1.8" />
+              <polygon points="168.5,59.5 168.5,64.5 172.5,62" fill={bc} opacity="0.9" />
+              {active && (<><circle cx="250" cy="35" r="7" stroke={ac} strokeWidth="1" fill="none" opacity="0.4" style={{ animation: 'aivPulse 2s ease-out infinite' }} /><circle cx="250" cy="35" r="11" stroke={ac} strokeWidth="0.6" fill="none" opacity="0.2" style={{ animation: 'aivPulse 2s ease-out infinite', animationDelay: '0.6s' }} /></>)}
+            </svg>
+          </div>
+
+          <div style={{ paddingTop: 20 }}>
+            {active ? (
+              <>
+                <button onClick={e => { e.stopPropagation(); onActivate?.(); }} onMouseEnter={() => setPriHov(true)} onMouseLeave={() => setPriHov(false)} style={{ width: '100%', padding: '12px 20px', borderRadius: 14, fontSize: 14, fontWeight: 700, color: '#34d399', cursor: 'pointer', transition: 'all 0.2s', background: priHov ? 'rgba(52,211,153,0.14)' : 'rgba(52,211,153,0.08)', border: `1px solid ${priHov ? 'rgba(52,211,153,0.3)' : 'rgba(52,211,153,0.18)'}` }}>{isAr ? 'تعديل الإعدادات' : 'Edit Settings'}</button>
+                <button onClick={e => { e.stopPropagation(); setActive(false); }} style={{ width: '100%', paddingTop: 10, fontSize: 11, color: 'rgba(255,255,255,0.3)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center' }}>{isAr ? 'إيقاف التشغيل' : 'Deactivate'}</button>
+              </>
+            ) : (
+              <>
+                <button onClick={e => { e.stopPropagation(); setActive(true); onActivate?.(); }} onMouseEnter={() => setPriHov(true)} onMouseLeave={() => setPriHov(false)} style={{ width: '100%', padding: '12px 20px', borderRadius: 14, fontSize: 14, fontWeight: 700, color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'linear-gradient(135deg, #2563eb, #3b82f6)', border: '1px solid rgba(96,165,250,0.25)', boxShadow: priHov ? '0 6px 24px -4px rgba(37,99,235,0.6)' : '0 4px 16px -4px rgba(37,99,235,0.5)', transform: priHov ? 'scale(1.02)' : 'scale(1)', transition: 'all 0.2s' }}>
+                  {isAr ? 'تفعيل الاستثمار التلقائي' : 'Activate Auto Invest'}
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M9 1L3 9h4l-1 6 6-8H8l1-6z" /></svg>
+                </button>
+                <button onClick={e => e.stopPropagation()} style={{ width: '100%', paddingTop: 10, fontSize: 12, color: 'rgba(255,255,255,0.4)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center' }}>{isAr ? 'كيف يعمل؟' : 'How it works?'}</button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Page Composition
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
@@ -761,10 +671,10 @@ export function PortfolioPage() {
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 md:pb-8">
-      {/* Top row: Wallet (with stats) + Auto Invest widget */}
+      {/* Top row: Portfolio hero + Auto Invest widget */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6" style={{ alignItems: 'stretch' }}>
         <div className="lg:col-span-8">
-          <WalletSummaryCard />
+          <PortfolioHero />
         </div>
         <div className="lg:col-span-4">
           <AutoInvestVertical onActivate={() => setAutoInvestOpen(true)} />

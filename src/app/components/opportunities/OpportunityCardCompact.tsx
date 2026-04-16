@@ -127,15 +127,14 @@ export function OpportunityCardCompact({
   return (
     <div
       onClick={onClick}
-      className="group rounded-2xl overflow-hidden h-full flex flex-col cursor-pointer"
+      className="group bg-white rounded-2xl overflow-hidden h-full flex flex-col cursor-pointer"
       style={{
-        background: '#0C1C34',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.1)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03)',
+        border: '1px solid #E8ECF2',
         transition: 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
       }}
       onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06)'; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.3)'; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03)'; }}
     >
       {/* ── Cover Area (160px) ── */}
       <div className="relative h-[160px] overflow-hidden shrink-0" style={{ background: 'linear-gradient(135deg, #0B1F3A 0%, #1A3F73 50%, #2563EB 100%)' }}>
@@ -195,7 +194,7 @@ export function OpportunityCardCompact({
               <div className="rounded-xl p-3 mb-3" style={{ background: '#F8FAFC', border: '1px solid #F1F5F9' }}>
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] text-[#64748B]" style={{ fontWeight: 500 }}>يفتح خلال</span>
-                  <span className="text-[20px] text-[#f1f5f9]" style={{ fontWeight: 700 }}>
+                  <span className="text-[20px] text-[#0F172A]" style={{ fontWeight: 700 }}>
                     {launchLabel?.replace('يفتح خلال ', '') || '5 أيام'}
                   </span>
                 </div>
@@ -224,7 +223,7 @@ export function OpportunityCardCompact({
               {/* Funded + percentage */}
               <div className="flex items-baseline justify-between mb-2">
                 <div className="text-[11px] text-[#94A3B8]">
-                  <span className="text-[18px] text-[#f1f5f9]" style={{ fontWeight: 700 }}>{formatSAR(fundedAmount, { decimals: 0 })}</span>
+                  <span className="text-[18px] text-[#0F172A]" style={{ fontWeight: 700 }}>{formatSAR(fundedAmount, { decimals: 0 })}</span>
                   <span className="mx-1">/</span>
                   {formatSAR(totalAmount, { decimals: 0 })} ر.س
                 </div>

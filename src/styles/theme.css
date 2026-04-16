@@ -3,29 +3,29 @@
 :root {
   --font-size: 16px;
 
-  /* FundMe VIP Dark Mode — Premium Navy System */
-  --background: #06111F;
-  --foreground: rgba(255,255,255,0.96);
-  --card: #0C1C34;
-  --card-foreground: rgba(255,255,255,0.96);
-  --popover: #102344;
-  --popover-foreground: rgba(255,255,255,0.96);
-  --primary: rgba(255,255,255,0.96);
-  --primary-foreground: #06111F;
-  --secondary: #08162A;
-  --secondary-foreground: rgba(255,255,255,0.96);
-  --muted: #0A1A30;
-  --muted-foreground: rgba(255,255,255,0.46);
+  /* FundMe Light Mode — Default for Normal Investors */
+  --background: #F7F9FC;
+  --foreground: #0B1A3A;
+  --card: #ffffff;
+  --card-foreground: #0B1A3A;
+  --popover: #ffffff;
+  --popover-foreground: #0B1A3A;
+  --primary: #0B1A3A;
+  --primary-foreground: #ffffff;
+  --secondary: #F1F4F9;
+  --secondary-foreground: #0B1A3A;
+  --muted: #E5E9F0;
+  --muted-foreground: #6B7280;
   --accent: #2563EB;
   --accent-foreground: #ffffff;
   --destructive: #EF4444;
   --destructive-foreground: #ffffff;
   --success: #10B981;
   --success-foreground: #ffffff;
-  --border: rgba(255,255,255,0.08);
+  --border: #E5E7EB;
   --input: transparent;
-  --input-background: #0A1A30;
-  --switch-background: #102344;
+  --input-background: #F9FAFB;
+  --switch-background: #D1D5DB;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   --font-weight-semibold: 600;
@@ -37,13 +37,13 @@
   --chart-4: #8B5CF6;
   --chart-5: #EF4444;
   --radius: 1rem;
-  --sidebar: #08162A;
-  --sidebar-foreground: rgba(255,255,255,0.96);
-  --sidebar-primary: rgba(255,255,255,0.96);
-  --sidebar-primary-foreground: #06111F;
-  --sidebar-accent: #0A1A30;
-  --sidebar-accent-foreground: rgba(255,255,255,0.96);
-  --sidebar-border: rgba(255,255,255,0.08);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0B1A3A;
+  --sidebar-primary: #0B1A3A;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #F1F4F9;
+  --sidebar-accent-foreground: #0B1A3A;
+  --sidebar-border: #E5E7EB;
   --sidebar-ring: #2563EB;
 }
 
@@ -208,8 +208,9 @@
 
 /* ━━━ Global Dark Theme Overrides ━━━ */
 
-/* Surfaces */
+/* Surfaces — class-based */
 .fundme-dark .bg-white { background-color: #0C1C34 !important; }
+.fundme-dark .bg-\[\#FFFFFF\] { background-color: #0C1C34 !important; }
 .fundme-dark .bg-\[\#F8FAFC\],
 .fundme-dark .bg-\[\#FAFBFC\],
 .fundme-dark .bg-\[\#F1F5F9\],
@@ -220,7 +221,13 @@
 .fundme-dark .hover\:bg-\[\#F8FAFC\]:hover,
 .fundme-dark .hover\:bg-\[\#F1F4F9\]:hover,
 .fundme-dark .hover\:bg-\[\#FAFBFC\]:hover,
+.fundme-dark .hover\:bg-\[\#EDF0F7\]:hover,
 .fundme-dark .hover\:bg-\[\#EFF6FF\]:hover { background-color: #132B4A !important; }
+
+/* Additional surface overrides */
+.fundme-dark .bg-\[\#F8FAFC\] { background-color: #0A1A30 !important; }
+.fundme-dark .border-\[\#E5E9F0\] { border-color: rgba(255,255,255,0.08) !important; }
+.fundme-dark .border-\[\#EDF0F7\] { border-color: rgba(255,255,255,0.08) !important; }
 
 /* Text: primary */
 .fundme-dark .text-\[\#0F172A\],
@@ -241,6 +248,9 @@
 .fundme-dark .border-\[\#E8ECF2\],
 .fundme-dark .border-\[\#F1F5F9\],
 .fundme-dark .border-\[\#E2E8F0\] { border-color: rgba(255,255,255,0.08) !important; }
+
+/* Inner surfaces (Tailwind classes) */
+.fundme-dark .bg-\[\#F1F5F9\] { background-color: #0A1A30 !important; }
 
 /* Tinted semantic backgrounds */
 .fundme-dark .bg-\[\#F0FDF4\],
