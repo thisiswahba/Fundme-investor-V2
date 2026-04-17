@@ -4,16 +4,15 @@ import { formatSAR, formatPercentage, formatChartValue } from '../utils/currency
 import { useI18n } from '../i18n';
 import { usePersona } from '../demoPersona';
 import { AutoInvestModal } from '../components/AutoInvestModal';
+import { colors } from '../components/fundme';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, LineChart, Line,
   PieChart, Pie, Cell,
 } from 'recharts';
 import {
-  TrendingUp, Wallet, AlertTriangle, Clock, CheckCircle,
-  Eye, Rocket, ShieldAlert, Briefcase, Calendar, Activity,
-  ChevronLeft, Search, Download, Filter, Lightbulb, ArrowUpRight,
-  PieChart as PieChartIcon, Zap,
+  TrendingUp, AlertTriangle, ShieldAlert,
+  ChevronLeft, Download, Zap,
 } from 'lucide-react';
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -60,18 +59,147 @@ const growthData = [
 const sparkline = [{ v: 80 }, { v: 150 }, { v: 230 }, { v: 290 }, { v: 340 }, { v: 360 }];
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Shared styles
+   Persona-aware tokens — VIP is its own theme, not a recolored light mode
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-const cardStyle = { background: 'white', border: '1px solid #E8ECF2', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' };
+type Tokens = ReturnType<typeof buildTokens>;
+
+function buildTokens(isVIP: boolean) {
+  if (isVIP) {
+    return {
+      isVIP: true,
+      card: { background: colors.dark.card, border: `1px solid ${colors.dark.border}` } as React.CSSProperties,
+      tooltipBg: colors.dark.elevated,
+      tooltipBorder: `1px solid ${colors.dark.border}`,
+      tooltipShadow: '0 8px 32px rgba(0,0,0,0.4)',
+      heroGradient: `linear-gradient(145deg, ${colors.dark.card} 0%, ${colors.dark.elevated} 60%, ${colors.dark.card} 100%)`,
+      heroBorder: `1px solid ${colors.dark.border}`,
+      heroDivider: `1px solid ${colors.dark.border}`,
+      statInnerBg: colors.dark.elevated,
+      statInnerBorder: `1px solid ${colors.dark.borderSubtle}`,
+      textPrimary: colors.textOnDark.primary,
+      textSecondary: colors.textOnDark.secondary,
+      textMuted: colors.textOnDark.tertiary,
+      textFaint: colors.textOnDark.muted,
+      linkBlue: colors.primaryHover,
+      alertBg: colors.dangerBg,
+      alertBorder: '1px solid rgba(220,38,38,0.2)',
+      alertIconBg: 'rgba(220,38,38,0.15)',
+      alertText: colors.textOnDark.primary,
+      alertBtnHover: 'rgba(220,38,38,0.15)',
+      alertBtnBorder: '1px solid rgba(220,38,38,0.35)',
+      tabActiveBg: 'rgba(255,255,255,0.08)',
+      tabActiveText: colors.textOnDark.primary,
+      tabInactiveText: colors.textOnDark.tertiary,
+      tabHoverText: colors.textOnDark.secondary,
+      tabHoverBg: colors.dark.hover,
+      rowInnerBg: colors.dark.elevated,
+      tableHeaderBg: colors.dark.elevated,
+      tableRowHoverBg: colors.dark.hover,
+      tableRowBorder: colors.dark.border,
+      tableTabBorder: colors.dark.border,
+      investGradient: `linear-gradient(135deg, ${colors.primaryMuted} 0%, ${colors.primary} 100%)`,
+      investShadow: '0 2px 8px rgba(37,99,235,0.35)',
+      heroSecondaryBorder: '1px solid rgba(96,165,250,0.35)',
+      heroSecondaryHover: 'rgba(37,99,235,0.1)',
+      secondaryBtnBorder: `1px solid ${colors.dark.border}`,
+      secondaryBtnText: colors.textOnDark.secondary,
+      secondaryBtnHoverBg: colors.dark.hover,
+      statusCompletedBg: colors.dark.hover,
+      statusCompletedColor: colors.textOnDark.tertiary,
+      statusCompletedBorder: colors.dark.border,
+      lateBg: colors.dangerBg,
+      lateBorder: 'rgba(220,38,38,0.3)',
+      lateText: '#F87171',
+      nextDueNeutralBg: colors.dark.elevated,
+      nextDueLateBg: colors.dangerBg,
+      nextDueLateBorder: '1px solid rgba(220,38,38,0.2)',
+      timelineDivider: colors.dark.border,
+      gridStroke: colors.dark.border,
+      axisTickFill: colors.textOnDark.tertiary,
+      dotStroke: colors.dark.card,
+      returnsPositive: colors.success,
+      returnsNeutralBg: colors.successBg,
+      monthlyPillBg: colors.successBg,
+      monthlyPillColor: colors.success,
+    };
+  }
+  return {
+    isVIP: false,
+    card: { background: 'white', border: '1px solid #E8ECF2', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' } as React.CSSProperties,
+    tooltipBg: '#FFFFFF',
+    tooltipBorder: '1px solid #E8ECF2',
+    tooltipShadow: '0 4px 16px rgba(0,0,0,0.08)',
+    heroGradient: 'linear-gradient(145deg, #F0F5FF 0%, #FAFBFF 60%, #FFFFFF 100%)',
+    heroBorder: '1px solid #DBEAFE',
+    heroDivider: '1px solid #E2E8F0',
+    statInnerBg: '#F8FAFC',
+    statInnerBorder: '1px solid #F1F5F9',
+    textPrimary: '#0F172A',
+    textSecondary: '#64748B',
+    textMuted: '#94A3B8',
+    textFaint: '#CBD5E1',
+    linkBlue: '#3B82F6',
+    alertBg: '#FEF8F8',
+    alertBorder: '1px solid #FDE8E8',
+    alertIconBg: '#FEE2E2',
+    alertText: '#0F172A',
+    alertBtnHover: '#FEE2E2',
+    alertBtnBorder: '1px solid #FECACA',
+    tabActiveBg: '#0F172A',
+    tabActiveText: '#FFFFFF',
+    tabInactiveText: '#94A3B8',
+    tabHoverText: '#64748B',
+    tabHoverBg: '#F8FAFC',
+    rowInnerBg: '#F8FAFC',
+    tableHeaderBg: '#FAFBFC',
+    tableRowHoverBg: '#FAFBFC',
+    tableRowBorder: '#F1F5F9',
+    tableTabBorder: '#E8ECF2',
+    investGradient: 'linear-gradient(135deg, #1D4ED8 0%, #2563EB 100%)',
+    investShadow: '0 2px 8px rgba(37,99,235,0.25)',
+    heroSecondaryBorder: '1px solid #BFDBFE',
+    heroSecondaryHover: '#EFF6FF',
+    secondaryBtnBorder: '1px solid #E2E8F0',
+    secondaryBtnText: '#64748B',
+    secondaryBtnHoverBg: '#F8FAFC',
+    statusCompletedBg: '#F8FAFC',
+    statusCompletedColor: '#94A3B8',
+    statusCompletedBorder: '#E2E8F0',
+    lateBg: '#FEF2F2',
+    lateBorder: '#FECACA',
+    lateText: '#EF4444',
+    nextDueNeutralBg: '#F8FAFC',
+    nextDueLateBg: '#FEF8F8',
+    nextDueLateBorder: '1px solid #FDE8E8',
+    timelineDivider: '#F1F5F9',
+    gridStroke: '#F1F5F9',
+    axisTickFill: '#94A3B8',
+    dotStroke: 'white',
+    returnsPositive: '#2BB673',
+    returnsNeutralBg: 'rgba(43,182,115,0.08)',
+    monthlyPillBg: 'rgba(43,182,115,0.08)',
+    monthlyPillColor: '#2BB673',
+  };
+}
+
+function useTokens(): Tokens {
+  const { personaId } = usePersona();
+  return buildTokens(personaId === 'vip');
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Shared helpers
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
 const riskColor: Record<string, string> = { A: '#3B82F6', B: '#14B8A6', C: '#F59E0B', D: '#EF4444' };
 
-function statusBadge(status: string, isAr: boolean) {
+function statusBadge(status: string, isAr: boolean, t: Tokens) {
   const map: Record<string, { label: string; bg: string; color: string; border: string }> = {
     active: { label: isAr ? 'نشط' : 'On-time', bg: 'transparent', color: '#2BB673', border: '#BBF7D0' },
-    late: { label: isAr ? 'متأخر' : 'Delayed', bg: '#FEF2F2', color: '#EF4444', border: '#FECACA' },
+    late: { label: isAr ? 'متأخر' : 'Delayed', bg: t.lateBg, color: t.lateText, border: t.lateBorder },
     funding: { label: isAr ? 'قيد التمويل' : 'Funding', bg: 'transparent', color: '#3B82F6', border: '#BFDBFE' },
-    completed: { label: isAr ? 'مكتمل' : 'Completed', bg: '#F8FAFC', color: '#94A3B8', border: '#E2E8F0' },
+    completed: { label: isAr ? 'مكتمل' : 'Completed', bg: t.statusCompletedBg, color: t.statusCompletedColor, border: t.statusCompletedBorder },
   };
   const c = map[status] || map.active;
   return (
@@ -83,16 +211,16 @@ function statusBadge(status: string, isAr: boolean) {
   );
 }
 
-function ChartTip({ active, payload, label }: any) {
+function ChartTip({ active, payload, label, t }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-white rounded-lg px-3 py-2 text-[11px]" style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.08)', border: '1px solid #E8ECF2' }}>
-      <div className="text-[#94A3B8] mb-1" style={{ fontWeight: 500 }}>{label}</div>
+    <div className="rounded-lg px-3 py-2 text-[11px]" style={{ background: t.tooltipBg, boxShadow: t.tooltipShadow, border: t.tooltipBorder }}>
+      <div className="mb-1" style={{ fontWeight: 500, color: t.textMuted }}>{label}</div>
       {payload.map((p: any) => (
         <div key={p.dataKey} className="flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: p.color }} />
-          <span className="text-[#64748B]">{p.name}</span>
-          <span className="text-[#0F172A]" style={{ fontWeight: 600 }}>{formatSAR(p.value, { decimals: 0 })}</span>
+          <span style={{ color: t.textSecondary }}>{p.name}</span>
+          <span style={{ color: t.textPrimary, fontWeight: 600 }}>{formatSAR(p.value, { decimals: 0 })}</span>
         </div>
       ))}
     </div>
@@ -100,82 +228,80 @@ function ChartTip({ active, payload, label }: any) {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   1. Portfolio Hero — tiered hierarchy
+   1. Portfolio Hero
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function PortfolioHero() {
   const { lang } = useI18n();
   const isAr = lang === 'ar';
+  const t = useTokens();
 
   return (
     <div
       className="rounded-2xl relative overflow-hidden h-full flex flex-col"
-      style={{ background: 'linear-gradient(145deg, #F0F5FF 0%, #FAFBFF 60%, #FFFFFF 100%)', border: '1px solid #DBEAFE', padding: '24px 28px' }}
+      style={{ background: t.heroGradient, border: t.heroBorder, padding: '24px 28px' }}
     >
       <div className="absolute top-4 left-4 w-[120px] h-[48px] opacity-30">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={sparkline}><Line type="monotone" dataKey="v" stroke="#3B82F6" strokeWidth={1.5} dot={false} /></LineChart>
+          <LineChart data={sparkline}><Line type="monotone" dataKey="v" stroke={t.isVIP ? '#60A5FA' : '#3B82F6'} strokeWidth={1.5} dot={false} /></LineChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Top spacer */}
       <div style={{ flex: 1 }} />
 
       <div className="relative">
-        <div className="text-[11px] text-[#64748B] uppercase tracking-[0.08em] mb-3" style={{ fontWeight: 600 }}>
+        <div className="text-[11px] uppercase tracking-[0.08em] mb-3" style={{ fontWeight: 600, color: t.textSecondary }}>
           {isAr ? 'إجمالي المحفظة' : 'Total Portfolio Value'}
         </div>
         <div className="flex items-baseline gap-3 mb-1.5">
-          <span className="text-[36px] text-[#0F172A] leading-none" style={{ fontWeight: 700, letterSpacing: '-0.025em', fontVariantNumeric: 'tabular-nums' }}>
+          <span className="text-[36px] leading-none" style={{ fontWeight: 700, letterSpacing: '-0.025em', fontVariantNumeric: 'tabular-nums', color: t.textPrimary }}>
             {formatSAR(summary.totalPortfolio, { decimals: 0 })}
           </span>
-          <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[11px]" style={{ background: 'rgba(43,182,115,0.08)', color: '#2BB673', fontWeight: 600 }}>
+          <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[11px]" style={{ background: t.monthlyPillBg, color: t.monthlyPillColor, fontWeight: 600 }}>
             <TrendingUp className="w-3 h-3" strokeWidth={2.5} />
             +{summary.monthlyChange}% {isAr ? 'هذا الشهر' : 'this month'}
           </span>
         </div>
-        <div className="text-[11px] text-[#94A3B8] mb-4" style={{ fontWeight: 500 }}>
+        <div className="text-[11px] mb-4" style={{ fontWeight: 500, color: t.textMuted }}>
           {isAr ? 'إجمالي قيمة المحفظة' : 'Portfolio value including returns'}
         </div>
         <div className="flex items-center gap-3">
           <Link
             to="/app/opportunities"
             className="inline-flex items-center gap-1.5 h-9 px-4 rounded-xl text-[12px] text-white transition-all hover:brightness-110"
-            style={{ background: 'linear-gradient(135deg, #1D4ED8 0%, #2563EB 100%)', fontWeight: 600, boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}
+            style={{ background: t.investGradient, fontWeight: 600, boxShadow: t.investShadow }}
           >
             <Zap className="w-3.5 h-3.5" strokeWidth={2.5} />
             {isAr ? 'استثمر الآن' : 'Invest Now'}
           </Link>
           <Link
             to="/app/opportunities"
-            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-xl text-[12px] text-[#3B82F6] transition-all hover:bg-[#EFF6FF]"
-            style={{ fontWeight: 600, border: '1px solid #BFDBFE' }}
+            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-xl text-[12px] transition-all"
+            style={{ fontWeight: 600, border: t.heroSecondaryBorder, color: t.linkBlue }}
           >
             {isAr ? 'استكشاف الفرص' : 'Explore'}
           </Link>
         </div>
       </div>
 
-      {/* Bottom spacer */}
       <div style={{ flex: 1 }} />
 
-      {/* Stat cards inside wallet — pushed to bottom */}
-      <div style={{ borderTop: '1px solid #E2E8F0', margin: '0 -28px', padding: '16px 28px 0' }}>
+      <div style={{ borderTop: t.heroDivider, margin: '0 -28px', padding: '16px 28px 0' }}>
         <div className="grid grid-cols-3 gap-4">
-          <div className="rounded-xl p-4" style={{ background: '#F8FAFC', border: '1px solid #F1F5F9' }}>
-            <div className="text-[10px] text-[#94A3B8] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600 }}>{isAr ? 'نشطة' : 'Active'}</div>
-            <div className="text-[18px] text-[#0F172A] leading-tight" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{formatSAR(summary.activeInvested, { decimals: 0 })}</div>
-            <div className="text-[10px] text-[#94A3B8] mt-1">{summary.activeCount} {isAr ? 'صفقات' : 'deals'}</div>
+          <div className="rounded-xl p-4" style={{ background: t.statInnerBg, border: t.statInnerBorder }}>
+            <div className="text-[10px] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600, color: t.textMuted }}>{isAr ? 'نشطة' : 'Active'}</div>
+            <div className="text-[18px] leading-tight" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: t.textPrimary }}>{formatSAR(summary.activeInvested, { decimals: 0 })}</div>
+            <div className="text-[10px] mt-1" style={{ color: t.textMuted }}>{summary.activeCount} {isAr ? 'صفقات' : 'deals'}</div>
           </div>
-          <div className="rounded-xl p-4" style={{ background: '#F8FAFC', border: '1px solid #F1F5F9' }}>
-            <div className="text-[10px] text-[#94A3B8] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600 }}>{isAr ? 'متوسط العائد' : 'Avg. Return'}</div>
-            <div className="text-[18px] text-[#2BB673] leading-tight" style={{ fontWeight: 700 }}>{summary.avgReturn}%</div>
-            <div className="text-[10px] text-[#94A3B8] mt-1">{isAr ? 'سنوياً' : 'annual'}</div>
+          <div className="rounded-xl p-4" style={{ background: t.statInnerBg, border: t.statInnerBorder }}>
+            <div className="text-[10px] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600, color: t.textMuted }}>{isAr ? 'متوسط العائد' : 'Avg. Return'}</div>
+            <div className="text-[18px] leading-tight" style={{ fontWeight: 700, color: t.returnsPositive }}>{summary.avgReturn}%</div>
+            <div className="text-[10px] mt-1" style={{ color: t.textMuted }}>{isAr ? 'سنوياً' : 'annual'}</div>
           </div>
-          <div className="rounded-xl p-4" style={{ background: '#F8FAFC', border: '1px solid #F1F5F9' }}>
-            <div className="text-[10px] text-[#94A3B8] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600 }}>{isAr ? 'العوائد' : 'Returns'}</div>
-            <div className="text-[18px] text-[#2BB673] leading-tight" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{formatSAR(summary.realizedReturns, { decimals: 0 })}</div>
-            <div className="text-[10px] text-[#94A3B8] mt-1">{isAr ? 'محققة' : 'realized'}</div>
+          <div className="rounded-xl p-4" style={{ background: t.statInnerBg, border: t.statInnerBorder }}>
+            <div className="text-[10px] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600, color: t.textMuted }}>{isAr ? 'العوائد' : 'Returns'}</div>
+            <div className="text-[18px] leading-tight" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: t.returnsPositive }}>{formatSAR(summary.realizedReturns, { decimals: 0 })}</div>
+            <div className="text-[10px] mt-1" style={{ color: t.textMuted }}>{isAr ? 'محققة' : 'realized'}</div>
           </div>
         </div>
       </div>
@@ -184,12 +310,13 @@ function PortfolioHero() {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   2. Alert Banner — clean inline card
+   2. Alert Banner
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function InsightBanner() {
   const { lang } = useI18n();
   const isAr = lang === 'ar';
+  const t = useTokens();
   const hasOverdue = investments.some(i => i.status === 'late');
   const overdueItem = investments.find(i => i.status === 'late');
 
@@ -198,12 +325,12 @@ function InsightBanner() {
   return (
     <div
       className="flex items-center gap-3 px-5 py-4 rounded-2xl"
-      style={{ background: '#FEF8F8', border: '1px solid #FDE8E8' }}
+      style={{ background: t.alertBg, border: t.alertBorder }}
     >
-      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: '#FEE2E2' }}>
-        <ShieldAlert className="w-4 h-4 text-[#EF4444]" strokeWidth={1.8} />
+      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: t.alertIconBg }}>
+        <ShieldAlert className="w-4 h-4" strokeWidth={1.8} style={{ color: t.lateText }} />
       </div>
-      <span className="flex-1 text-[13px] text-[#0F172A]" style={{ fontWeight: 500 }}>
+      <span className="flex-1 text-[13px]" style={{ fontWeight: 500, color: t.alertText }}>
         {isAr
           ? `دفعة متأخرة بقيمة ${formatSAR(Math.abs(overdueItem!.netReturn), { decimals: 0 })} — ${overdueItem!.project}`
           : `Overdue repayment of ${formatSAR(Math.abs(overdueItem!.netReturn), { decimals: 0 })} — ${overdueItem!.projectEn}`}
@@ -217,7 +344,12 @@ function InsightBanner() {
           <Zap className="w-3 h-3" strokeWidth={2.5} />
           {isAr ? 'استثمر الآن' : 'Invest Now'}
         </Link>
-        <button className="h-8 px-4 rounded-lg text-[12px] text-[#EF4444] hover:bg-[#FEE2E2] transition-colors cursor-pointer" style={{ fontWeight: 600, border: '1px solid #FECACA' }}>
+        <button
+          className="h-8 px-4 rounded-lg text-[12px] transition-colors cursor-pointer"
+          style={{ fontWeight: 600, border: t.alertBtnBorder, color: t.lateText }}
+          onMouseEnter={e => (e.currentTarget.style.background = t.alertBtnHover)}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+        >
           {isAr ? 'عرض التفاصيل' : 'View Details'}
         </button>
       </div>
@@ -226,59 +358,66 @@ function InsightBanner() {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   3. Analytics — donut with breakdown list
+   3. Analytics
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function AnalyticsSection() {
   const [tab, setTab] = useState<'risk' | 'activity'>('risk');
   const { lang } = useI18n();
   const isAr = lang === 'ar';
+  const t = useTokens();
   const gradInv = useId();
   const gradRet = useId();
 
   return (
-    <div className="rounded-2xl p-6" style={cardStyle}>
-      {/* Title + Tabs row */}
+    <div className="rounded-2xl p-6" style={t.card}>
       <div className="mb-5">
-        <h2 className="text-[15px] text-[#0F172A] mb-3" style={{ fontWeight: 700 }}>
+        <h2 className="text-[15px] mb-3" style={{ fontWeight: 700, color: t.textPrimary }}>
           {isAr ? 'تحليلات المحفظة' : 'Portfolio Analytics'}
         </h2>
         <div className="flex items-center gap-1">
           {[
             { key: 'risk' as const, label: isAr ? 'توزيع المخاطر' : 'Risk Distribution' },
             { key: 'activity' as const, label: isAr ? 'نمو المحفظة' : 'Portfolio Growth' },
-          ].map(t => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`px-3 py-1.5 rounded-lg text-[12px] transition-all ${tab === t.key ? 'bg-[#0F172A] text-white' : 'text-[#94A3B8] hover:text-[#64748B] hover:bg-[#F8FAFC]'}`}
-              style={{ fontWeight: 600 }}
-            >
-              {t.label}
-            </button>
-          ))}
+          ].map(tb => {
+            const isActive = tab === tb.key;
+            return (
+              <button
+                key={tb.key}
+                onClick={() => setTab(tb.key)}
+                className="px-3 py-1.5 rounded-lg text-[12px] transition-all"
+                style={{
+                  fontWeight: 600,
+                  background: isActive ? t.tabActiveBg : 'transparent',
+                  color: isActive ? t.tabActiveText : t.tabInactiveText,
+                }}
+                onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = t.tabHoverBg; e.currentTarget.style.color = t.tabHoverText; } }}
+                onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = t.tabInactiveText; } }}
+              >
+                {tb.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {tab === 'risk' ? (
         <div className="flex flex-col-reverse lg:flex-row items-center gap-6">
-          {/* LEFT: Breakdown list */}
           <div className="flex-1 w-full space-y-2">
             {riskDistribution.map(d => {
               const pct = Math.round((d.amount / summary.totalPortfolio) * 100);
               return (
-                <div key={d.grade} className="flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: '#F8FAFC' }}>
+                <div key={d.grade} className="flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: t.rowInnerBg }}>
                   <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: d.color }} />
-                  <span className="w-6 text-[12px] text-[#0F172A]" style={{ fontWeight: 700 }}>{d.grade}</span>
-                  <span className="flex-1 text-[12px] text-[#64748B]">{d.count} {isAr ? 'صفقات' : 'deals'}</span>
-                  <span className="text-[13px] text-[#0F172A]" style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{formatSAR(d.amount, { decimals: 0 })}</span>
-                  <span className="w-10 text-left text-[11px] text-[#94A3B8]" style={{ fontWeight: 600 }}>{pct}%</span>
+                  <span className="w-6 text-[12px]" style={{ fontWeight: 700, color: t.textPrimary }}>{d.grade}</span>
+                  <span className="flex-1 text-[12px]" style={{ color: t.textSecondary }}>{d.count} {isAr ? 'صفقات' : 'deals'}</span>
+                  <span className="text-[13px]" style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: t.textPrimary }}>{formatSAR(d.amount, { decimals: 0 })}</span>
+                  <span className="w-10 text-left text-[11px]" style={{ fontWeight: 600, color: t.textMuted }}>{pct}%</span>
                 </div>
               );
             })}
           </div>
 
-          {/* RIGHT: Donut */}
           <div className="relative w-[200px] h-[200px] shrink-0">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -288,8 +427,8 @@ function AnalyticsSection() {
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-[18px] text-[#0F172A]" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{formatSAR(summary.totalPortfolio, { decimals: 0 })}</span>
-              <span className="text-[10px] text-[#94A3B8]" style={{ fontWeight: 500 }}>{isAr ? 'إجمالي' : 'Total'}</span>
+              <span className="text-[18px]" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: t.textPrimary }}>{formatSAR(summary.totalPortfolio, { decimals: 0 })}</span>
+              <span className="text-[10px]" style={{ fontWeight: 500, color: t.textMuted }}>{isAr ? 'إجمالي' : 'Total'}</span>
             </div>
           </div>
         </div>
@@ -298,15 +437,15 @@ function AnalyticsSection() {
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={growthData} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
               <defs>
-                <linearGradient id={gradInv} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#3B82F6" stopOpacity={0.06} /><stop offset="100%" stopColor="#3B82F6" stopOpacity={0} /></linearGradient>
-                <linearGradient id={gradRet} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#2BB673" stopOpacity={0.06} /><stop offset="100%" stopColor="#2BB673" stopOpacity={0} /></linearGradient>
+                <linearGradient id={gradInv} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#3B82F6" stopOpacity={t.isVIP ? 0.15 : 0.06} /><stop offset="100%" stopColor="#3B82F6" stopOpacity={0} /></linearGradient>
+                <linearGradient id={gradRet} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#2BB673" stopOpacity={t.isVIP ? 0.15 : 0.06} /><stop offset="100%" stopColor="#2BB673" stopOpacity={0} /></linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
-              <XAxis dataKey={isAr ? 'monthAr' : 'month'} tick={{ fill: '#94A3B8', fontSize: 10, fontWeight: 500 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#94A3B8', fontSize: 10, fontWeight: 500 }} axisLine={false} tickLine={false} tickFormatter={formatChartValue} orientation="right" width={48} />
-              <Tooltip content={<ChartTip />} cursor={{ stroke: '#E2E8F0', strokeDasharray: '4 4' }} />
-              <Area type="monotone" dataKey="invested" name={isAr ? 'المستثمر' : 'Invested'} stroke="#3B82F6" strokeWidth={1.5} fill={`url(#${gradInv})`} dot={false} activeDot={{ r: 3, fill: '#3B82F6', strokeWidth: 1.5, stroke: 'white' }} />
-              <Area type="monotone" dataKey="returns" name={isAr ? 'العوائد' : 'Returns'} stroke="#2BB673" strokeWidth={1.5} fill={`url(#${gradRet})`} dot={false} activeDot={{ r: 3, fill: '#2BB673', strokeWidth: 1.5, stroke: 'white' }} />
+              <CartesianGrid strokeDasharray="3 3" stroke={t.gridStroke} vertical={false} />
+              <XAxis dataKey={isAr ? 'monthAr' : 'month'} tick={{ fill: t.axisTickFill, fontSize: 10, fontWeight: 500 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: t.axisTickFill, fontSize: 10, fontWeight: 500 }} axisLine={false} tickLine={false} tickFormatter={formatChartValue} orientation="right" width={48} />
+              <Tooltip content={<ChartTip t={t} />} cursor={{ stroke: t.gridStroke, strokeDasharray: '4 4' }} />
+              <Area type="monotone" dataKey="invested" name={isAr ? 'المستثمر' : 'Invested'} stroke="#3B82F6" strokeWidth={1.5} fill={`url(#${gradInv})`} dot={false} activeDot={{ r: 3, fill: '#3B82F6', strokeWidth: 1.5, stroke: t.dotStroke }} />
+              <Area type="monotone" dataKey="returns" name={isAr ? 'العوائد' : 'Returns'} stroke="#2BB673" strokeWidth={1.5} fill={`url(#${gradRet})`} dot={false} activeDot={{ r: 3, fill: '#2BB673', strokeWidth: 1.5, stroke: t.dotStroke }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -316,13 +455,14 @@ function AnalyticsSection() {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   4. Investments Table — refined
+   4. Investments Table
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function InvestmentsTable() {
   const [activeTab, setActiveTab] = useState<'active' | 'completed' | 'all'>('active');
   const { lang } = useI18n();
   const isAr = lang === 'ar';
+  const t = useTokens();
   const navigate = useNavigate();
 
   const activeInv = investments.filter(i => i.status !== 'completed');
@@ -336,13 +476,12 @@ function InvestmentsTable() {
   ];
 
   return (
-    <div className="rounded-2xl overflow-hidden" style={cardStyle}>
-      {/* Header */}
+    <div className="rounded-2xl overflow-hidden" style={t.card}>
       <div className="px-6 pt-6 pb-0">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[15px] text-[#0F172A]" style={{ fontWeight: 700 }}>
+          <h2 className="text-[15px]" style={{ fontWeight: 700, color: t.textPrimary }}>
             {isAr ? 'استثماراتي' : 'My Investments'}
-            <span className="text-[12px] text-[#94A3B8] mr-2 ml-2" style={{ fontWeight: 400 }}>{investments.length}</span>
+            <span className="text-[12px] mr-2 ml-2" style={{ fontWeight: 400, color: t.textMuted }}>{investments.length}</span>
           </h2>
           <div className="flex items-center gap-2">
             <Link
@@ -353,34 +492,43 @@ function InvestmentsTable() {
               <Zap className="w-3 h-3" strokeWidth={2.5} />
               {isAr ? 'استثمر الآن' : 'Invest Now'}
             </Link>
-            <button className="h-8 px-3 rounded-lg text-[11px] text-[#64748B] hover:bg-[#F8FAFC] transition-colors cursor-pointer" style={{ border: '1px solid #E2E8F0', fontWeight: 500 }}>
+            <button
+              className="h-8 px-3 rounded-lg text-[11px] transition-colors cursor-pointer"
+              style={{ border: t.secondaryBtnBorder, fontWeight: 500, color: t.secondaryBtnText }}
+              onMouseEnter={e => (e.currentTarget.style.background = t.secondaryBtnHoverBg)}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
               <Download className="w-3 h-3 inline mr-1 ml-1" strokeWidth={1.8} />
               {isAr ? 'تصدير' : 'Export'}
             </button>
           </div>
         </div>
 
-        {/* Tabs — underline style */}
-        <div className="flex items-center gap-0 border-b" style={{ borderColor: '#E8ECF2' }}>
-          {tabs.map(t => (
-            <button
-              key={t.key}
-              onClick={() => setActiveTab(t.key)}
-              className={`px-4 py-2.5 text-[12px] transition-all border-b-2 -mb-px ${activeTab === t.key ? 'border-[#3B82F6] text-[#0F172A]' : 'border-transparent text-[#94A3B8] hover:text-[#64748B]'}`}
-              style={{ fontWeight: activeTab === t.key ? 600 : 500 }}
-            >
-              {t.label} ({t.count})
-            </button>
-          ))}
+        <div className="flex items-center gap-0 border-b" style={{ borderColor: t.tableTabBorder }}>
+          {tabs.map(tb => {
+            const isActive = activeTab === tb.key;
+            return (
+              <button
+                key={tb.key}
+                onClick={() => setActiveTab(tb.key)}
+                className="px-4 py-2.5 text-[12px] transition-all border-b-2 -mb-px"
+                style={{
+                  fontWeight: isActive ? 600 : 500,
+                  borderColor: isActive ? '#3B82F6' : 'transparent',
+                  color: isActive ? t.textPrimary : t.textMuted,
+                }}
+              >
+                {tb.label} ({tb.count})
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Desktop table */}
       <div className="hidden md:block">
-        {/* Header row — slightly tinted */}
         <div
-          className="grid grid-cols-12 gap-4 px-6 h-[40px] items-center text-[10px] uppercase tracking-[0.06em] text-[#94A3B8]"
-          style={{ fontWeight: 600, background: '#FAFBFC' }}
+          className="grid grid-cols-12 gap-4 px-6 h-[40px] items-center text-[10px] uppercase tracking-[0.06em]"
+          style={{ fontWeight: 600, background: t.tableHeaderBg, color: t.textMuted }}
         >
           <div className="col-span-4">{isAr ? 'الفرصة' : 'Opportunity'}</div>
           <div className="col-span-1 text-center">{isAr ? 'المخاطر' : 'Risk'}</div>
@@ -394,73 +542,80 @@ function InvestmentsTable() {
           <div
             key={inv.id}
             onClick={() => navigate(`/app/portfolio/${inv.id}`)}
-            className="grid grid-cols-12 gap-4 items-center px-6 min-h-[68px] py-3 border-t hover:bg-[#FAFBFC] transition-colors cursor-pointer group relative"
-            style={{ borderColor: '#F1F5F9' }}
+            className="grid grid-cols-12 gap-4 items-center px-6 min-h-[68px] py-3 border-t transition-colors cursor-pointer group relative"
+            style={{ borderColor: t.tableRowBorder }}
+            onMouseEnter={e => (e.currentTarget.style.background = t.tableRowHoverBg)}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
-            {/* Risk stripe */}
             <div className="absolute left-0 top-4 bottom-4 w-[3px] rounded-full" style={{ background: riskColor[inv.risk] || '#94A3B8' }} />
 
             <div className="col-span-4 pr-2">
-              <div className="text-[13px] text-[#0F172A] truncate group-hover:text-[#3B82F6] transition-colors" style={{ fontWeight: 600 }}>{isAr ? inv.project : inv.projectEn}</div>
-              <div className="text-[10px] text-[#3B82F6] mt-0.5 font-mono">{inv.id}</div>
+              <div className="text-[13px] truncate group-hover:text-[#3B82F6] transition-colors" style={{ fontWeight: 600, color: t.textPrimary }}>{isAr ? inv.project : inv.projectEn}</div>
+              <div className="text-[10px] mt-0.5 font-mono" style={{ color: t.linkBlue }}>{inv.id}</div>
             </div>
 
             <div className="col-span-1 flex justify-center">
               <span className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] text-white" style={{ background: riskColor[inv.risk], fontWeight: 700 }}>{inv.risk}</span>
             </div>
 
-            <div className="col-span-2 text-[13px] text-[#0F172A]" style={{ fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{formatSAR(inv.amount, { decimals: 0 })}</div>
+            <div className="col-span-2 text-[13px]" style={{ fontWeight: 500, fontVariantNumeric: 'tabular-nums', color: t.textPrimary }}>{formatSAR(inv.amount, { decimals: 0 })}</div>
 
             <div className="col-span-2">
               {inv.nextPayment ? (
                 <>
-                  <div className="text-[11px] text-[#0F172A]" style={{ fontWeight: 500 }}>{isAr ? inv.nextPaymentAr : inv.nextPayment}</div>
-                  <div className={`text-[10px] mt-0.5 ${inv.status === 'late' ? 'text-[#EF4444]' : 'text-[#94A3B8]'}`} style={{ fontWeight: inv.status === 'late' ? 600 : 400 }}>
+                  <div className="text-[11px]" style={{ fontWeight: 500, color: t.textPrimary }}>{isAr ? inv.nextPaymentAr : inv.nextPayment}</div>
+                  <div className="text-[10px] mt-0.5" style={{ fontWeight: inv.status === 'late' ? 600 : 400, color: inv.status === 'late' ? t.lateText : t.textMuted }}>
                     {isAr ? inv.nextPaymentRelAr : inv.nextPaymentRel}
                   </div>
                 </>
               ) : (
-                <span className="text-[11px] text-[#94A3B8]">{isAr ? inv.nextPaymentRelAr : inv.nextPaymentRel}</span>
+                <span className="text-[11px]" style={{ color: t.textMuted }}>{isAr ? inv.nextPaymentRelAr : inv.nextPaymentRel}</span>
               )}
             </div>
 
             <div className="col-span-2">
-              <div className={`text-[13px] ${inv.netReturn >= 0 ? 'text-[#2BB673]' : 'text-[#EF4444]'}`} style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+              <div className="text-[13px]" style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: inv.netReturn >= 0 ? t.returnsPositive : t.lateText }}>
                 {inv.netReturn >= 0 ? '+' : ''}{formatSAR(inv.netReturn, { decimals: 0 })}
               </div>
-              <div className={`text-[10px] mt-0.5 ${inv.returnPct >= 0 ? 'text-[#2BB673]' : 'text-[#EF4444]'}`} style={{ fontWeight: 500 }}>
+              <div className="text-[10px] mt-0.5" style={{ fontWeight: 500, color: inv.returnPct >= 0 ? t.returnsPositive : t.lateText }}>
                 {inv.returnPct >= 0 ? '+' : ''}{inv.returnPct}%
               </div>
             </div>
 
             <div className="col-span-1 flex items-center justify-between">
-              {statusBadge(inv.status, isAr)}
-              <ChevronLeft className="w-4 h-4 text-[#CBD5E1] opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={1.5} />
+              {statusBadge(inv.status, isAr, t)}
+              <ChevronLeft className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={1.5} style={{ color: t.textFaint }} />
             </div>
           </div>
         ))}
       </div>
 
-      {/* Mobile cards */}
       <div className="md:hidden">
         {filtered.map(inv => (
-          <div key={inv.id} onClick={() => navigate(`/app/portfolio/${inv.id}`)} className="p-4 border-t relative cursor-pointer hover:bg-[#FAFBFC] transition-colors" style={{ borderColor: '#F1F5F9' }}>
+          <div
+            key={inv.id}
+            onClick={() => navigate(`/app/portfolio/${inv.id}`)}
+            className="p-4 border-t relative cursor-pointer transition-colors"
+            style={{ borderColor: t.tableRowBorder }}
+            onMouseEnter={e => (e.currentTarget.style.background = t.tableRowHoverBg)}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
             <div className="absolute left-0 top-3 bottom-3 w-[3px] rounded-full" style={{ background: riskColor[inv.risk] }} />
             <div className="flex items-start justify-between mb-2 pr-1 pl-2">
               <div>
-                <div className="text-[13px] text-[#0F172A] truncate" style={{ fontWeight: 600 }}>{isAr ? inv.project : inv.projectEn}</div>
+                <div className="text-[13px] truncate" style={{ fontWeight: 600, color: t.textPrimary }}>{isAr ? inv.project : inv.projectEn}</div>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-[10px] text-[#3B82F6] font-mono">{inv.id}</span>
-                  {statusBadge(inv.status, isAr)}
+                  <span className="text-[10px] font-mono" style={{ color: t.linkBlue }}>{inv.id}</span>
+                  {statusBadge(inv.status, isAr, t)}
                 </div>
               </div>
-              <span className={`text-[14px] ${inv.netReturn >= 0 ? 'text-[#2BB673]' : 'text-[#EF4444]'}`} style={{ fontWeight: 700 }}>
+              <span className="text-[14px]" style={{ fontWeight: 700, color: inv.netReturn >= 0 ? t.returnsPositive : t.lateText }}>
                 {inv.netReturn >= 0 ? '+' : ''}{formatPercentage(inv.returnPct)}
               </span>
             </div>
-            <div className="flex items-center justify-between text-[11px] text-[#64748B] pt-2 pl-2 border-t" style={{ borderColor: '#F1F5F9' }}>
+            <div className="flex items-center justify-between text-[11px] pt-2 pl-2 border-t" style={{ borderColor: t.tableRowBorder, color: t.textSecondary }}>
               <span style={{ fontVariantNumeric: 'tabular-nums' }}>{formatSAR(inv.amount, { decimals: 0 })}</span>
-              <span className={inv.status === 'late' ? 'text-[#EF4444] font-medium' : ''}>{isAr ? inv.nextPaymentRelAr : inv.nextPaymentRel}</span>
+              <span style={{ color: inv.status === 'late' ? t.lateText : undefined, fontWeight: inv.status === 'late' ? 500 : 400 }}>{isAr ? inv.nextPaymentRelAr : inv.nextPaymentRel}</span>
             </div>
           </div>
         ))}
@@ -476,6 +631,7 @@ function InvestmentsTable() {
 function RepaymentsSection() {
   const { lang } = useI18n();
   const isAr = lang === 'ar';
+  const t = useTokens();
 
   const upcoming = investments.filter(i => i.status === 'active' || i.status === 'late').sort((a, b) => {
     if (a.status === 'late') return -1;
@@ -486,54 +642,55 @@ function RepaymentsSection() {
   const nextDue = upcoming[0];
 
   return (
-    <div className="rounded-2xl p-6" style={cardStyle}>
-      <h2 className="text-[15px] text-[#0F172A] mb-5" style={{ fontWeight: 700 }}>
+    <div className="rounded-2xl p-6" style={t.card}>
+      <h2 className="text-[15px] mb-5" style={{ fontWeight: 700, color: t.textPrimary }}>
         {isAr ? 'الدفعات القادمة' : 'Upcoming Repayments'}
       </h2>
 
-      {/* Summary row */}
       <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="p-4 rounded-xl" style={{ background: '#F8FAFC' }}>
-          <div className="text-[10px] text-[#94A3B8] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600 }}>{isAr ? 'الإجمالي' : 'Total Due'}</div>
-          <div className="text-[18px] text-[#0F172A]" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{formatSAR(totalDue, { decimals: 0 })}</div>
+        <div className="p-4 rounded-xl" style={{ background: t.nextDueNeutralBg }}>
+          <div className="text-[10px] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600, color: t.textMuted }}>{isAr ? 'الإجمالي' : 'Total Due'}</div>
+          <div className="text-[18px]" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: t.textPrimary }}>{formatSAR(totalDue, { decimals: 0 })}</div>
         </div>
         <div
           className="p-4 rounded-xl"
-          style={{ background: nextDue?.status === 'late' ? '#FEF8F8' : '#F8FAFC', border: nextDue?.status === 'late' ? '1px solid #FDE8E8' : 'none' }}
+          style={{
+            background: nextDue?.status === 'late' ? t.nextDueLateBg : t.nextDueNeutralBg,
+            border: nextDue?.status === 'late' ? t.nextDueLateBorder : 'none',
+          }}
         >
-          <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600, color: nextDue?.status === 'late' ? '#EF4444' : '#94A3B8' }}>
-            {nextDue?.status === 'late' && <span className="w-1.5 h-1.5 rounded-full bg-[#EF4444] animate-pulse" />}
+          <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600, color: nextDue?.status === 'late' ? t.lateText : t.textMuted }}>
+            {nextDue?.status === 'late' && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: t.lateText }} />}
             {isAr ? 'التالي' : 'Next Due'}
           </div>
-          <div className="text-[16px] text-[#0F172A]" style={{ fontWeight: 700 }}>
+          <div className="text-[16px]" style={{ fontWeight: 700, color: t.textPrimary }}>
             {nextDue ? (isAr ? nextDue.nextPaymentRelAr : nextDue.nextPaymentRel) : '—'}
           </div>
         </div>
-        <div className="p-4 rounded-xl" style={{ background: '#F8FAFC' }}>
-          <div className="text-[10px] text-[#94A3B8] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600 }}>{isAr ? 'عدد الدفعات' : 'Count'}</div>
-          <div className="text-[18px] text-[#0F172A]" style={{ fontWeight: 700 }}>{upcoming.length}</div>
+        <div className="p-4 rounded-xl" style={{ background: t.nextDueNeutralBg }}>
+          <div className="text-[10px] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600, color: t.textMuted }}>{isAr ? 'عدد الدفعات' : 'Count'}</div>
+          <div className="text-[18px]" style={{ fontWeight: 700, color: t.textPrimary }}>{upcoming.length}</div>
         </div>
       </div>
 
-      {/* Timeline */}
       <div className="space-y-0">
         {upcoming.map((inv, i) => (
-          <div key={inv.id} className="flex items-start gap-3 py-3.5" style={{ borderBottom: i < upcoming.length - 1 ? '1px solid #F1F5F9' : 'none' }}>
+          <div key={inv.id} className="flex items-start gap-3 py-3.5" style={{ borderBottom: i < upcoming.length - 1 ? `1px solid ${t.timelineDivider}` : 'none' }}>
             <div className="flex flex-col items-center shrink-0 pt-1.5">
-              <div className="w-2.5 h-2.5 rounded-full" style={{ background: inv.status === 'late' ? '#EF4444' : '#3B82F6' }} />
-              {i < upcoming.length - 1 && <div className="w-px flex-1 mt-1" style={{ background: '#F1F5F9' }} />}
+              <div className="w-2.5 h-2.5 rounded-full" style={{ background: inv.status === 'late' ? t.lateText : '#3B82F6' }} />
+              {i < upcoming.length - 1 && <div className="w-px flex-1 mt-1" style={{ background: t.timelineDivider }} />}
             </div>
             <div className="flex-1 flex items-center justify-between min-w-0">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[13px] text-[#0F172A]" style={{ fontWeight: 600 }}>{isAr ? inv.project : inv.projectEn}</span>
+                  <span className="text-[13px]" style={{ fontWeight: 600, color: t.textPrimary }}>{isAr ? inv.project : inv.projectEn}</span>
                   <span className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] text-white" style={{ background: riskColor[inv.risk], fontWeight: 700 }}>{inv.risk}</span>
-                  {inv.status === 'late' && statusBadge('late', isAr)}
+                  {inv.status === 'late' && statusBadge('late', isAr, t)}
                 </div>
-                <div className="text-[10px] text-[#94A3B8] mt-0.5">{isAr ? inv.nextPaymentRelAr : inv.nextPaymentRel}</div>
+                <div className="text-[10px] mt-0.5" style={{ color: t.textMuted }}>{isAr ? inv.nextPaymentRelAr : inv.nextPaymentRel}</div>
               </div>
               <div className="text-right shrink-0">
-                <div className={`text-[14px] ${inv.netReturn >= 0 ? 'text-[#0F172A]' : 'text-[#EF4444]'}`} style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
+                <div className="text-[14px]" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: inv.netReturn >= 0 ? t.textPrimary : t.lateText }}>
                   {formatSAR(Math.abs(inv.netReturn), { decimals: 0 })}
                 </div>
               </div>
@@ -546,7 +703,7 @@ function RepaymentsSection() {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Auto Invest Vertical Card (dark self-contained widget)
+   Auto Invest Vertical Card (always dark by design)
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 function AutoInvestVertical({ onActivate }: { onActivate?: () => void }) {
@@ -668,10 +825,10 @@ function AutoInvestVertical({ onActivate }: { onActivate?: () => void }) {
 
 export function PortfolioPage() {
   const [autoInvestOpen, setAutoInvestOpen] = useState(false);
+  const t = useTokens();
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 md:pb-8">
-      {/* Top row: Portfolio hero + Auto Invest widget */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6" style={{ alignItems: 'stretch' }}>
         <div className="lg:col-span-8">
           <PortfolioHero />
@@ -684,7 +841,7 @@ export function PortfolioPage() {
       <div className="mb-6"><AnalyticsSection /></div>
       <div className="mb-6"><InvestmentsTable /></div>
       <div className="mb-8"><RepaymentsSection /></div>
-      <div className="text-center text-[11px] text-[#94A3B8] py-4">
+      <div className="text-center text-[11px] py-4" style={{ color: t.textMuted }}>
         © 2026 FundMe. All rights reserved. · Privacy Policy · Terms of Service · Contact
       </div>
       <AutoInvestModal open={autoInvestOpen} onClose={() => setAutoInvestOpen(false)} />

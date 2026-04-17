@@ -2,12 +2,125 @@ import { useState, useRef, useEffect } from 'react';
 import { formatSAR } from '../utils/currency';
 import { useI18n } from '../i18n';
 import { usePersona } from '../demoPersona';
+import { colors } from '../components/fundme';
 import {
   Wallet, Plus, ArrowDownToLine, Building2, CreditCard, Download,
   ArrowUpRight, ArrowDownRight, Briefcase, TrendingUp, MoreHorizontal,
   Shield, Clock, Filter, ChevronDown, Trash2, Star, X, CheckCircle,
   AlertCircle, Loader2,
 } from 'lucide-react';
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Persona-aware tokens (mirrors VIP overview palette)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+type Tokens = ReturnType<typeof buildTokens>;
+
+function buildTokens(isVIP: boolean) {
+  if (isVIP) {
+    return {
+      isVIP: true,
+      cardBg: colors.dark.card,
+      cardBorder: `1px solid ${colors.dark.border}`,
+      rowHover: colors.dark.hover,
+      rowDivider: colors.dark.borderSubtle,
+      sectionDivider: colors.dark.border,
+      innerSurface: colors.dark.elevated,
+      textPrimary: colors.textOnDark.primary,
+      textSecondary: colors.textOnDark.secondary,
+      textMuted: colors.textOnDark.tertiary,
+      textFaint: colors.textOnDark.muted,
+      depositBg: colors.successBg,
+      depositColor: '#34D399',
+      returnBg: colors.successBg,
+      returnColor: '#34D399',
+      investmentBg: 'rgba(37,99,235,0.15)',
+      investmentColor: '#60A5FA',
+      withdrawalBg: colors.dangerBg,
+      withdrawalColor: '#F87171',
+      feeBg: colors.dark.hover,
+      feeColor: colors.textOnDark.tertiary,
+      completedBg: colors.successBg,
+      completedColor: '#34D399',
+      processingBg: 'rgba(245,158,11,0.15)',
+      processingColor: '#FBBF24',
+      primary: colors.primary,
+      primaryText: colors.primaryHover,
+      primarySoft: 'rgba(37,99,235,0.12)',
+      primarySoftBorder: '1px solid rgba(96,165,250,0.3)',
+      bankPrimaryBg: 'rgba(37,99,235,0.15)',
+      bankPrimaryIcon: '#60A5FA',
+      bankSecondaryBg: colors.dark.hover,
+      bankSecondaryIcon: colors.textOnDark.tertiary,
+      countPillBg: colors.dark.hover,
+      countPillColor: colors.textOnDark.secondary,
+      filterActiveBg: colors.primary,
+      filterActiveColor: '#fff',
+      filterInactiveColor: colors.textOnDark.tertiary,
+      filterInactiveBorder: `1px solid ${colors.dark.border}`,
+      groupHeaderColor: colors.textOnDark.muted,
+      heroGradient: `linear-gradient(135deg, ${colors.dark.base} 0%, #0F2A4D 50%, #143766 100%)`,
+      trashHoverBg: 'rgba(220,38,38,0.12)',
+      secondaryBtnBorder: `1px solid ${colors.dark.border}`,
+      secondaryBtnText: colors.textOnDark.secondary,
+      secondaryBtnHover: colors.dark.hover,
+      amountPrimary: colors.textOnDark.primary,
+    };
+  }
+  return {
+    isVIP: false,
+    cardBg: '#FFFFFF',
+    cardBorder: '1px solid #E5E7EB',
+    rowHover: '#FAFBFC',
+    rowDivider: '#F8FAFC',
+    sectionDivider: '#F1F5F9',
+    innerSurface: '#F8FAFC',
+    textPrimary: '#0F172A',
+    textSecondary: '#64748B',
+    textMuted: '#94A3B8',
+    textFaint: '#CBD5E1',
+    depositBg: '#F0FDF4',
+    depositColor: '#16A34A',
+    returnBg: '#F0FDF4',
+    returnColor: '#16A34A',
+    investmentBg: '#EFF6FF',
+    investmentColor: '#1D4ED8',
+    withdrawalBg: '#FEF2F2',
+    withdrawalColor: '#DC2626',
+    feeBg: '#F8FAFC',
+    feeColor: '#94A3B8',
+    completedBg: '#F0FDF4',
+    completedColor: '#16A34A',
+    processingBg: '#FEF3C7',
+    processingColor: '#D97706',
+    primary: '#1D4ED8',
+    primaryText: '#1D4ED8',
+    primarySoft: '#EFF6FF',
+    primarySoftBorder: '1px solid #DBEAFE',
+    bankPrimaryBg: '#EFF6FF',
+    bankPrimaryIcon: '#1D4ED8',
+    bankSecondaryBg: '#F8FAFC',
+    bankSecondaryIcon: '#94A3B8',
+    countPillBg: '#F8FAFC',
+    countPillColor: '#94A3B8',
+    filterActiveBg: '#0F172A',
+    filterActiveColor: '#fff',
+    filterInactiveColor: '#94A3B8',
+    filterInactiveBorder: '1px solid #F1F5F9',
+    groupHeaderColor: '#CBD5E1',
+    heroGradient: 'linear-gradient(135deg, #0B1F3A 0%, #0F2A4D 50%, #143766 100%)',
+    trashHoverBg: '#FEF2F2',
+    secondaryBtnBorder: '1px solid #E5E7EB',
+    secondaryBtnText: '#64748B',
+    secondaryBtnHover: '#F8FAFC',
+    amountPrimary: '#0F172A',
+  };
+}
+
+function useTokens(): Tokens {
+  const { personaId } = usePersona();
+  return buildTokens(personaId === 'vip');
+}
 
 const bankAccounts = [
   { id: 1, bank: 'البنك الأهلي', bankEn: 'Al Ahli Bank', iban: 'SA•••• •••• •••• ١٢٣٤', primary: true },
@@ -129,31 +242,31 @@ const transactions: Transaction[] = [
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function txIcon(type: string) {
+function txIcon(type: string, t: Tokens) {
   switch (type) {
-    case 'deposit': return { Icon: ArrowDownRight, bg: '#F0FDF4', color: '#16A34A' };
-    case 'return': return { Icon: TrendingUp, bg: '#F0FDF4', color: '#16A34A' };
-    case 'investment': return { Icon: Briefcase, bg: '#EFF6FF', color: '#1D4ED8' };
-    case 'withdrawal': return { Icon: ArrowUpRight, bg: '#FEF2F2', color: '#DC2626' };
-    case 'fee': return { Icon: Clock, bg: '#F8FAFC', color: '#94A3B8' };
-    default: return { Icon: Wallet, bg: '#F8FAFC', color: '#64748B' };
+    case 'deposit': return { Icon: ArrowDownRight, bg: t.depositBg, color: t.depositColor };
+    case 'return': return { Icon: TrendingUp, bg: t.returnBg, color: t.returnColor };
+    case 'investment': return { Icon: Briefcase, bg: t.investmentBg, color: t.investmentColor };
+    case 'withdrawal': return { Icon: ArrowUpRight, bg: t.withdrawalBg, color: t.withdrawalColor };
+    case 'fee': return { Icon: Clock, bg: t.feeBg, color: t.feeColor };
+    default: return { Icon: Wallet, bg: t.feeBg, color: t.textSecondary };
   }
 }
 
-function txAmountColor(type: string) {
+function txAmountColor(type: string, t: Tokens) {
   switch (type) {
-    case 'deposit': case 'return': return '#16A34A';
-    case 'investment': return '#1D4ED8';
-    case 'withdrawal': return '#DC2626';
-    case 'fee': return '#94A3B8';
-    default: return '#0F172A';
+    case 'deposit': case 'return': return t.depositColor;
+    case 'investment': return t.investmentColor;
+    case 'withdrawal': return t.withdrawalColor;
+    case 'fee': return t.textMuted;
+    default: return t.amountPrimary;
   }
 }
 
-function statusChip(status: string, isAr: boolean) {
-  if (status === 'completed') return { label: isAr ? 'مكتمل' : 'Completed', bg: '#F0FDF4', color: '#16A34A' };
-  if (status === 'processing') return { label: isAr ? 'قيد المعالجة' : 'Processing', bg: '#FEF3C7', color: '#D97706' };
-  return { label: status, bg: '#F8FAFC', color: '#64748B' };
+function statusChip(status: string, isAr: boolean, t: Tokens) {
+  if (status === 'completed') return { label: isAr ? 'مكتمل' : 'Completed', bg: t.completedBg, color: t.completedColor };
+  if (status === 'processing') return { label: isAr ? 'قيد المعالجة' : 'Processing', bg: t.processingBg, color: t.processingColor };
+  return { label: status, bg: t.feeBg, color: t.textSecondary };
 }
 
 // ─── Add Bank Account Modal ──────────────────────────────────────────────────
@@ -710,6 +823,7 @@ export function WalletPage() {
   const { t, lang } = useI18n();
   const isAr = lang === 'ar';
   const { persona } = usePersona();
+  const tk = useTokens();
   const wallet = {
     available: persona.wallet.available,
     pending: persona.wallet.pending,
@@ -733,7 +847,7 @@ export function WalletPage() {
       {/* ═══ 1. WALLET OVERVIEW — Hero (matches overview wallet) ═══ */}
       <section
         className="relative rounded-[20px] overflow-hidden mb-8"
-        style={{ background: 'linear-gradient(135deg, #0B1F3A 0%, #0F2A4D 50%, #143766 100%)' }}
+        style={{ background: tk.heroGradient, border: tk.isVIP ? tk.cardBorder : undefined }}
       >
         {/* Decorative circle */}
         <div
@@ -800,17 +914,19 @@ export function WalletPage() {
 
       {/* ═══ 2. BANK ACCOUNTS ═══ */}
       <section className="mb-8">
-        <div className="bg-white rounded-[16px] overflow-hidden" style={{ border: '1px solid #E5E7EB' }}>
+        <div className="rounded-[16px] overflow-hidden" style={{ background: tk.cardBg, border: tk.cardBorder }}>
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: '#F1F5F9' }}>
+          <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: tk.sectionDivider }}>
             <div className="flex items-center gap-2">
-              <h2 className="text-[15px] text-[#0F172A]" style={{ fontWeight: 700 }}>{isAr ? 'الحسابات البنكية' : 'Bank Accounts'}</h2>
-              <span className="text-[11px] text-[#94A3B8] px-1.5 py-0.5 rounded" style={{ backgroundColor: '#F8FAFC', fontWeight: 500 }}>{bankAccounts.length}</span>
+              <h2 className="text-[15px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{isAr ? 'الحسابات البنكية' : 'Bank Accounts'}</h2>
+              <span className="text-[11px] px-1.5 py-0.5 rounded" style={{ backgroundColor: tk.countPillBg, color: tk.countPillColor, fontWeight: 500 }}>{bankAccounts.length}</span>
             </div>
             <button
               onClick={() => setAddBankOpen(true)}
-              className="flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11px] text-[#1D4ED8] hover:bg-[#EFF6FF] transition-colors"
-              style={{ fontWeight: 600, border: '1px solid #DBEAFE' }}
+              className="flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11px] transition-colors"
+              style={{ fontWeight: 600, border: tk.primarySoftBorder, color: tk.primaryText }}
+              onMouseEnter={e => (e.currentTarget.style.background = tk.primarySoft)}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               <Plus className="w-3 h-3" strokeWidth={2} />
               {isAr ? 'إضافة' : 'Add'}
@@ -821,34 +937,46 @@ export function WalletPage() {
           {bankAccounts.map((acc, i) => (
             <div
               key={acc.id}
-              className="flex items-center gap-3 px-5 h-[60px] hover:bg-[#FAFBFC] transition-colors"
-              style={{ borderBottom: i < bankAccounts.length - 1 ? '1px solid #F8FAFC' : 'none' }}
+              className="flex items-center gap-3 px-5 h-[60px] transition-colors"
+              style={{ borderBottom: i < bankAccounts.length - 1 ? `1px solid ${tk.rowDivider}` : 'none' }}
+              onMouseEnter={e => (e.currentTarget.style.background = tk.rowHover)}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               {/* Icon */}
-              <div className="w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: acc.primary ? '#EFF6FF' : '#F8FAFC' }}>
-                <Building2 className="w-4 h-4" style={{ color: acc.primary ? '#1D4ED8' : '#94A3B8' }} strokeWidth={1.5} />
+              <div className="w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: acc.primary ? tk.bankPrimaryBg : tk.bankSecondaryBg }}>
+                <Building2 className="w-4 h-4" style={{ color: acc.primary ? tk.bankPrimaryIcon : tk.bankSecondaryIcon }} strokeWidth={1.5} />
               </div>
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-[13px] text-[#0F172A] truncate" style={{ fontWeight: 600 }}>{isAr ? acc.bank : acc.bankEn}</span>
+                  <span className="text-[13px] truncate" style={{ fontWeight: 600, color: tk.textPrimary }}>{isAr ? acc.bank : acc.bankEn}</span>
                   {acc.primary && (
-                    <span className="text-[9px] text-[#1D4ED8] px-1.5 py-px rounded-full flex-shrink-0" style={{ backgroundColor: '#EFF6FF', fontWeight: 600 }}>
+                    <span className="text-[9px] px-1.5 py-px rounded-full flex-shrink-0" style={{ backgroundColor: tk.primarySoft, color: tk.primaryText, fontWeight: 600 }}>
                       {isAr ? 'أساسي' : 'Primary'}
                     </span>
                   )}
                 </div>
-                <div className="text-[11px] text-[#CBD5E1] mt-px font-mono">{acc.iban}</div>
+                <div className="text-[11px] mt-px font-mono" style={{ color: tk.textFaint }}>{acc.iban}</div>
               </div>
               {/* Actions */}
               <div className="flex items-center gap-0.5 flex-shrink-0">
                 {!acc.primary && (
-                  <button className="w-7 h-7 rounded-md flex items-center justify-center hover:bg-[#F1F5F9] transition-colors" title={isAr ? 'تعيين كأساسي' : 'Set primary'}>
-                    <Star className="w-3 h-3 text-[#CBD5E1]" strokeWidth={1.5} />
+                  <button
+                    className="w-7 h-7 rounded-md flex items-center justify-center transition-colors"
+                    title={isAr ? 'تعيين كأساسي' : 'Set primary'}
+                    onMouseEnter={e => (e.currentTarget.style.background = tk.innerSurface)}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    <Star className="w-3 h-3" strokeWidth={1.5} style={{ color: tk.textFaint }} />
                   </button>
                 )}
-                <button className="w-7 h-7 rounded-md flex items-center justify-center hover:bg-[#FEF2F2] transition-colors" title={isAr ? 'حذف' : 'Remove'}>
-                  <Trash2 className="w-3 h-3 text-[#CBD5E1]" strokeWidth={1.5} />
+                <button
+                  className="w-7 h-7 rounded-md flex items-center justify-center transition-colors"
+                  title={isAr ? 'حذف' : 'Remove'}
+                  onMouseEnter={e => (e.currentTarget.style.background = tk.trashHoverBg)}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <Trash2 className="w-3 h-3" strokeWidth={1.5} style={{ color: tk.textFaint }} />
                 </button>
               </div>
             </div>
@@ -857,15 +985,20 @@ export function WalletPage() {
       </section>
 
       {/* ═══ 3. TRANSACTION HISTORY ═══ */}
-      <section className="bg-white rounded-[16px] overflow-hidden" style={{ border: '1px solid #E5E7EB' }}>
+      <section className="rounded-[16px] overflow-hidden" style={{ background: tk.cardBg, border: tk.cardBorder }}>
 
         {/* Header */}
         <div className="px-6 pt-5 pb-3">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[16px] text-[#0F172A]" style={{ fontWeight: 700 }}>
+            <h2 className="text-[16px]" style={{ fontWeight: 700, color: tk.textPrimary }}>
               {isAr ? 'سجل العمليات' : 'Transaction History'}
             </h2>
-            <button className="h-7 px-3 rounded-md flex items-center gap-1.5 text-[11px] text-[#64748B] hover:bg-[#F8FAFC] transition-colors" style={{ fontWeight: 500, border: '1px solid #E5E7EB' }}>
+            <button
+              className="h-7 px-3 rounded-md flex items-center gap-1.5 text-[11px] transition-colors"
+              style={{ fontWeight: 500, border: tk.secondaryBtnBorder, color: tk.secondaryBtnText }}
+              onMouseEnter={e => (e.currentTarget.style.background = tk.secondaryBtnHover)}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
               <Download className="w-3 h-3" strokeWidth={1.5} />
               {isAr ? 'تصدير' : 'Export'}
             </button>
@@ -880,26 +1013,29 @@ export function WalletPage() {
               { key: 'return', label: isAr ? 'عوائد' : 'Returns' },
               { key: 'withdrawal', label: isAr ? 'سحب' : 'Withdrawals' },
               { key: 'fee', label: isAr ? 'رسوم' : 'Fees' },
-            ].map((chip) => (
-              <button
-                key={chip.key}
-                onClick={() => setFilter(chip.key)}
-                className="h-7 px-3 rounded-full text-[11px] transition-all"
-                style={{
-                  fontWeight: filter === chip.key ? 600 : 400,
-                  backgroundColor: filter === chip.key ? '#0F172A' : 'transparent',
-                  color: filter === chip.key ? '#fff' : '#94A3B8',
-                  border: filter === chip.key ? 'none' : '1px solid #F1F5F9',
-                }}
-              >
-                {chip.label}
-              </button>
-            ))}
+            ].map((chip) => {
+              const isActive = filter === chip.key;
+              return (
+                <button
+                  key={chip.key}
+                  onClick={() => setFilter(chip.key)}
+                  className="h-7 px-3 rounded-full text-[11px] transition-all"
+                  style={{
+                    fontWeight: isActive ? 600 : 400,
+                    backgroundColor: isActive ? tk.filterActiveBg : 'transparent',
+                    color: isActive ? tk.filterActiveColor : tk.filterInactiveColor,
+                    border: isActive ? 'none' : tk.filterInactiveBorder,
+                  }}
+                >
+                  {chip.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Divider */}
-        <div className="h-px" style={{ backgroundColor: '#F1F5F9' }} />
+        <div className="h-px" style={{ backgroundColor: tk.sectionDivider }} />
 
         {/* Grouped transactions */}
         {groups.map((group) => {
@@ -911,21 +1047,23 @@ export function WalletPage() {
           return (
             <div key={group.key}>
               {/* Date group header */}
-              <div className="h-8 flex items-center px-6 text-[10px] uppercase tracking-wider text-[#CBD5E1]" style={{ fontWeight: 600 }}>
+              <div className="h-8 flex items-center px-6 text-[10px] uppercase tracking-wider" style={{ fontWeight: 600, color: tk.groupHeaderColor }}>
                 {group.label}
               </div>
 
               {/* Transaction rows — compact */}
               {items.map((tx, i) => {
-                const { Icon, bg, color } = txIcon(tx.type);
-                const sc = statusChip(tx.status, isAr);
+                const { Icon, bg, color } = txIcon(tx.type, tk);
+                const sc = statusChip(tx.status, isAr, tk);
                 const isIncoming = tx.amount > 0;
 
                 return (
                   <div
                     key={`${group.key}-${i}`}
-                    className="flex items-center gap-3 px-6 h-[60px] hover:bg-[#FAFBFC] transition-colors cursor-pointer"
-                    style={{ borderBottom: '1px solid #F8FAFC' }}
+                    className="flex items-center gap-3 px-6 h-[60px] transition-colors cursor-pointer"
+                    style={{ borderBottom: `1px solid ${tk.rowDivider}` }}
+                    onMouseEnter={e => (e.currentTarget.style.background = tk.rowHover)}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
                     {/* Icon */}
                     <div
@@ -938,7 +1076,7 @@ export function WalletPage() {
                     {/* Title + detail + date */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-[13px] text-[#0F172A] truncate" style={{ fontWeight: 600 }}>
+                        <span className="text-[13px] truncate" style={{ fontWeight: 600, color: tk.textPrimary }}>
                           {isAr ? tx.title : tx.titleEn}
                         </span>
                         {tx.status !== 'completed' && (
@@ -950,7 +1088,7 @@ export function WalletPage() {
                           </span>
                         )}
                       </div>
-                      <div className="text-[11px] text-[#CBD5E1] mt-px truncate">
+                      <div className="text-[11px] mt-px truncate" style={{ color: tk.textFaint }}>
                         {isAr ? tx.detail : tx.detailEn}
                         <span className="hidden sm:inline"> · {isAr ? tx.time : tx.timeEn}</span>
                       </div>
@@ -960,7 +1098,7 @@ export function WalletPage() {
                     <div className="flex-shrink-0 text-left">
                       <span
                         className="text-[16px] tabular-nums"
-                        style={{ fontWeight: 700, color: txAmountColor(tx.type) }}
+                        style={{ fontWeight: 700, color: txAmountColor(tx.type, tk) }}
                       >
                         {isIncoming ? '+' : '-'}
                         <span className="text-[16px]">{formatSAR(Math.abs(tx.amount), { decimals: 0, showCurrency: false })}</span>
@@ -977,8 +1115,8 @@ export function WalletPage() {
         {/* Empty state */}
         {transactions.filter(tx => filter === 'all' || tx.type === filter).length === 0 && (
           <div className="py-16 text-center">
-            <Wallet className="w-8 h-8 text-[#E5E7EB] mx-auto mb-2" strokeWidth={1.5} />
-            <div className="text-[12px] text-[#CBD5E1]" style={{ fontWeight: 500 }}>
+            <Wallet className="w-8 h-8 mx-auto mb-2" strokeWidth={1.5} style={{ color: tk.textFaint }} />
+            <div className="text-[12px]" style={{ fontWeight: 500, color: tk.textFaint }}>
               {isAr ? 'لا توجد عمليات' : 'No transactions found'}
             </div>
           </div>
