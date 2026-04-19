@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useOnboarding } from "../OnboardingContext";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 import { motion } from "motion/react";
+import { useI18n } from "../../../i18n";
 
 export function StepOTP() {
   const { data, updateData, next, back } = useOnboarding();
@@ -9,6 +10,10 @@ export function StepOTP() {
   const [verified, setVerified] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const { lang } = useI18n();
+  const isAr = lang === 'ar';
+  const NextArrow = isAr ? ArrowLeft : ArrowRight;
+  const BackArrow = isAr ? ArrowRight : ArrowLeft;
 
   useEffect(() => {
     inputRefs.current[0]?.focus();
@@ -61,8 +66,8 @@ export function StepOTP() {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-[#0F2A44] mb-2">رمز التحقق</h2>
-      <p className="text-sm text-gray-500 mb-1">أدخل الرمز المرسل إلى</p>
+      <h2 className="text-xl font-bold text-[#0F2A44] mb-2">{isAr ? 'رمز التحقق' : 'Verification Code'}</h2>
+      <p className="text-sm text-gray-500 mb-1">{isAr ? 'أدخل الرمز المرسل إلى' : 'Enter the code sent to'}</p>
       <p className="text-sm font-bold text-[#0F2A44] mb-8" dir="ltr">+966 {data.phone}</p>
 
       {/* OTP Inputs */}
@@ -103,7 +108,7 @@ export function StepOTP() {
           className="flex items-center justify-center gap-2 text-green-600 mb-6"
         >
           <CheckCircle2 className="size-5" />
-          <span className="text-sm font-medium">تم التحقق بنجاح</span>
+          <span className="text-sm font-medium">{isAr ? 'تم التحقق بنجاح' : 'Verified successfully'}</span>
         </motion.div>
       )}
 
@@ -112,14 +117,22 @@ export function StepOTP() {
         <div className="text-center mb-8">
           {countdown > 0 ? (
             <p className="text-sm text-gray-400">
-              إعادة الإرسال بعد <span className="font-bold text-[#0F2A44]">{countdown}</span> ثانية
+              {isAr ? (
+                <>
+                  إعادة الإرسال بعد <span className="font-bold text-[#0F2A44]">{countdown}</span> ثانية
+                </>
+              ) : (
+                <>
+                  Resend code in <span className="font-bold text-[#0F2A44]">{countdown}</span> seconds
+                </>
+              )}
             </p>
           ) : (
             <button
               onClick={() => setCountdown(60)}
               className="text-sm font-medium text-[#0F2A44] hover:text-[#7BFF00] transition-colors cursor-pointer"
             >
-              إعادة إرسال الرمز
+              {isAr ? 'إعادة إرسال الرمز' : 'Resend code'}
             </button>
           )}
         </div>
@@ -132,14 +145,14 @@ export function StepOTP() {
             onClick={back}
             className="h-12 w-12 rounded-lg border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-gray-50 transition-colors cursor-pointer shrink-0"
           >
-            <ArrowRight className="size-4" />
+            <BackArrow className="size-4" />
           </button>
           <button
             disabled
             className="flex-1 h-12 rounded-lg font-bold text-[#0F2A44] bg-[#7BFF00] opacity-40 cursor-not-allowed flex items-center justify-center gap-2"
           >
-            <span>تحقق</span>
-            <ArrowLeft className="size-4" />
+            <span>{isAr ? 'تحقق' : 'Verify'}</span>
+            <NextArrow className="size-4" />
           </button>
         </div>
       )}

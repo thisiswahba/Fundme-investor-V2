@@ -47,7 +47,7 @@ export function EmptyHeroSection() {
               <Wallet className="w-5 h-5 text-white" strokeWidth={2} />
             </div>
             <span className="text-[14px] text-white/80" style={{ fontWeight: 500 }}>
-              المحفظة
+              {isAr ? 'المحفظة' : 'Wallet'}
             </span>
           </div>
 
@@ -81,7 +81,7 @@ export function EmptyHeroSection() {
               }}
             >
               <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
-              <span>إيداع في المحفظة</span>
+              <span>{isAr ? 'إيداع في المحفظة' : 'Deposit to Wallet'}</span>
             </button>
 
             <button
@@ -96,7 +96,7 @@ export function EmptyHeroSection() {
               }}
             >
               <ArrowDownToLine className="w-4 h-4 shrink-0" strokeWidth={2.5} />
-              <span>سحب من المحفظة</span>
+              <span>{isAr ? 'سحب من المحفظة' : 'Withdraw from Wallet'}</span>
             </button>
           </div>
         </div>

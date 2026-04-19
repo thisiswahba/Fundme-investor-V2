@@ -10,35 +10,50 @@ import { StepSuccess } from "./steps/StepSuccess";
 import { Shield, CheckCircle } from "lucide-react";
 import logoLight from "../../../assets/logo-light.png";
 import logoDark from "../../../assets/logo-dark.png";
+import { useI18n } from "../../i18n";
 
-const LEFT_CONTENT: Record<number, { title: string; description: string }> = {
+const LEFT_CONTENT: Record<number, { titleAr: string; descAr: string; titleEn: string; descEn: string }> = {
   1: {
-    title: "ابدأ رحلتك الاستثمارية",
-    description: "اختر نوع حسابك وابدأ في بناء محفظتك الاستثمارية مع فرص متوافقة مع الشريعة",
+    titleAr: "ابدأ رحلتك الاستثمارية",
+    descAr: "اختر نوع حسابك وابدأ في بناء محفظتك الاستثمارية مع فرص متوافقة مع الشريعة",
+    titleEn: "Start your investment journey",
+    descEn: "Choose your account type and start building your portfolio with Sharia-compliant opportunities",
   },
   2: {
-    title: "تأمين حسابك",
-    description: "نحتاج رقم جوالك للتحقق من هويتك وحماية حسابك",
+    titleAr: "تأمين حسابك",
+    descAr: "نحتاج رقم جوالك للتحقق من هويتك وحماية حسابك",
+    titleEn: "Secure your account",
+    descEn: "We need your mobile number to verify your identity and protect your account",
   },
   3: {
-    title: "تحقق من رقمك",
-    description: "أدخل رمز التحقق المرسل إلى جوالك",
+    titleAr: "تحقق من رقمك",
+    descAr: "أدخل رمز التحقق المرسل إلى جوالك",
+    titleEn: "Verify your number",
+    descEn: "Enter the verification code sent to your phone",
   },
   4: {
-    title: "إعداد الحساب",
-    description: "أكمل بياناتك الأساسية لفتح حسابك الاستثماري",
+    titleAr: "إعداد الحساب",
+    descAr: "أكمل بياناتك الأساسية لفتح حسابك الاستثماري",
+    titleEn: "Set up your account",
+    descEn: "Complete your basic details to open your investment account",
   },
   5: {
-    title: "التحقق عبر نفاذ",
-    description: "نتحقق من هويتك الوطنية عبر منصة نفاذ الموحدة",
+    titleAr: "التحقق عبر نفاذ",
+    descAr: "نتحقق من هويتك الوطنية عبر منصة نفاذ الموحدة",
+    titleEn: "Verify with Nafath",
+    descEn: "We verify your national identity through the unified Nafath platform",
   },
   6: {
-    title: "تحديد ملف المخاطر",
-    description: "نساعدك في تحديد الفرص الأنسب لأهدافك الاستثمارية",
+    titleAr: "تحديد ملف المخاطر",
+    descAr: "نساعدك في تحديد الفرص الأنسب لأهدافك الاستثمارية",
+    titleEn: "Build your risk profile",
+    descEn: "We help you find the opportunities best suited to your investment goals",
   },
   7: {
-    title: "مبروك!",
-    description: "حسابك جاهز للاستثمار",
+    titleAr: "مبروك!",
+    descAr: "حسابك جاهز للاستثمار",
+    titleEn: "Congratulations!",
+    descEn: "Your account is ready to invest",
   },
 };
 
@@ -114,13 +129,29 @@ function StepIndicator() {
   );
 }
 
+function LangToggle() {
+  const { lang, setLang } = useI18n();
+  return (
+    <button
+      onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
+      className="absolute top-4 right-4 z-20 flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] bg-white/80 backdrop-blur-sm hover:bg-white transition-colors"
+      style={{ fontWeight: 500, border: '1px solid #E5E7EB', color: '#64748B' }}
+    >
+      {lang === 'ar' ? 'EN' : 'ع'}
+    </button>
+  );
+}
+
 export function OnboardingLayout() {
   const { step } = useOnboarding();
+  const { lang, dir } = useI18n();
+  const isAr = lang === 'ar';
   const content = LEFT_CONTENT[step];
   const StepComponent = STEPS[step];
 
   return (
-    <div dir="rtl" className="flex min-h-screen font-[IBM_Plex_Sans_Arabic]">
+    <div dir={dir} className={`flex min-h-screen relative ${isAr ? 'font-[IBM_Plex_Sans_Arabic]' : ''}`}>
+      <LangToggle />
       {/* LEFT SIDE - Gradient background */}
       <div className="hidden lg:flex lg:w-[45%] relative overflow-hidden flex-col justify-between p-12"
         style={{ background: "linear-gradient(160deg, #0F2A44 0%, #1a4a6e 50%, #0F2A44 100%)" }}
@@ -141,10 +172,10 @@ export function OnboardingLayout() {
               transition={{ duration: 0.4 }}
             >
               <h1 className="text-4xl font-bold text-white mb-4 leading-tight">
-                {content.title}
+                {isAr ? content.titleAr : content.titleEn}
               </h1>
               <p className="text-lg text-white/70 leading-relaxed max-w-md">
-                {content.description}
+                {isAr ? content.descAr : content.descEn}
               </p>
             </motion.div>
           </AnimatePresence>
@@ -152,9 +183,9 @@ export function OnboardingLayout() {
 
         {/* Trust indicators */}
         <div className="relative z-10 flex flex-wrap gap-3">
-          <TrustBadge icon={Shield} text="مرخص من ساما" />
-          <TrustBadge icon={CheckCircle} text="متوافق مع الشريعة" />
-          <TrustBadge icon={Shield} text="حماية عالية" />
+          <TrustBadge icon={Shield} text={isAr ? "مرخص من ساما" : "SAMA Licensed"} />
+          <TrustBadge icon={CheckCircle} text={isAr ? "متوافق مع الشريعة" : "Sharia Compliant"} />
+          <TrustBadge icon={Shield} text={isAr ? "حماية عالية" : "Bank-Grade Security"} />
         </div>
 
         {/* Animated graph */}

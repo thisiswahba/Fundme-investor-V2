@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import {
-  ArrowRight, Building2, Shield, CheckCircle,
+  ArrowRight, ArrowLeft, Building2, Shield, CheckCircle,
   FileText, Users, Banknote, MapPin, Calendar,
   DollarSign, Repeat, AlertTriangle, Download,
   X, Info, Loader2, ShieldCheck,
@@ -242,6 +242,8 @@ function InvestModal({
   const [countdown, setCountdown] = useState(60);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const tk = useTokens();
+  const { t, dir, lang } = useI18n();
+  const isAr = lang === 'ar';
 
   // Calculations
   const profit = Math.round(amount * (roi / 100) * (duration / 12));
@@ -329,12 +331,12 @@ function InvestModal({
       <div
         className="w-full max-w-[540px] rounded-[16px] overflow-hidden"
         style={{ background: tk.cardBg, border: tk.isVIP ? tk.cardBorder : undefined, boxShadow: tk.isVIP ? '0 24px 80px rgba(0,0,0,0.6)' : '0 24px 80px rgba(0,0,0,0.15)' }}
-        dir="rtl"
+        dir={dir}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b" style={{ borderColor: tk.divider }}>
           <h2 className="text-[18px]" style={{ fontWeight: 700, color: tk.textPrimary }}>
-            {success ? 'تم بنجاح' : loading ? 'جارٍ التنفيذ' : step === 1 ? 'تفاصيل الاستثمار' : step === 2 ? 'ملخص الاستثمار' : 'تأكيد الاستثمار'}
+            {success ? t('modal.success') : loading ? t('modal.processing') : step === 1 ? t('modal.breakdown') : step === 2 ? t('modal.summary') : t('modal.verify')}
           </h2>
           {!loading && !success && (
             <div className="flex items-center gap-3">
@@ -369,14 +371,14 @@ function InvestModal({
           {step === 1 && (
             <div>
               <div className="rounded-[12px] p-4 mb-5 text-center" style={{ backgroundColor: tk.innerSurface }}>
-                <div className="text-[12px] mb-1" style={{ fontWeight: 500, color: tk.textMuted }}>مبلغ الاستثمار</div>
+                <div className="text-[12px] mb-1" style={{ fontWeight: 500, color: tk.textMuted }}>{t('modal.investAmount')}</div>
                 <div className="text-[28px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{formatSAR(amount, { decimals: 0 })}</div>
               </div>
 
               <div className="space-y-3 mb-4">
                 <div className="flex items-center justify-between">
                   <span className="text-[13px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{formatSAR(profit, { decimals: 0 })}</span>
-                  <span className="text-[13px]" style={{ color: tk.textSecondary }}>الأرباح المتوقعة</span>
+                  <span className="text-[13px]" style={{ color: tk.textSecondary }}>{t('modal.expectedProfit')}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
@@ -385,7 +387,7 @@ function InvestModal({
                       <Info className="w-3.5 h-3.5" strokeWidth={1.5} style={{ color: tk.textFaint }} />
                     </button>
                   </div>
-                  <span className="text-[13px]" style={{ color: tk.textSecondary }}>رسوم المنصة (2%)</span>
+                  <span className="text-[13px]" style={{ color: tk.textSecondary }}>{t('modal.platformFee')}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
@@ -394,7 +396,7 @@ function InvestModal({
                       <Info className="w-3.5 h-3.5" strokeWidth={1.5} style={{ color: tk.textFaint }} />
                     </button>
                   </div>
-                  <span className="text-[13px]" style={{ color: tk.textSecondary }}>ضريبة القيمة المضافة (15%)</span>
+                  <span className="text-[13px]" style={{ color: tk.textSecondary }}>{t('modal.vat')}</span>
                 </div>
               </div>
 
@@ -402,7 +404,7 @@ function InvestModal({
 
               <div className="flex items-center justify-between">
                 <span className="text-[18px]" style={{ fontWeight: 700, color: tk.successText }}>{formatSAR(netReturn, { decimals: 0 })}</span>
-                <span className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>صافي العائد</span>
+                <span className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{t('modal.netReturn')}</span>
               </div>
             </div>
           )}
@@ -411,17 +413,17 @@ function InvestModal({
           {step === 2 && (
             <div>
               <div className="text-center mb-5">
-                <div className="text-[12px] mb-1" style={{ fontWeight: 500, color: tk.textMuted }}>مبلغ الاستثمار</div>
+                <div className="text-[12px] mb-1" style={{ fontWeight: 500, color: tk.textMuted }}>{t('modal.investAmount')}</div>
                 <div className="text-[36px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{formatSAR(amount, { decimals: 0 })}</div>
               </div>
 
               <div className="grid grid-cols-2 gap-3 mb-5">
                 <div className="rounded-[12px] p-4 text-center" style={{ backgroundColor: tk.successBg, border: `1px solid ${tk.successBorder}` }}>
-                  <div className="text-[11px] mb-1" style={{ fontWeight: 500, color: tk.textSecondary }}>صافي العائد</div>
+                  <div className="text-[11px] mb-1" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('modal.netReturn')}</div>
                   <div className="text-[20px]" style={{ fontWeight: 700, color: tk.successText }}>{formatSAR(netReturn, { decimals: 0 })}</div>
                 </div>
                 <div className="rounded-[12px] p-4 text-center" style={{ backgroundColor: tk.infoBg, border: `1px solid ${tk.infoBorder}` }}>
-                  <div className="text-[11px] mb-1" style={{ fontWeight: 500, color: tk.textSecondary }}>إجمالي المبلغ</div>
+                  <div className="text-[11px] mb-1" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('modal.totalPayout')}</div>
                   <div className="text-[20px]" style={{ fontWeight: 700, color: tk.infoText }}>{formatSAR(totalPayout, { decimals: 0 })}</div>
                 </div>
               </div>
@@ -429,22 +431,22 @@ function InvestModal({
               <div className="rounded-[12px] p-4 mb-5 space-y-2.5" style={{ backgroundColor: tk.innerSurface }}>
                 <div className="flex items-center justify-between text-[12px]">
                   <span style={{ fontWeight: 600, color: tk.textPrimary }}>{formatSAR(amount, { decimals: 0 })}</span>
-                  <span style={{ color: tk.textMuted }}>رأس المال</span>
+                  <span style={{ color: tk.textMuted }}>{t('modal.principal')}</span>
                 </div>
                 <div className="flex items-center justify-between text-[12px]">
                   <span style={{ fontWeight: 600, color: tk.successText }}>{formatSAR(netReturn, { decimals: 0 })}</span>
-                  <span style={{ color: tk.textMuted }}>صافي الأرباح</span>
+                  <span style={{ color: tk.textMuted }}>{t('modal.netProfit')}</span>
                 </div>
                 <div className="border-t pt-2.5" style={{ borderColor: tk.divider }}>
                   <div className="flex items-center justify-between text-[13px]">
                     <span style={{ fontWeight: 700, color: tk.textPrimary }}>{formatSAR(totalPayout, { decimals: 0 })}</span>
-                    <span style={{ fontWeight: 600, color: tk.textPrimary }}>إجمالي المبلغ عند الاستحقاق</span>
+                    <span style={{ fontWeight: 600, color: tk.textPrimary }}>{t('modal.totalAtMaturity')}</span>
                   </div>
                 </div>
               </div>
 
               <div className="text-center mb-5">
-                <span className="text-[12px]" style={{ color: tk.textMuted }}>العائد الفعلي: </span>
+                <span className="text-[12px]" style={{ color: tk.textMuted }}>{t('modal.effectiveRate')}: </span>
                 <span className="text-[13px]" style={{ fontWeight: 700, color: tk.infoText }}>{effectiveRate}%</span>
               </div>
 
@@ -457,7 +459,7 @@ function InvestModal({
                   style={{ accentColor: tk.primary }}
                 />
                 <span className="text-[12px] leading-relaxed" style={{ color: tk.textSecondary }}>
-                  أقر بأنني قرأت وفهمت المخاطر المرتبطة بهذا الاستثمار وأوافق على الشروط والأحكام
+                  {t('modal.agreeRisk')}
                 </span>
               </label>
             </div>
@@ -469,9 +471,9 @@ function InvestModal({
               <div className="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: tk.infoBg }}>
                 <ShieldCheck className="w-7 h-7" strokeWidth={1.5} style={{ color: tk.infoText }} />
               </div>
-              <div className="text-[14px] mb-1" style={{ fontWeight: 600, color: tk.textPrimary }}>أدخل رمز التحقق</div>
+              <div className="text-[14px] mb-1" style={{ fontWeight: 600, color: tk.textPrimary }}>{t('modal.enterOtp')}</div>
               <div className="text-[12px] mb-6" style={{ color: tk.textMuted }}>
-                تم إرسال رمز التحقق إلى <span style={{ fontWeight: 500, color: tk.textPrimary }}>٠٥٥•••••٨٩</span>
+                {t('modal.otpSent')} <span style={{ fontWeight: 500, color: tk.textPrimary }} dir="ltr">{isAr ? '٠٥٥•••••٨٩' : '055•••••89'}</span>
               </div>
 
               <div className="flex items-center justify-center gap-3 mb-5" dir="ltr">
@@ -499,14 +501,14 @@ function InvestModal({
 
               <div className="text-[12px]" style={{ color: tk.textMuted }}>
                 {countdown > 0 ? (
-                  <span>إعادة الإرسال خلال <span style={{ fontWeight: 600, color: tk.textPrimary }}>{countdown} ثانية</span></span>
+                  <span>{t('modal.resendIn')} <span style={{ fontWeight: 600, color: tk.textPrimary }}>{countdown} {t('modal.seconds')}</span></span>
                 ) : (
                   <button
                     onClick={() => setCountdown(60)}
                     className="hover:underline"
                     style={{ fontWeight: 500, color: tk.primary }}
                   >
-                    إعادة إرسال الرمز
+                    {t('modal.resend')}
                   </button>
                 )}
               </div>
@@ -519,8 +521,8 @@ function InvestModal({
               <div className="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: tk.infoBg }}>
                 <Loader2 className="w-7 h-7 animate-spin" strokeWidth={1.5} style={{ color: tk.infoText }} />
               </div>
-              <div className="text-[16px] mb-1" style={{ fontWeight: 600, color: tk.textPrimary }}>جارٍ تنفيذ الاستثمار...</div>
-              <div className="text-[13px]" style={{ color: tk.textMuted }}>يرجى الانتظار لحظات</div>
+              <div className="text-[16px] mb-1" style={{ fontWeight: 600, color: tk.textPrimary }}>{t('modal.processingInvestment')}</div>
+              <div className="text-[13px]" style={{ color: tk.textMuted }}>{t('modal.pleaseWait')}</div>
             </div>
           )}
 
@@ -531,22 +533,22 @@ function InvestModal({
                 <CheckCircle className="w-10 h-10" strokeWidth={1.5} style={{ color: tk.successText }} />
               </div>
 
-              <div className="text-[24px] mb-3" style={{ fontWeight: 700, color: tk.textPrimary }}>تم الاستثمار بنجاح!</div>
+              <div className="text-[24px] mb-3" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('modal.successTitle')}</div>
               <p className="text-[15px] leading-relaxed mb-8" style={{ color: tk.textSecondary }}>
-                تم استثمار <span style={{ fontWeight: 600, color: tk.textPrimary }}>{formatSAR(amount, { decimals: 0 })}</span> في
+                {t('modal.successDesc')} <span style={{ fontWeight: 600, color: tk.textPrimary }}>{formatSAR(amount, { decimals: 0 })}</span> {t('modal.successIn')}
                 <br />
-                تمويل مشروع سكني - الدمام
+                {isAr ? 'تمويل مشروع سكني - الدمام' : 'Residential Project — Dammam'}
               </p>
 
               <div className="border-t mx-8 mb-6" style={{ borderColor: tk.divider }} />
 
               <div className="grid grid-cols-2 gap-6 mb-6 px-4">
                 <div>
-                  <div className="text-[12px] mb-1.5" style={{ fontWeight: 500, color: tk.textMuted }}>الأرباح المتوقعة</div>
+                  <div className="text-[12px] mb-1.5" style={{ fontWeight: 500, color: tk.textMuted }}>{t('modal.expectedProfitLabel')}</div>
                   <div className="text-[24px]" style={{ fontWeight: 700, color: tk.successText }}>{formatSAR(netReturn, { decimals: 0 })}</div>
                 </div>
                 <div>
-                  <div className="text-[12px] mb-1.5" style={{ fontWeight: 500, color: tk.textMuted }}>إجمالي الاستحقاق</div>
+                  <div className="text-[12px] mb-1.5" style={{ fontWeight: 500, color: tk.textMuted }}>{t('modal.totalPayout')}</div>
                   <div className="text-[24px]" style={{ fontWeight: 700, color: tk.infoText }}>{formatSAR(totalPayout, { decimals: 0 })}</div>
                 </div>
               </div>
@@ -554,7 +556,7 @@ function InvestModal({
               <div className="border-t mx-8 mb-6" style={{ borderColor: tk.divider }} />
 
               <div className="text-[13px] mb-8" style={{ color: tk.textMuted }}>
-                سيتم إرسال التفاصيل إلى بريدك الإلكتروني
+                {t('modal.emailNote')}
               </div>
 
               <button
@@ -562,7 +564,7 @@ function InvestModal({
                 className="w-full h-12 rounded-[12px] text-[15px] text-white transition-all duration-200 active:scale-[0.98]"
                 style={{ backgroundColor: tk.primary, fontWeight: 600 }}
               >
-                الذهاب إلى استثماراتي
+                {t('modal.goToPortfolio')}
               </button>
             </div>
           )}
@@ -578,7 +580,7 @@ function InvestModal({
               onMouseEnter={e => (e.currentTarget.style.background = tk.secondaryBtnHover)}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
-              {step === 1 ? 'إلغاء' : 'رجوع'}
+              {step === 1 ? t('modal.cancel') : t('modal.back')}
             </button>
             <button
               onClick={() => {
@@ -595,9 +597,9 @@ function InvestModal({
                 cursor: primaryDisabled ? 'not-allowed' : 'pointer',
               }}
             >
-              {step === 1 && 'متابعة'}
-              {step === 2 && 'تأكيد والتحقق'}
-              {step === 3 && 'تحقق واستثمر'}
+              {step === 1 && t('modal.continue')}
+              {step === 2 && t('modal.confirmVerify')}
+              {step === 3 && t('modal.verifyInvest')}
             </button>
           </div>
         )}
@@ -613,7 +615,9 @@ function InvestModal({
 export function OpportunityDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const isAr = lang === 'ar';
+  const BackArrow = isAr ? ArrowRight : ArrowLeft;
   const tk = useTokens();
   const [amount, setAmount] = useState(5000);
   const [chartTab, setChartTab] = useState<'returns' | 'growth'>('returns');
@@ -635,8 +639,8 @@ export function OpportunityDetailPage() {
         onMouseEnter={e => (e.currentTarget.style.color = tk.textPrimary)}
         onMouseLeave={e => (e.currentTarget.style.color = tk.textSecondary)}
       >
-        <ArrowRight className="w-5 h-5" strokeWidth={1.5} />
-        العودة إلى الفرص
+        <BackArrow className="w-5 h-5" strokeWidth={1.5} />
+        {t('opp.back')}
       </button>
 
       <div className="flex gap-6">
@@ -680,25 +684,25 @@ export function OpportunityDetailPage() {
             </div>
 
             <div className="relative">
-              <h1 className="text-[32px] text-white text-right mb-2" style={{ fontWeight: 700 }}>{opp.title}</h1>
-              <p className="text-[16px] text-white/90 mb-8">{opp.pitch}</p>
+              <h1 className="text-[32px] text-white text-start mb-2" style={{ fontWeight: 700 }}>{isAr ? opp.title : 'Residential Project Financing — Dammam'}</h1>
+              <p className="text-[16px] text-white/90 mb-8">{isAr ? opp.pitch : 'A premium residential complex in a prime location with secured returns'}</p>
 
               <div className="grid grid-cols-4 gap-4 mb-6">
                 <div>
-                  <div className="text-[12px] text-white/70 mb-1.5" style={{ fontWeight: 500 }}>العائد السنوي</div>
+                  <div className="text-[12px] text-white/70 mb-1.5" style={{ fontWeight: 500 }}>{t('opp.annualReturn')}</div>
                   <div className="text-[28px] text-white" style={{ fontWeight: 700 }}>+{opp.roi}%</div>
                 </div>
                 <div>
-                  <div className="text-[12px] text-white/70 mb-1.5" style={{ fontWeight: 500 }}>المدة</div>
-                  <div className="text-[20px] text-white" style={{ fontWeight: 700 }}>{opp.duration} شهر</div>
+                  <div className="text-[12px] text-white/70 mb-1.5" style={{ fontWeight: 500 }}>{t('opp.duration')}</div>
+                  <div className="text-[20px] text-white" style={{ fontWeight: 700 }}>{opp.duration} {t('opp.months')}</div>
                 </div>
                 <div>
-                  <div className="text-[12px] text-white/70 mb-1.5" style={{ fontWeight: 500 }}>التصنيف</div>
+                  <div className="text-[12px] text-white/70 mb-1.5" style={{ fontWeight: 500 }}>{t('opp.rating')}</div>
                   <div className="text-[20px] text-[#F59E0B]" style={{ fontWeight: 700 }}>{opp.risk}</div>
                 </div>
                 <div>
-                  <div className="text-[12px] text-white/70 mb-1.5" style={{ fontWeight: 500 }}>نوع التمويل</div>
-                  <div className="text-[14px] text-white" style={{ fontWeight: 600 }}>{opp.type}</div>
+                  <div className="text-[12px] text-white/70 mb-1.5" style={{ fontWeight: 500 }}>{t('opp.financingType')}</div>
+                  <div className="text-[14px] text-white" style={{ fontWeight: 600 }}>{isAr ? opp.type : 'Real Estate Murabaha'}</div>
                 </div>
               </div>
 
@@ -706,10 +710,10 @@ export function OpportunityDetailPage() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="rounded-[20px] px-4 py-2" style={{ backgroundColor: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.3)' }}>
                     <div className="text-[28px] text-white text-center" style={{ fontWeight: 700 }}>{opp.fundingPct}%</div>
-                    <div className="text-[11px] text-white/80 text-center" style={{ fontWeight: 500 }}>مكتمل</div>
+                    <div className="text-[11px] text-white/80 text-center" style={{ fontWeight: 500 }}>{t('opp.completed')}</div>
                   </div>
                   <div>
-                    <div className="text-[12px] text-white/80 mb-1" style={{ fontWeight: 500 }}>التمويل المجموع</div>
+                    <div className="text-[12px] text-white/80 mb-1" style={{ fontWeight: 500 }}>{t('opp.fundingCollected')}</div>
                     <div className="text-[24px] text-white" style={{ fontWeight: 700 }}>{formatSAR(opp.raisedAmount, { decimals: 0 })}</div>
                   </div>
                 </div>
@@ -717,8 +721,8 @@ export function OpportunityDetailPage() {
                   <div className="h-full rounded-full" style={{ width: `${opp.fundingPct}%`, background: 'linear-gradient(90deg, white, #E0F2FE)', boxShadow: '0 0 10px rgba(255,255,255,0.5)' }} />
                 </div>
                 <div className="flex items-center justify-between text-[12px]">
-                  <span className="text-white/90" style={{ fontWeight: 600 }}>{opp.investors} مستثمر</span>
-                  <span className="text-white/70" style={{ fontWeight: 500 }}>من إجمالي {formatSAR(opp.targetAmount, { decimals: 0 })}</span>
+                  <span className="text-white/90" style={{ fontWeight: 600 }}>{opp.investors} {t('opp.investors')}</span>
+                  <span className="text-white/70" style={{ fontWeight: 500 }}>{t('opp.totalOf')} {formatSAR(opp.targetAmount, { decimals: 0 })}</span>
                 </div>
               </div>
             </div>
@@ -727,10 +731,10 @@ export function OpportunityDetailPage() {
           {/* SECTION TABS */}
           <div className="flex items-center gap-1 mt-6 mb-6 border-b" style={{ borderColor: tk.tabBorder }}>
             {([
-              { key: 'overview' as const, label: 'نظرة عامة' },
-              { key: 'returns' as const, label: 'العوائد والدفعات' },
-              { key: 'risk' as const, label: 'المخاطر' },
-              { key: 'borrower' as const, label: 'المقترض والمستندات' },
+              { key: 'overview' as const, label: isAr ? 'نظرة عامة' : 'Overview' },
+              { key: 'returns' as const, label: isAr ? 'العوائد والدفعات' : 'Returns & Payments' },
+              { key: 'risk' as const, label: isAr ? 'المخاطر' : 'Risk' },
+              { key: 'borrower' as const, label: isAr ? 'المقترض والمستندات' : 'Borrower & Documents' },
             ] as const).map(tab => {
               const active = sectionTab === tab.key;
               return (
@@ -760,9 +764,9 @@ export function OpportunityDetailPage() {
             <h2 className="text-[18px] mb-6" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.whyThis')}</h2>
             <div className="grid grid-cols-3 gap-5">
               {[
-                { icon: DollarSign, title: 'استخدام الأموال', desc: opp.whyCards[0].text },
-                { icon: Building2, title: 'ملخص المشروع', desc: opp.whyCards[1].text },
-                { icon: MapPin, title: 'الموقع والقطاع', desc: 'الدمام، المملكة العربية السعودية — قطاع التطوير العقاري' },
+                { icon: DollarSign, title: t('opp.useOfFunds'), desc: isAr ? opp.whyCards[0].text : 'Construction and development of an integrated residential complex with 45 premium units in Al Nakheel district, Dammam.' },
+                { icon: Building2, title: t('opp.projectSummary'), desc: isAr ? opp.whyCards[1].text : 'The project targets the upper-middle class in the Eastern Region, offering modern residential units and integrated facilities.' },
+                { icon: MapPin, title: t('opp.locationSector'), desc: isAr ? 'الدمام، المملكة العربية السعودية — قطاع التطوير العقاري' : 'Dammam, Saudi Arabia — Real Estate Development sector' },
               ].map((card, i) => (
                 <div
                   key={i}
@@ -785,10 +789,10 @@ export function OpportunityDetailPage() {
             <h2 className="text-[18px] mb-5" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.projectDetails')}</h2>
             <div className="flex items-center">
               {[
-                { label: 'إجمالي التمويل', value: '500,000 ﷼', icon: Banknote },
-                { label: 'عدد المستثمرين', value: '42 مستثمر', icon: Users },
-                { label: 'تكرار السداد', value: 'شهري', icon: Repeat },
-                { label: 'الحد الأدنى', value: '5,000 ﷼', icon: DollarSign },
+                { label: t('opp.totalFinancing'), value: isAr ? '500,000 ﷼' : 'SAR 500,000', icon: Banknote },
+                { label: t('opp.investorCount'), value: isAr ? '42 مستثمر' : '42 investors', icon: Users },
+                { label: t('opp.repaymentFreq'), value: t('opp.monthly'), icon: Repeat },
+                { label: t('opp.minInvestment'), value: isAr ? '5,000 ﷼' : 'SAR 5,000', icon: DollarSign },
               ].map((item, i, arr) => (
                 <div key={i} className="flex items-center flex-1">
                   <div className="flex items-center gap-3">
@@ -815,7 +819,7 @@ export function OpportunityDetailPage() {
             <h2 className="text-[18px] mb-6" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.expectedReturns')}</h2>
 
             <div className="rounded-[12px] p-5 mb-6" style={{ backgroundColor: tk.successBg, border: `1px solid ${tk.successBorder}` }}>
-              <div className="text-[12px] mb-3" style={{ fontWeight: 500, color: tk.textSecondary }}>إجمالي العوائد المتوقعة</div>
+              <div className="text-[12px] mb-3" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.totalExpectedReturns')}</div>
               <div className="text-[32px] leading-none" style={{ fontWeight: 700, color: tk.successText }}>
                 {formatSAR(opp.totalReturns, { decimals: 0 })}
               </div>
@@ -824,25 +828,25 @@ export function OpportunityDetailPage() {
             <div className="rounded-[12px] p-5 mb-6" style={{ backgroundColor: tk.infoBg, border: `1px solid ${tk.infoBorder}` }}>
               <div className="flex items-start justify-between">
                 <div>
-                  <div className="text-[12px] mb-3" style={{ fontWeight: 500, color: tk.textSecondary }}>الدفعة القادمة</div>
+                  <div className="text-[12px] mb-3" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.nextPayment')}</div>
                   <div className="text-[24px] leading-none" style={{ fontWeight: 700, color: tk.infoText }}>
                     {formatSAR(opp.nextPaymentAmount, { decimals: 0 })}
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 text-[12px] mt-1" style={{ fontWeight: 500, color: tk.textSecondary }}>
                   <Calendar className="w-3.5 h-3.5" strokeWidth={1.5} />
-                  ١٥ يونيو ٢٠٢٦
+                  {isAr ? '١٥ يونيو ٢٠٢٦' : 'Jun 15, 2026'}
                 </div>
               </div>
             </div>
 
             <div className="flex items-center gap-6">
               <div className="flex-1 flex items-center justify-between py-3 px-4 rounded-[10px]" style={{ backgroundColor: tk.innerSurface }}>
-                <span className="text-[12px]" style={{ fontWeight: 500, color: tk.textSecondary }}>عدد الدفعات</span>
+                <span className="text-[12px]" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.paymentCount')}</span>
                 <span className="text-[16px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{opp.paymentCount}</span>
               </div>
               <div className="flex-1 flex items-center justify-between py-3 px-4 rounded-[10px]" style={{ backgroundColor: tk.innerSurface }}>
-                <span className="text-[12px]" style={{ fontWeight: 500, color: tk.textSecondary }}>متوسط الدفعة</span>
+                <span className="text-[12px]" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.avgPayment')}</span>
                 <span className="text-[16px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{formatSAR(opp.avgPayment, { decimals: 0 })}</span>
               </div>
             </div>
@@ -863,17 +867,17 @@ export function OpportunityDetailPage() {
                   backgroundPosition: 'left 10px center',
                 }}
               >
-                <option>٦ أشهر</option>
-                <option>٣ أشهر</option>
-                <option>سنة</option>
-                <option>الكل</option>
+                <option>{isAr ? '٦ أشهر' : '6 Months'}</option>
+                <option>{isAr ? '٣ أشهر' : '3 Months'}</option>
+                <option>{isAr ? 'سنة' : '1 Year'}</option>
+                <option>{isAr ? 'الكل' : 'All'}</option>
               </select>
             </div>
 
             <div className="flex items-center gap-5 mb-6 border-b" style={{ borderColor: tk.divider }}>
               {([
-                { key: 'returns', label: 'توقعات العائد' },
-                { key: 'growth', label: 'نمو التمويل' },
+                { key: 'returns', label: t('opp.returnForecast') },
+                { key: 'growth', label: t('opp.fundingGrowth') },
               ] as const).map((tab) => (
                 <button
                   key={tab.key}
@@ -916,17 +920,17 @@ export function OpportunityDetailPage() {
 
             <div className="rounded-[12px] p-5 mb-6 flex items-center justify-between" style={{ backgroundColor: tk.infoBg, border: `1px solid ${tk.infoBorder}` }}>
               <div>
-                <div className="text-[12px] mb-1" style={{ fontWeight: 500, color: tk.textSecondary }}>الدفعة القادمة</div>
+                <div className="text-[12px] mb-1" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.nextPaymentLabel')}</div>
                 <div className="text-[28px] leading-none" style={{ fontWeight: 700, color: tk.infoText }}>
                   {formatSAR(opp.nextPaymentAmount, { decimals: 0 })}
                 </div>
               </div>
-              <div className="text-left">
+              <div className="text-end">
                 <div className="flex items-center gap-1.5 text-[12px] mb-1" style={{ fontWeight: 600, color: tk.infoText }}>
                   <Calendar className="w-3.5 h-3.5" strokeWidth={1.5} />
-                  ١٥ يونيو ٢٠٢٦
+                  {isAr ? '١٥ يونيو ٢٠٢٦' : 'Jun 15, 2026'}
                 </div>
-                <div className="text-[11px]" style={{ fontWeight: 500, color: tk.textSecondary }}>خلال ٥ أيام</div>
+                <div className="text-[11px]" style={{ fontWeight: 500, color: tk.textSecondary }}>{isAr ? 'خلال ٥ أيام' : 'In 5 days'}</div>
               </div>
             </div>
 
@@ -938,9 +942,9 @@ export function OpportunityDetailPage() {
               const remainingAmount = [...current, ...future].reduce((s, r) => s + r.amount, 0);
 
               function statusLabel(s: string) {
-                if (s === 'current') return 'خلال ٥ أيام';
-                if (s === 'upcoming') return 'تم السداد';
-                return 'مستقبلي';
+                if (s === 'current') return isAr ? 'خلال ٥ أيام' : 'In 5 days';
+                if (s === 'upcoming') return isAr ? 'تم السداد' : 'Paid';
+                return isAr ? 'مستقبلي' : 'Future';
               }
               function statusStyle(s: string) {
                 if (s === 'current') return { bg: tk.infoBg, text: tk.infoText };
@@ -948,8 +952,14 @@ export function OpportunityDetailPage() {
                 return { bg: tk.scheduleFutureBg, text: tk.scheduleFutureColor };
               }
 
+              const monthEnMap: Record<string, string> = {
+                'يناير': 'January', 'فبراير': 'February', 'مارس': 'March', 'أبريل': 'April',
+                'مايو': 'May', 'يونيو': 'June', 'يوليو': 'July', 'أغسطس': 'August',
+                'سبتمبر': 'September', 'أكتوبر': 'October', 'نوفمبر': 'November', 'ديسمبر': 'December',
+              };
               const renderRow = (row: typeof opp.schedule[0], i: number, isLast: boolean, isCurrent: boolean) => {
                 const st = statusStyle(row.status);
+                const monthLabel = isAr ? row.month : (monthEnMap[row.month] || row.month);
                 return (
                   <div key={`${row.date}-${i}`} className="flex items-stretch gap-4">
                     <div className="flex flex-col items-center w-8 flex-shrink-0">
@@ -969,8 +979,8 @@ export function OpportunityDetailPage() {
                       style={isCurrent ? { backgroundColor: tk.scheduleCurrentRowBg } : {}}
                     >
                       <div>
-                        <div className="text-[13px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{row.month}</div>
-                        <div className="text-[11px] mt-0.5" style={{ color: tk.textMuted }}>{row.date}</div>
+                        <div className="text-[13px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{monthLabel}</div>
+                        <div className="text-[11px] mt-0.5" style={{ color: tk.textMuted }} dir="ltr">{row.date}</div>
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="text-[15px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{formatSAR(row.amount, { decimals: 0 })}</span>
@@ -987,36 +997,36 @@ export function OpportunityDetailPage() {
                 <div>
                   {upcoming.length > 0 && (
                     <div className="mb-2">
-                      <div className="text-[11px] mb-3 mr-12" style={{ fontWeight: 600, color: tk.successText }}>تم السداد ({upcoming.length})</div>
+                      <div className="text-[11px] mb-3 mx-12" style={{ fontWeight: 600, color: tk.successText }}>{t('opp.paid')} ({upcoming.length})</div>
                       {upcoming.map((row, i) => renderRow(row, i, false, false))}
                     </div>
                   )}
 
                   {current.length > 0 && (
                     <div className="mb-2">
-                      <div className="text-[11px] mb-3 mr-12" style={{ fontWeight: 600, color: tk.infoText }}>الدفعة الحالية</div>
+                      <div className="text-[11px] mb-3 mx-12" style={{ fontWeight: 600, color: tk.infoText }}>{t('opp.currentPayment')}</div>
                       {current.map((row, i) => renderRow(row, i, false, true))}
                     </div>
                   )}
 
                   {future.length > 0 && (
                     <div>
-                      <div className="text-[11px] mb-3 mr-12" style={{ fontWeight: 600, color: tk.textMuted }}>قادمة ({future.length})</div>
+                      <div className="text-[11px] mb-3 mx-12" style={{ fontWeight: 600, color: tk.textMuted }}>{t('opp.futurePayments')} ({future.length})</div>
                       {future.map((row, i) => renderRow(row, i, i === future.length - 1, false))}
                     </div>
                   )}
 
                   <div className="flex items-center gap-3 mt-4 pt-4 border-t" style={{ borderColor: tk.divider }}>
                     <div className="flex-1 flex items-center justify-between py-2.5 px-3 rounded-[8px]" style={{ backgroundColor: tk.innerSurface }}>
-                      <span className="text-[11px]" style={{ fontWeight: 500, color: tk.textMuted }}>إجمالي الدفعات</span>
+                      <span className="text-[11px]" style={{ fontWeight: 500, color: tk.textMuted }}>{t('opp.totalPayments')}</span>
                       <span className="text-[13px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{opp.paymentCount}</span>
                     </div>
                     <div className="flex-1 flex items-center justify-between py-2.5 px-3 rounded-[8px]" style={{ backgroundColor: tk.innerSurface }}>
-                      <span className="text-[11px]" style={{ fontWeight: 500, color: tk.textMuted }}>المتبقية</span>
+                      <span className="text-[11px]" style={{ fontWeight: 500, color: tk.textMuted }}>{t('opp.remaining')}</span>
                       <span className="text-[13px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{remainingCount}</span>
                     </div>
                     <div className="flex-1 flex items-center justify-between py-2.5 px-3 rounded-[8px]" style={{ backgroundColor: tk.innerSurface }}>
-                      <span className="text-[11px]" style={{ fontWeight: 500, color: tk.textMuted }}>المبلغ المتبقي</span>
+                      <span className="text-[11px]" style={{ fontWeight: 500, color: tk.textMuted }}>{t('opp.remainingAmount')}</span>
                       <span className="text-[13px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{formatSAR(remainingAmount, { decimals: 0 })}</span>
                     </div>
                   </div>
@@ -1034,7 +1044,7 @@ export function OpportunityDetailPage() {
             <h2 className="text-[20px] mb-6" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.riskAssessment')}</h2>
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <div className="text-[14px] mb-4" style={{ fontWeight: 600, color: tk.textPrimary }}>التصنيف الائتماني</div>
+                <div className="text-[14px] mb-4" style={{ fontWeight: 600, color: tk.textPrimary }}>{t('opp.creditRating')}</div>
                 <div className="flex items-center gap-1 mb-4">
                   {grades.map((g) => (
                     <div
@@ -1051,11 +1061,13 @@ export function OpportunityDetailPage() {
                   ))}
                 </div>
                 <p className="text-[13px] mb-4 leading-relaxed" style={{ color: tk.textSecondary }}>
-                  التصنيف الائتماني B يعكس مستوى مخاطر متوسط مع ضمانات كافية.
+                  {isAr
+                    ? 'التصنيف الائتماني B يعكس مستوى مخاطر متوسط مع ضمانات كافية.'
+                    : 'A B credit rating reflects a moderate risk level with sufficient guarantees in place.'}
                 </p>
-                <div className="text-[13px] mb-2" style={{ fontWeight: 600, color: tk.textPrimary }}>عوامل المخاطرة:</div>
+                <div className="text-[13px] mb-2" style={{ fontWeight: 600, color: tk.textPrimary }}>{t('opp.riskFactors')}:</div>
                 <ul className="space-y-1.5">
-                  {opp.riskFactors.map((f, i) => (
+                  {(isAr ? opp.riskFactors : ['Real estate market risk', 'Potential execution delays', 'Raw material price volatility']).map((f, i) => (
                     <li key={i} className="flex items-center gap-2 text-[13px]" style={{ color: tk.textSecondary }}>
                       <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} style={{ color: tk.warningText }} />
                       {f}
@@ -1064,17 +1076,17 @@ export function OpportunityDetailPage() {
                 </ul>
               </div>
               <div>
-                <div className="text-[14px] mb-3" style={{ fontWeight: 600, color: tk.textPrimary }}>الضمانات</div>
+                <div className="text-[14px] mb-3" style={{ fontWeight: 600, color: tk.textPrimary }}>{t('opp.guarantees')}</div>
                 <div className="flex items-start gap-2 mb-6 p-3 rounded-xl" style={{ backgroundColor: tk.successBg, border: `1px solid ${tk.successBorder}` }}>
                   <Shield className="w-4 h-4 mt-0.5 flex-shrink-0" strokeWidth={1.5} style={{ color: tk.successText }} />
-                  <span className="text-[13px]" style={{ color: tk.successDeep }}>{opp.guarantee}</span>
+                  <span className="text-[13px]" style={{ color: tk.successDeep }}>{isAr ? opp.guarantee : 'Bank guarantee for 30% of total financing'}</span>
                 </div>
-                <div className="text-[14px] mb-3" style={{ fontWeight: 600, color: tk.textPrimary }}>توزيع المخاطر</div>
+                <div className="text-[14px] mb-3" style={{ fontWeight: 600, color: tk.textPrimary }}>{t('opp.riskDistribution')}</div>
                 <div className="space-y-2">
                   {[
-                    { label: 'منخفض', pct: 20, color: tk.successText },
-                    { label: 'متوسط', pct: 50, color: tk.warningText },
-                    { label: 'مرتفع', pct: 30, color: tk.dangerText },
+                    { label: t('opp.low'), pct: 20, color: tk.successText },
+                    { label: t('opp.medium'), pct: 50, color: tk.warningText },
+                    { label: t('opp.high'), pct: 30, color: tk.dangerText },
                   ].map((r) => (
                     <div key={r.label}>
                       <div className="flex items-center justify-between text-[12px] mb-1">
@@ -1100,28 +1112,38 @@ export function OpportunityDetailPage() {
             <h2 className="text-[20px] mb-4" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.borrowerInfo')}</h2>
             <div className="grid grid-cols-3 gap-4 mb-4">
               <div>
-                <div className="text-[12px]" style={{ fontWeight: 500, color: tk.textSecondary }}>اسم الشركة</div>
-                <div className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{opp.borrower.name}</div>
+                <div className="text-[12px]" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.companyName')}</div>
+                <div className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{isAr ? opp.borrower.name : 'Al Nakheel Real Estate Co.'}</div>
               </div>
               <div>
-                <div className="text-[12px]" style={{ fontWeight: 500, color: tk.textSecondary }}>سنوات الخبرة</div>
-                <div className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{opp.borrower.experience} سنة</div>
+                <div className="text-[12px]" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.experience')}</div>
+                <div className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{opp.borrower.experience} {t('opp.years')}</div>
               </div>
               <div>
-                <div className="text-[12px]" style={{ fontWeight: 500, color: tk.textSecondary }}>القطاع</div>
-                <div className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{opp.borrower.sector}</div>
+                <div className="text-[12px]" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.sector')}</div>
+                <div className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{isAr ? opp.borrower.sector : 'Real Estate Development'}</div>
               </div>
             </div>
-            <p className="text-[14px] leading-relaxed" style={{ color: tk.textSecondary }}>{opp.borrower.bio}</p>
+            <p className="text-[14px] leading-relaxed" style={{ color: tk.textSecondary }}>
+              {isAr ? opp.borrower.bio : 'A leading real estate company in the Eastern Region, founded in 2012 and specialized in developing premium residential and commercial projects. Has completed more than 12 projects with a total value exceeding SAR 200 million.'}
+            </p>
           </div>
 
           <div className="rounded-2xl p-6" style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}>
             <h2 className="text-[20px] mb-4" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.documents')}</h2>
             <div className="grid grid-cols-2 gap-3">
-              {opp.documents.map((doc, i) => (
+              {opp.documents.map((doc, i) => {
+                const docNameMap: Record<string, string> = {
+                  'عقد التمويل': 'Financing Contract',
+                  'دراسة الجدوى': 'Feasibility Study',
+                  'التقرير المالي': 'Financial Report',
+                  'رخصة البناء': 'Building Permit',
+                };
+                const docName = isAr ? doc.name : (docNameMap[doc.name] || doc.name);
+                return (
                 <button
                   key={i}
-                  className="flex items-center gap-3 p-4 rounded-xl transition-colors text-right"
+                  className="flex items-center gap-3 p-4 rounded-xl transition-colors text-start"
                   style={{ border: `1px solid ${tk.innerBorder}`, background: 'transparent' }}
                   onMouseEnter={e => (e.currentTarget.style.background = tk.innerSurface)}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -1130,12 +1152,13 @@ export function OpportunityDetailPage() {
                     <FileText className="w-5 h-5" strokeWidth={1.5} style={{ color: tk.infoText }} />
                   </div>
                   <div className="flex-1">
-                    <div className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{doc.name}</div>
+                    <div className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{docName}</div>
                     <div className="text-[12px]" style={{ color: tk.textSecondary }}>{doc.size}</div>
                   </div>
                   <Download className="w-4 h-4" strokeWidth={1.5} style={{ color: tk.textSecondary }} />
                 </button>
-              ))}
+                );
+              })}
             </div>
           </div>
           </>
@@ -1156,23 +1179,23 @@ export function OpportunityDetailPage() {
                 </div>
               </div>
               <div className="text-[20px] text-center mb-1" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.invested')}</div>
-              <div className="text-[13px] text-center mb-6" style={{ color: tk.textSecondary }}>أنت مستثمر في هذه الفرصة</div>
+              <div className="text-[13px] text-center mb-6" style={{ color: tk.textSecondary }}>{t('opp.investedSubtitle')}</div>
 
               <div className="rounded-[12px] p-4 mb-4 text-center" style={{ backgroundColor: tk.innerSurface }}>
-                <div className="text-[12px] mb-1" style={{ fontWeight: 500, color: tk.textMuted }}>مبلغ استثمارك</div>
+                <div className="text-[12px] mb-1" style={{ fontWeight: 500, color: tk.textMuted }}>{t('opp.yourInvestment')}</div>
                 <div className="text-[28px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{formatSAR(investedAmount, { decimals: 0 })}</div>
               </div>
 
               <div className="grid grid-cols-2 gap-3 mb-5">
                 <div className="rounded-[12px] p-3 text-center" style={{ backgroundColor: tk.successBg, border: `1px solid ${tk.successBorder}` }}>
-                  <div className="text-[10px] mb-0.5" style={{ fontWeight: 500, color: tk.textSecondary }}>صافي العائد</div>
+                  <div className="text-[10px] mb-0.5" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.netReturn')}</div>
                   <div className="text-[16px]" style={{ fontWeight: 700, color: tk.successText }}>
                     {formatSAR(Math.round(investedAmount * (opp.roi / 100) * (opp.duration / 12) - investedAmount * 0.02 - investedAmount * 0.02 * 0.15), { decimals: 0 })}
                   </div>
                 </div>
                 <div className="rounded-[12px] p-3 text-center" style={{ backgroundColor: tk.infoBg, border: `1px solid ${tk.infoBorder}` }}>
-                  <div className="text-[10px] mb-0.5" style={{ fontWeight: 500, color: tk.textSecondary }}>الدفعة القادمة</div>
-                  <div className="text-[16px]" style={{ fontWeight: 700, color: tk.infoText }}>١٥ يونيو</div>
+                  <div className="text-[10px] mb-0.5" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.nextPayment')}</div>
+                  <div className="text-[16px]" style={{ fontWeight: 700, color: tk.infoText }}>{isAr ? '١٥ يونيو' : 'Jun 15'}</div>
                 </div>
               </div>
 
@@ -1180,26 +1203,26 @@ export function OpportunityDetailPage() {
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full" style={{ background: tk.successText }} />
                   <div className="flex-1">
-                    <div className="text-[12px]" style={{ fontWeight: 600, color: tk.textPrimary }}>تم تأكيد الاستثمار</div>
-                    <div className="text-[11px]" style={{ color: tk.textMuted }}>اليوم</div>
+                    <div className="text-[12px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{isAr ? 'تم تأكيد الاستثمار' : 'Investment confirmed'}</div>
+                    <div className="text-[11px]" style={{ color: tk.textMuted }}>{isAr ? 'اليوم' : 'Today'}</div>
                   </div>
                 </div>
-                <div className="w-px h-3 mr-[3.5px] my-1" style={{ backgroundColor: tk.divider }} />
+                <div className="w-px h-3 mx-[3.5px] my-1" style={{ backgroundColor: tk.divider }} />
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full" style={{ border: `1.5px solid ${tk.divider}` }} />
                   <div className="flex-1">
-                    <div className="text-[12px]" style={{ color: tk.textSecondary }}>أول دفعة متوقعة</div>
-                    <div className="text-[11px]" style={{ color: tk.textMuted }}>١٥ يونيو ٢٠٢٦</div>
+                    <div className="text-[12px]" style={{ color: tk.textSecondary }}>{isAr ? 'أول دفعة متوقعة' : 'First payment expected'}</div>
+                    <div className="text-[11px]" style={{ color: tk.textMuted }}>{isAr ? '١٥ يونيو ٢٠٢٦' : 'Jun 15, 2026'}</div>
                   </div>
                 </div>
               </div>
 
               <button
-                onClick={() => navigate('/portfolio')}
+                onClick={() => navigate('/app/portfolio')}
                 className="w-full h-12 rounded-[12px] text-[14px] text-white transition-all duration-200 active:scale-[0.98] mb-2"
                 style={{ backgroundColor: tk.primary, fontWeight: 600 }}
               >
-                عرض استثماراتي
+                {t('opp.viewPortfolio')}
               </button>
               <button
                 onClick={() => navigate('/app/opportunities')}
@@ -1208,13 +1231,13 @@ export function OpportunityDetailPage() {
                 onMouseEnter={e => (e.currentTarget.style.background = tk.secondaryBtnHover)}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
-                تصفح فرص أخرى
+                {t('opp.browseMore')}
               </button>
             </div>
           ) : (
             <div>
             <h3 className="text-[22px] text-center mb-1" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.startInvesting')}</h3>
-            <p className="text-[14px] text-center mb-6" style={{ color: tk.textSecondary }}>أدخل المبلغ الذي ترغب باستثماره</p>
+            <p className="text-[14px] text-center mb-6" style={{ color: tk.textSecondary }}>{t('opp.enterAmount')}</p>
 
             <div className="mb-6">
               <div
@@ -1229,7 +1252,7 @@ export function OpportunityDetailPage() {
                   className="text-[13px] mb-3 transition-colors duration-200"
                   style={{ fontWeight: 500, color: amount > 0 ? (tk.isVIP ? tk.infoText : tk.primary) : tk.textMuted }}
                 >
-                  المبلغ (ريال)
+                  {t('opp.amountLabel')}
                 </div>
                 <input
                   type="text"
@@ -1239,7 +1262,7 @@ export function OpportunityDetailPage() {
                     const raw = e.target.value.replace(/[^0-9]/g, '');
                     setAmount(raw ? parseInt(raw, 10) : 0);
                   }}
-                  placeholder="أدخل المبلغ"
+                  placeholder={t('opp.amountPlaceholder')}
                   className="w-full text-center text-[42px] outline-none bg-transparent transition-all duration-200"
                   style={{ fontWeight: 700, color: tk.isVIP ? tk.infoText : tk.primary }}
                 />
@@ -1254,18 +1277,18 @@ export function OpportunityDetailPage() {
               </div>
               <div className="flex items-center justify-center gap-2 mt-2">
                 <span className="text-[12px]" style={{ fontWeight: 500, color: tk.textMuted }}>
-                  الحد الأدنى: {formatSAR(opp.minInvestment, { decimals: 0 })}
+                  {t('opp.minLabel')}: {formatSAR(opp.minInvestment, { decimals: 0 })}
                 </span>
                 {amount > 0 && amount < opp.minInvestment && (
                   <span className="text-[11px] transition-opacity duration-200" style={{ fontWeight: 500, color: tk.dangerText }}>
-                    — أقل من الحد الأدنى
+                    — {t('opp.belowMin')}
                   </span>
                 )}
               </div>
             </div>
 
             <div className="mb-6">
-              <div className="text-[13px] text-center mb-3" style={{ fontWeight: 500, color: tk.textMuted }}>أو اختر مبلغاً سريعاً</div>
+              <div className="text-[13px] text-center mb-3" style={{ fontWeight: 500, color: tk.textMuted }}>{t('opp.quickSelect')}</div>
               <div className="grid grid-cols-3 gap-3">
                 {[5000, 10000, 25000].map((v) => {
                   const selected = amount === v;
@@ -1290,7 +1313,7 @@ export function OpportunityDetailPage() {
             </div>
 
             <div className="text-center mb-6">
-              <div className="text-[13px] mb-2" style={{ fontWeight: 500, color: tk.textMuted }}>العائد المتوقع ({opp.duration} شهر)</div>
+              <div className="text-[13px] mb-2" style={{ fontWeight: 500, color: tk.textMuted }}>{t('opp.expectedReturn')} ({opp.duration} {t('opp.months')})</div>
               <div
                 className="transition-all duration-300"
                 style={{
@@ -1311,12 +1334,12 @@ export function OpportunityDetailPage() {
               return (
                 <div className="flex items-center justify-between mb-4 text-[12px]">
                   <span style={{ fontWeight: 400, color: tk.textMuted }}>
-                    رصيدك المتاح: <span style={{ fontWeight: 600, color: tk.textPrimary }}>{formatSAR(walletBalance, { decimals: 0 })}</span>
+                    {t('opp.walletBalance')}: <span style={{ fontWeight: 600, color: tk.textPrimary }}>{formatSAR(walletBalance, { decimals: 0 })}</span>
                   </span>
                   {insufficient && valid ? (
-                    <span className="transition-opacity duration-200" style={{ fontWeight: 500, color: tk.dangerText }}>الرصيد غير كافي</span>
+                    <span className="transition-opacity duration-200" style={{ fontWeight: 500, color: tk.dangerText }}>{t('opp.insufficientBalance')}</span>
                   ) : (
-                    <button className="hover:underline" style={{ fontWeight: 500, color: tk.isVIP ? tk.infoText : tk.primary }}>+ إضافة رصيد</button>
+                    <button className="hover:underline" style={{ fontWeight: 500, color: tk.isVIP ? tk.infoText : tk.primary }}>{t('opp.addBalance')}</button>
                   )}
                 </div>
               );
@@ -1340,7 +1363,7 @@ export function OpportunityDetailPage() {
                   disabled={!canInvest}
                   onClick={() => canInvest && setModalOpen(true)}
                 >
-                  استثمر الآن
+                  {t('opp.investNow')}
                 </button>
               );
             })()}

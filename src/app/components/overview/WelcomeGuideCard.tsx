@@ -1,43 +1,46 @@
 import { Link } from 'react-router';
 import { Wallet, TrendingUp, PieChart, CheckCircle2, Check, Rocket } from 'lucide-react';
+import { useI18n } from '../../i18n';
 
 interface WelcomeGuideCardProps {
   completedSteps?: number;
 }
 
 export function WelcomeGuideCard({ completedSteps = 1 }: WelcomeGuideCardProps) {
+  const { lang } = useI18n();
+  const isAr = lang === 'ar';
   const totalSteps = 3;
   const isAllComplete = completedSteps >= totalSteps;
   const progressPercent = Math.round((completedSteps / totalSteps) * 100);
 
   const upcomingHints: Record<number, string> = {
-    2: 'سيتم تفعيل هذه الخطوة بعد أول استثمار',
+    2: isAr ? 'سيتم تفعيل هذه الخطوة بعد أول استثمار' : 'This step unlocks after your first investment',
   };
 
   const steps = [
     {
       icon: Wallet,
-      title: 'أضف رصيد',
-      description: 'قم بإيداع الأموال في محفظتك للبدء',
-      action: 'إيداع الآن',
+      title: isAr ? 'أضف رصيد' : 'Add Funds',
+      description: isAr ? 'قم بإيداع الأموال في محفظتك للبدء' : 'Deposit funds into your wallet to get started',
+      action: isAr ? 'إيداع الآن' : 'Deposit now',
       link: '/wallet',
       color: '#0D82F9',
       bgColor: 'rgba(13, 130, 249, 0.1)',
     },
     {
       icon: TrendingUp,
-      title: 'استكشف الفرص',
-      description: 'تصفح الفرص الاستثمارية المتاحة',
-      action: 'عرض الفرص',
+      title: isAr ? 'استكشف الفرص' : 'Explore Opportunities',
+      description: isAr ? 'تصفح الفرص الاستثمارية المتاحة' : 'Browse available investment opportunities',
+      action: isAr ? 'عرض الفرص' : 'View opportunities',
       link: '/app/opportunities',
       color: '#002E83',
       bgColor: 'rgba(0, 46, 131, 0.1)',
     },
     {
       icon: PieChart,
-      title: 'نوّع محفظتك',
-      description: 'استثمر في عدة فرص لتقليل المخاطر',
-      action: 'تعرف على المزيد',
+      title: isAr ? 'نوّع محفظتك' : 'Diversify Your Portfolio',
+      description: isAr ? 'استثمر في عدة فرص لتقليل المخاطر' : 'Invest across multiple opportunities to reduce risk',
+      action: isAr ? 'تعرف على المزيد' : 'Learn more',
       link: '/app/opportunities',
       color: '#10B981',
       bgColor: 'rgba(16, 185, 129, 0.1)',
@@ -61,10 +64,10 @@ export function WelcomeGuideCard({ completedSteps = 1 }: WelcomeGuideCardProps) 
           <Rocket className="w-7 h-7 text-[#10B981]" strokeWidth={2} />
         </div>
         <h3 className="text-[18px] text-[#0B1A3A] mb-2" style={{ fontWeight: 700 }}>
-          أنت جاهز للاستثمار!
+          {isAr ? 'أنت جاهز للاستثمار!' : 'You\'re ready to invest!'}
         </h3>
         <p className="text-[13px] text-[#6B7280] mb-5 max-w-[260px] leading-relaxed">
-          أكملت جميع الخطوات بنجاح. ابدأ باستكشاف الفرص المتاحة
+          {isAr ? 'أكملت جميع الخطوات بنجاح. ابدأ باستكشاف الفرص المتاحة' : 'You\'ve completed all the steps. Start exploring available opportunities'}
         </p>
         <Link
           to="/app/opportunities"
@@ -78,7 +81,7 @@ export function WelcomeGuideCard({ completedSteps = 1 }: WelcomeGuideCardProps) 
           }}
         >
           <TrendingUp className="w-4 h-4" strokeWidth={2.5} />
-          <span>استكشف الفرص</span>
+          <span>{isAr ? 'استكشف الفرص' : 'Explore Opportunities'}</span>
         </Link>
       </div>
     );
@@ -102,10 +105,10 @@ export function WelcomeGuideCard({ completedSteps = 1 }: WelcomeGuideCardProps) 
         </div>
         <div className="flex-1">
           <h3 className="text-[17px] text-[#0B1A3A]" style={{ fontWeight: 700 }}>
-            ابدأ رحلتك الاستثمارية
+            {isAr ? 'ابدأ رحلتك الاستثمارية' : 'Start your investment journey'}
           </h3>
           <p className="text-[12px] text-[#6B7280] mt-0.5">
-            اتبع هذه الخطوات البسيطة لبدء الاستثمار
+            {isAr ? 'اتبع هذه الخطوات البسيطة لبدء الاستثمار' : 'Follow these simple steps to start investing'}
           </p>
         </div>
       </div>
@@ -122,7 +125,7 @@ export function WelcomeGuideCard({ completedSteps = 1 }: WelcomeGuideCardProps) 
           />
         </div>
         <span className="text-[12px] text-[#0B1A3A] flex-shrink-0" style={{ fontWeight: 700 }}>
-          %{progressPercent}
+          {progressPercent}%
         </span>
       </div>
 
@@ -167,7 +170,7 @@ export function WelcomeGuideCard({ completedSteps = 1 }: WelcomeGuideCardProps) 
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <h4 className="text-[13px] mb-0.5" style={{ fontWeight: 600, color: '#0B1A3A' }}>
-                  {isCompleted && <span className="text-[#10B981] ml-1">✓</span>}
+                  {isCompleted && <span className="text-[#10B981] mx-1">✓</span>}
                   {step.title}
                 </h4>
                 <p className="text-[11px] text-[#6B7280] leading-relaxed">
@@ -179,7 +182,7 @@ export function WelcomeGuideCard({ completedSteps = 1 }: WelcomeGuideCardProps) 
                     className="inline-flex items-center gap-1 text-[11px] hover:underline mt-1.5"
                     style={{ color: '#0D82F9', fontWeight: 700 }}
                   >
-                    {step.action} ←
+                    {step.action} {isAr ? '←' : '→'}
                   </Link>
                 )}
                 {isUpcoming && upcomingHints[index] && (

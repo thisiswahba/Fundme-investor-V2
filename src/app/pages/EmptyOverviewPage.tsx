@@ -44,7 +44,7 @@ export function EmptyOverviewPage() {
           }}
         >
           <TrendingUp className="w-4 h-4" strokeWidth={2.5} />
-          <span>استثمر الآن</span>
+          <span>{isAr ? 'استثمر الآن' : 'Invest Now'}</span>
         </Link>
       </div>
 

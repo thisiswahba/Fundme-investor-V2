@@ -1,23 +1,26 @@
 import { TrendingUp, PieChart, Calendar } from 'lucide-react';
+import { useI18n } from '../../i18n';
 
 export function EmptyKPISummary() {
+  const { lang } = useI18n();
+  const isAr = lang === 'ar';
   const kpis = [
     {
-      label: 'إجمالي العوائد',
+      label: isAr ? 'إجمالي العوائد' : 'Total Returns',
       value: '0',
       icon: TrendingUp,
       color: '#10B981',
       bgColor: 'rgba(16, 185, 129, 0.1)',
     },
     {
-      label: 'عدد الاستثمارات',
+      label: isAr ? 'عدد الاستثمارات' : 'Investments',
       value: '0',
       icon: PieChart,
       color: '#0D82F9',
       bgColor: 'rgba(13, 130, 249, 0.1)',
     },
     {
-      label: 'متوسط العائد',
+      label: isAr ? 'متوسط العائد' : 'Avg. Return',
       value: '+0%',
       icon: Calendar,
       color: '#002E83',
@@ -37,9 +40,9 @@ export function EmptyKPISummary() {
           <div
             key={index}
             className="flex-1 p-5"
-            style={!isLast ? { borderLeft: '1px solid #E5E7EB' } : undefined}
+            style={!isLast ? { borderInlineEnd: '1px solid #E5E7EB' } : undefined}
           >
-            {/* Icon + Label row — RTL: icon first = right, label follows */}
+            {/* Icon + Label row */}
             <div className="flex items-center gap-2 mb-6">
               <div
                 className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -51,7 +54,7 @@ export function EmptyKPISummary() {
                 {kpi.label}
               </span>
             </div>
-            {/* Value — right-aligned */}
+            {/* Value */}
             <div
               className="text-[28px] text-[#0B1A3A]"
               style={{ fontWeight: 700, letterSpacing: '-0.01em', opacity: 0.5 }}

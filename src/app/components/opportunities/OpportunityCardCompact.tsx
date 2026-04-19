@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { formatSAR, formatPercentage } from '../../utils/currency';
-import { ArrowLeft, Bell, CheckCircle, Clock } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Bell, CheckCircle, Clock } from 'lucide-react';
 import { usePersona } from '../../demoPersona';
+import { useI18n } from '../../i18n';
 import { colors } from '../fundme';
 
 interface OpportunityCardCompactProps {
@@ -82,20 +83,31 @@ const patterns = [Pattern1, Pattern2, Pattern3];
 
 /* ── Risk Config ── */
 
-const riskConfigLight: Record<string, { label: string; color: string; bg: string; border: string }> = {
-  A: { label: 'A · منخفض جداً', color: '#2BB673', bg: '#F0FDF4', border: '#BBF7D0' },
-  B: { label: 'B · منخفض', color: '#2BB673', bg: '#F0FDF4', border: '#BBF7D0' },
-  C: { label: 'C · متوسط', color: '#D97706', bg: '#FFFBEB', border: '#FDE68A' },
-  D: { label: 'D · مرتفع', color: '#EF4444', bg: '#FEF2F2', border: '#FECACA' },
-  E: { label: 'E · مرتفع جداً', color: '#EF4444', bg: '#FEF2F2', border: '#FECACA' },
+const riskLabel = (k: string, isAr: boolean) => {
+  const map: Record<string, { ar: string; en: string }> = {
+    A: { ar: 'A · منخفض جداً', en: 'A · Very Low' },
+    B: { ar: 'B · منخفض', en: 'B · Low' },
+    C: { ar: 'C · متوسط', en: 'C · Moderate' },
+    D: { ar: 'D · مرتفع', en: 'D · High' },
+    E: { ar: 'E · مرتفع جداً', en: 'E · Very High' },
+  };
+  return (map[k] || map.B)[isAr ? 'ar' : 'en'];
 };
 
-const riskConfigDark: Record<string, { label: string; color: string; bg: string; border: string }> = {
-  A: { label: 'A · منخفض جداً', color: '#34D399', bg: 'rgba(52,211,153,0.12)', border: 'rgba(52,211,153,0.3)' },
-  B: { label: 'B · منخفض', color: '#34D399', bg: 'rgba(52,211,153,0.12)', border: 'rgba(52,211,153,0.3)' },
-  C: { label: 'C · متوسط', color: '#FBBF24', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.3)' },
-  D: { label: 'D · مرتفع', color: '#F87171', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' },
-  E: { label: 'E · مرتفع جداً', color: '#F87171', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' },
+const riskConfigLight: Record<string, { color: string; bg: string; border: string }> = {
+  A: { color: '#2BB673', bg: '#F0FDF4', border: '#BBF7D0' },
+  B: { color: '#2BB673', bg: '#F0FDF4', border: '#BBF7D0' },
+  C: { color: '#D97706', bg: '#FFFBEB', border: '#FDE68A' },
+  D: { color: '#EF4444', bg: '#FEF2F2', border: '#FECACA' },
+  E: { color: '#EF4444', bg: '#FEF2F2', border: '#FECACA' },
+};
+
+const riskConfigDark: Record<string, { color: string; bg: string; border: string }> = {
+  A: { color: '#34D399', bg: 'rgba(52,211,153,0.12)', border: 'rgba(52,211,153,0.3)' },
+  B: { color: '#34D399', bg: 'rgba(52,211,153,0.12)', border: 'rgba(52,211,153,0.3)' },
+  C: { color: '#FBBF24', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.3)' },
+  D: { color: '#F87171', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' },
+  E: { color: '#F87171', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' },
 };
 
 function buildCardTokens(isVIP: boolean) {
@@ -176,8 +188,11 @@ export function OpportunityCardCompact({
   const [notified, setNotified] = useState(false);
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const { personaId } = usePersona();
+  const { lang } = useI18n();
+  const isAr = lang === 'ar';
   const tk = buildCardTokens(personaId === 'vip');
   const rk = tk.riskConfig[risk] || tk.riskConfig.B;
+  const Arrow = isAr ? ArrowLeft : ArrowRight;
 
   // Pick pattern by index or hash from ID
   const pIdx = patternIndex ?? (opportunityId.charCodeAt(opportunityId.length - 1) % 3);
@@ -215,12 +230,12 @@ export function OpportunityCardCompact({
               <div className="text-[32px] text-white leading-none" style={{ fontWeight: 700 }}>
                 {formatPercentage(returnValue)}
               </div>
-              <div className="text-[10px] text-white/50 mt-1" style={{ fontWeight: 500 }}>صافي العائد</div>
+              <div className="text-[10px] text-white/50 mt-1" style={{ fontWeight: 500 }}>{isAr ? 'صافي العائد' : 'Net Return'}</div>
             </div>
             {comingSoon ? (
               <div className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px]" style={{ background: 'rgba(255,255,255,0.12)', color: 'white', fontWeight: 600, backdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.1)' }}>
                 <span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B] animate-pulse" />
-                قريباً
+                {isAr ? 'قريباً' : 'Soon'}
               </div>
             ) : (
               <span className="text-[10px] text-white/30 font-mono" style={{ fontWeight: 500 }}>{opportunityId}</span>
@@ -244,7 +259,7 @@ export function OpportunityCardCompact({
             style={{ background: rk.bg, color: rk.color, border: `1px solid ${rk.border}`, fontWeight: 600 }}
           >
             <span className="w-1.5 h-1.5 rounded-full" style={{ background: rk.color }} />
-            {rk.label}
+            {riskLabel(risk, isAr)}
           </span>
           <span className="px-2 py-0.5 rounded-full text-[11px]" style={{ background: tk.pillBg, border: tk.pillBorder, color: tk.pillColor, fontWeight: 500 }}>
             {financingType}
@@ -261,9 +276,9 @@ export function OpportunityCardCompact({
             <>
               <div className="rounded-xl p-3 mb-3" style={{ background: tk.innerCardBg, border: tk.innerCardBorder }}>
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px]" style={{ fontWeight: 500, color: tk.textSecondary }}>يفتح خلال</span>
+                  <span className="text-[11px]" style={{ fontWeight: 500, color: tk.textSecondary }}>{isAr ? 'يفتح خلال' : 'Opens in'}</span>
                   <span className="text-[20px]" style={{ fontWeight: 700, color: tk.textPrimary }}>
-                    {launchLabel?.replace('يفتح خلال ', '') || '5 أيام'}
+                    {launchLabel?.replace('يفتح خلال ', '') || (isAr ? '5 أيام' : '5 days')}
                   </span>
                 </div>
               </div>
@@ -279,9 +294,9 @@ export function OpportunityCardCompact({
                 disabled={notified}
               >
                 {notified ? (
-                  <><CheckCircle className="w-3.5 h-3.5" strokeWidth={2} />تم تفعيل التنبيه</>
+                  <><CheckCircle className="w-3.5 h-3.5" strokeWidth={2} />{isAr ? 'تم تفعيل التنبيه' : 'Notification on'}</>
                 ) : (
-                  <><Bell className="w-3.5 h-3.5" strokeWidth={2} />أشعرني عند الإطلاق</>
+                  <><Bell className="w-3.5 h-3.5" strokeWidth={2} />{isAr ? 'أشعرني عند الإطلاق' : 'Notify me at launch'}</>
                 )}
               </button>
             </>
@@ -293,7 +308,7 @@ export function OpportunityCardCompact({
                 <div className="text-[11px]" style={{ color: tk.textMuted }}>
                   <span className="text-[18px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{formatSAR(fundedAmount, { decimals: 0 })}</span>
                   <span className="mx-1">/</span>
-                  {formatSAR(totalAmount, { decimals: 0 })} ر.س
+                  {formatSAR(totalAmount, { decimals: 0 })} {isAr ? 'ر.س' : 'SAR'}
                 </div>
                 <span className="text-[14px] font-mono" style={{ fontWeight: 600, color: tk.fundedPctColor }}>{fundingProgress}%</span>
               </div>
@@ -320,8 +335,8 @@ export function OpportunityCardCompact({
                 onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
               >
-                عرض التفاصيل
-                <ArrowLeft className="w-3.5 h-3.5" strokeWidth={2} />
+                {isAr ? 'عرض التفاصيل' : 'View Details'}
+                <Arrow className="w-3.5 h-3.5" strokeWidth={2} />
               </button>
             </>
           )}

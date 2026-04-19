@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { useI18n } from '../i18n';
 
 export default function AutoInvestBannerDark({ onConfigure }: { onConfigure?: () => void }) {
+  const { lang, dir } = useI18n();
+  const isAr = lang === 'ar';
   const [active, setActive] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [priHover, setPriHover] = useState(false);
@@ -21,7 +24,7 @@ export default function AutoInvestBannerDark({ onConfigure }: { onConfigure?: ()
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={{
-          width: '100%', height: 116, borderRadius: 20, padding: '0 32px', position: 'relative', overflow: 'hidden', cursor: 'pointer', direction: 'rtl',
+          width: '100%', height: 116, borderRadius: 20, padding: '0 32px', position: 'relative', overflow: 'hidden', cursor: 'pointer', direction: dir,
           display: 'flex', alignItems: 'center', gap: 28,
           background: active
             ? 'linear-gradient(135deg, rgba(13,148,136,0.08) 0%, #0C1C34 40%, rgba(13,148,136,0.04) 100%)'
@@ -98,22 +101,22 @@ export default function AutoInvestBannerDark({ onConfigure }: { onConfigure?: ()
                   <circle cx="10" cy="10" r="9" fill="#34d399" />
                   <path d="M6 10.5 L9 13.5 L14 7.5" stroke="#0f2847" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
                 </svg>
-                <span style={{ fontSize: 17, fontWeight: 700, color: '#f1f5f9' }}>تم تفعيل الاستثمار التلقائي</span>
+                <span style={{ fontSize: 17, fontWeight: 700, color: '#f1f5f9' }}>{isAr ? 'تم تفعيل الاستثمار التلقائي' : 'Auto Invest Active'}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 20, fontSize: 12, marginTop: 6 }}>
-                <span style={{ color: '#64748b' }}>استثمارات تلقائية: <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 13, fontWeight: 700, color: '#34d399' }}>12</span></span>
+                <span style={{ color: '#64748b' }}>{isAr ? 'استثمارات تلقائية:' : 'Auto investments:'} <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 13, fontWeight: 700, color: '#34d399' }}>12</span></span>
                 <div style={{ width: 1, height: 14, background: '#102344' }} />
-                <span style={{ color: '#64748b' }}>آخر تنفيذ: <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, fontWeight: 500, color: '#94a3b8' }}>قبل 3 ساعات</span></span>
+                <span style={{ color: '#64748b' }}>{isAr ? 'آخر تنفيذ:' : 'Last run:'} <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, fontWeight: 500, color: '#94a3b8' }}>{isAr ? 'قبل 3 ساعات' : '3 hours ago'}</span></span>
               </div>
             </>
           ) : (
             <>
-              <div style={{ fontSize: 17, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 }}>الاستثمار التلقائي</div>
-              <div style={{ fontSize: 13, color: '#94a3b8', marginBottom: 4 }}>حدد معاييرك ودع النظام يستثمر تلقائيًا في الفرص المناسبة لك</div>
+              <div style={{ fontSize: 17, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 }}>{isAr ? 'الاستثمار التلقائي' : 'Auto Invest'}</div>
+              <div style={{ fontSize: 13, color: '#94a3b8', marginBottom: 4 }}>{isAr ? 'حدد معاييرك ودع النظام يستثمر تلقائيًا في الفرص المناسبة لك' : 'Set your criteria and let the system auto-invest in matching opportunities'}</div>
               <div style={{ fontSize: 11, color: '#64748b', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span>بدون رسوم إضافية</span>
+                <span>{isAr ? 'بدون رسوم إضافية' : 'No extra fees'}</span>
                 <span style={{ width: 3, height: 3, borderRadius: '50%', background: '#334155' }} />
-                <span>تحكم كامل</span>
+                <span>{isAr ? 'تحكم كامل' : 'Full control'}</span>
               </div>
             </>
           )}
@@ -134,7 +137,7 @@ export default function AutoInvestBannerDark({ onConfigure }: { onConfigure?: ()
                   padding: '9px 22px', borderRadius: 12, cursor: 'pointer', transition: 'all 0.2s',
                 }}
               >
-                تعديل الإعدادات
+                {isAr ? 'تعديل الإعدادات' : 'Edit Settings'}
               </button>
               <button
                 onClick={e => { e.stopPropagation(); setActive(false); }}
@@ -142,7 +145,7 @@ export default function AutoInvestBannerDark({ onConfigure }: { onConfigure?: ()
                 onMouseLeave={() => setSecHover(false)}
                 style={{ fontSize: 11, color: secHover ? '#f87171' : '#475569', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.2s', whiteSpace: 'nowrap' }}
               >
-                إيقاف
+                {isAr ? 'إيقاف' : 'Deactivate'}
               </button>
             </>
           ) : (
@@ -164,7 +167,7 @@ export default function AutoInvestBannerDark({ onConfigure }: { onConfigure?: ()
                   transition: 'all 0.2s',
                 }}
               >
-                تفعيل الاستثمار التلقائي
+                {isAr ? 'تفعيل الاستثمار التلقائي' : 'Activate Auto Invest'}
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M9 1L3 9h4l-1 6 6-8H8l1-6z" /></svg>
               </button>
               <button
@@ -173,7 +176,7 @@ export default function AutoInvestBannerDark({ onConfigure }: { onConfigure?: ()
                 onMouseLeave={() => setSecHover(false)}
                 style={{ fontSize: 12, color: secHover ? '#93c5fd' : '#64748b', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.2s', whiteSpace: 'nowrap' }}
               >
-                كيف يعمل؟
+                {isAr ? 'كيف يعمل؟' : 'How it works?'}
               </button>
             </>
           )}

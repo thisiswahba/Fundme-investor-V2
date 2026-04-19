@@ -3,6 +3,7 @@ import { ArrowRight, ArrowLeft, SlidersHorizontal, ChevronDown, TrendingUp, Ligh
 import { OpportunityCardCompact } from '../components/opportunities/OpportunityCardCompact';
 import { Link, useNavigate } from 'react-router';
 import { usePersona } from '../demoPersona';
+import { useI18n } from '../i18n';
 import { colors } from '../components/fundme';
 
 function buildTokens(isVIP: boolean) {
@@ -99,60 +100,79 @@ function useTokens() {
   return buildTokens(personaId === 'vip');
 }
 
-const opportunities = [
+interface Opp {
+  id: number;
+  borrowerNameAr: string; borrowerNameEn: string;
+  opportunityId: string;
+  financingTypeAr: string; financingTypeEn: string;
+  roi: number; risk: 'A' | 'B' | 'C' | 'D';
+  tenorMonths: number;
+  fundingProgress: number; totalAmount: number; fundedAmount: number;
+  categoryIcon: 'invoice' | 'capital' | 'equipment' | 'expansion' | 'food' | 'innovation';
+  gradientTone: string;
+  recommended: boolean;
+}
+
+const opportunities: Opp[] = [
   {
-    id: 1, borrowerName: 'شركة البركة التجارية', opportunityId: 'FM-0001-309',
-    financingType: 'تمويل الفواتير', roi: 11.5, risk: 'B' as const, tenor: '20 شهر',
+    id: 1, borrowerNameAr: 'شركة البركة التجارية', borrowerNameEn: 'Al-Baraka Trading Co.', opportunityId: 'FM-0001-309',
+    financingTypeAr: 'تمويل الفواتير', financingTypeEn: 'Invoice Finance', roi: 11.5, risk: 'B', tenorMonths: 20,
     fundingProgress: 68, totalAmount: 500000, fundedAmount: 340000,
-    categoryIcon: 'invoice' as const, gradientTone: 'linear-gradient(135deg, #001d5a 0%, #0D82F9 100%)',
-    urgency: 'تبقى 32% فقط' as string | undefined, recommended: false,
+    categoryIcon: 'invoice', gradientTone: 'linear-gradient(135deg, #001d5a 0%, #0D82F9 100%)',
+    recommended: false,
   },
   {
-    id: 2, borrowerName: 'مؤسسة الأفق للتجزئة', opportunityId: 'FM-0002-412',
-    financingType: 'تمويل رأس المال', roi: 13.2, risk: 'C' as const, tenor: '20 شهر',
+    id: 2, borrowerNameAr: 'مؤسسة الأفق للتجزئة', borrowerNameEn: 'Al-Ufq Retail Est.', opportunityId: 'FM-0002-412',
+    financingTypeAr: 'تمويل رأس المال', financingTypeEn: 'Working Capital', roi: 13.2, risk: 'C', tenorMonths: 20,
     fundingProgress: 42, totalAmount: 350000, fundedAmount: 147000,
-    categoryIcon: 'capital' as const, gradientTone: 'linear-gradient(135deg, #001d5a 0%, #1e40af 100%)',
-    urgency: 'طلب عالي' as string | undefined, recommended: true,
+    categoryIcon: 'capital', gradientTone: 'linear-gradient(135deg, #001d5a 0%, #1e40af 100%)',
+    recommended: true,
   },
   {
-    id: 3, borrowerName: 'الشركة الصناعية المتقدمة', opportunityId: 'FM-0003-578',
-    financingType: 'تمويل المعدات', roi: 9.8, risk: 'A' as const, tenor: '24 شهر',
+    id: 3, borrowerNameAr: 'الشركة الصناعية المتقدمة', borrowerNameEn: 'Advanced Industrial Co.', opportunityId: 'FM-0003-578',
+    financingTypeAr: 'تمويل المعدات', financingTypeEn: 'Equipment Finance', roi: 9.8, risk: 'A', tenorMonths: 24,
     fundingProgress: 85, totalAmount: 750000, fundedAmount: 637500,
-    categoryIcon: 'equipment' as const, gradientTone: 'linear-gradient(135deg, #001d5a 0%, #0c4a6e 100%)',
-    urgency: 'تبقى 15% فقط' as string | undefined, recommended: true,
+    categoryIcon: 'equipment', gradientTone: 'linear-gradient(135deg, #001d5a 0%, #0c4a6e 100%)',
+    recommended: true,
   },
   {
-    id: 4, borrowerName: 'شركة النقل السريع', opportunityId: 'FM-0004-221',
-    financingType: 'تمويل التوسع', roi: 14.5, risk: 'C' as const, tenor: '20 شهر',
+    id: 4, borrowerNameAr: 'شركة النقل السريع', borrowerNameEn: 'Fast Transport Co.', opportunityId: 'FM-0004-221',
+    financingTypeAr: 'تمويل التوسع', financingTypeEn: 'Expansion Finance', roi: 14.5, risk: 'C', tenorMonths: 20,
     fundingProgress: 29, totalAmount: 450000, fundedAmount: 130500,
-    categoryIcon: 'expansion' as const, gradientTone: 'linear-gradient(135deg, #001d5a 0%, #075985 100%)',
-    urgency: undefined, recommended: true,
+    categoryIcon: 'expansion', gradientTone: 'linear-gradient(135deg, #001d5a 0%, #075985 100%)',
+    recommended: true,
   },
   {
-    id: 5, borrowerName: 'مطاعم النخبة السريعة', opportunityId: 'FM-0005-887',
-    financingType: 'تمويل التوسع', roi: 12.8, risk: 'B' as const, tenor: '20 شهر',
+    id: 5, borrowerNameAr: 'مطاعم النخبة السريعة', borrowerNameEn: 'Elite Quick Restaurants', opportunityId: 'FM-0005-887',
+    financingTypeAr: 'تمويل التوسع', financingTypeEn: 'Expansion Finance', roi: 12.8, risk: 'B', tenorMonths: 20,
     fundingProgress: 55, totalAmount: 600000, fundedAmount: 330000,
-    categoryIcon: 'food' as const, gradientTone: 'linear-gradient(135deg, #001d5a 0%, #0369a1 100%)',
-    urgency: 'سينتهي قريبًا' as string | undefined, recommended: false,
+    categoryIcon: 'food', gradientTone: 'linear-gradient(135deg, #001d5a 0%, #0369a1 100%)',
+    recommended: false,
   },
   {
-    id: 6, borrowerName: 'شركة التقنية التعليمية', opportunityId: 'FM-0006-134',
-    financingType: 'تمويل الابتكار', roi: 16.2, risk: 'D' as const, tenor: '24 شهر',
+    id: 6, borrowerNameAr: 'شركة التقنية التعليمية', borrowerNameEn: 'EdTech Solutions', opportunityId: 'FM-0006-134',
+    financingTypeAr: 'تمويل الابتكار', financingTypeEn: 'Innovation Finance', roi: 16.2, risk: 'D', tenorMonths: 24,
     fundingProgress: 18, totalAmount: 400000, fundedAmount: 72000,
-    categoryIcon: 'innovation' as const, gradientTone: 'linear-gradient(135deg, #001d5a 0%, #1e3a8a 100%)',
-    urgency: undefined, recommended: false,
+    categoryIcon: 'innovation', gradientTone: 'linear-gradient(135deg, #001d5a 0%, #1e3a8a 100%)',
+    recommended: false,
   },
 ];
 
 type SortKey = 'default' | 'roi' | 'risk' | 'progress';
-const sortLabels: Record<SortKey, string> = {
+const sortLabelsAr: Record<SortKey, string> = {
   default: 'الترتيب الافتراضي', roi: 'الأعلى عائدًا', risk: 'الأقل مخاطرة', progress: 'الأقرب اكتمالًا',
+};
+const sortLabelsEn: Record<SortKey, string> = {
+  default: 'Default order', roi: 'Highest return', risk: 'Lowest risk', progress: 'Closest to funded',
 };
 const riskOrder = { A: 1, B: 2, C: 3, D: 4, E: 5 };
 
 export function OpportunitiesPage() {
   const navigate = useNavigate();
   const tk = useTokens();
+  const { lang } = useI18n();
+  const isAr = lang === 'ar';
+  const sortLabels = isAr ? sortLabelsAr : sortLabelsEn;
   const [selectedRisk, setSelectedRisk] = useState<string>('all');
   const [sortBy, setSortBy] = useState<SortKey>('default');
   const [sortOpen, setSortOpen] = useState(false);
@@ -174,12 +194,12 @@ export function OpportunitiesPage() {
       {/* Page Header */}
       <div className="mb-6">
         <h1 className="text-[28px] mb-2" style={{ fontWeight: 700, color: tk.textPrimary }}>
-          الفرص الاستثمارية
+          {isAr ? 'الفرص الاستثمارية' : 'Investment Opportunities'}
         </h1>
         <div className="flex items-center gap-2 text-[13px]">
-          <span style={{ fontWeight: 600, color: tk.titleAccent }}>{opportunities.length} فرصة متاحة</span>
+          <span style={{ fontWeight: 600, color: tk.titleAccent }}>{opportunities.length} {isAr ? 'فرصة متاحة' : 'opportunities available'}</span>
           <span style={{ color: tk.textFaint }}>•</span>
-          <span style={{ color: tk.textSecondary }}>متوسط العائد <span style={{ fontWeight: 700, color: tk.returnAccent }}>{avgRoi}%</span></span>
+          <span style={{ color: tk.textSecondary }}>{isAr ? 'متوسط العائد' : 'Avg. return'} <span style={{ fontWeight: 700, color: tk.returnAccent }}>{avgRoi}%</span></span>
         </div>
       </div>
 
@@ -206,13 +226,17 @@ export function OpportunitiesPage() {
               <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(128,255,0,0.15)' }}>
                 <TrendingUp className="w-4 h-4" style={{ color: '#80FF00' }} strokeWidth={2.5} />
               </div>
-              <span className="text-[12px] text-white/50" style={{ fontWeight: 600 }}>فرص هذا الشهر</span>
+              <span className="text-[12px] text-white/50" style={{ fontWeight: 600 }}>{isAr ? 'فرص هذا الشهر' : 'This month\'s opportunities'}</span>
             </div>
             <h2 className="text-[24px] lg:text-[28px] text-white leading-tight mb-2" style={{ fontWeight: 700 }}>
-              استثمر بذكاء هذا الشهر
+              {isAr ? 'استثمر بذكاء هذا الشهر' : 'Invest smartly this month'}
             </h2>
             <p className="text-[14px] text-white/60 mb-5 max-w-[400px]">
-              متوسط العائد الحالي <span className="text-[#80FF00]" style={{ fontWeight: 700 }}>{avgRoi}%</span> — اختر من فرص مدروسة بعناية ومخاطر محسوبة
+              {isAr ? (
+                <>متوسط العائد الحالي <span className="text-[#80FF00]" style={{ fontWeight: 700 }}>{avgRoi}%</span> — اختر من فرص مدروسة بعناية ومخاطر محسوبة</>
+              ) : (
+                <>Current avg. return <span className="text-[#80FF00]" style={{ fontWeight: 700 }}>{avgRoi}%</span> — pick from carefully vetted opportunities with measured risk</>
+              )}
             </p>
             <Link
               to="/app/opportunities"
@@ -223,7 +247,7 @@ export function OpportunitiesPage() {
                 boxShadow: '0 8px 24px rgba(128, 255, 0, 0.25)',
               }}
             >
-              <span>ابدأ الاستثمار</span>
+              <span>{isAr ? 'ابدأ الاستثمار' : 'Start Investing'}</span>
               <ArrowL className="w-4 h-4" strokeWidth={2.5} />
             </Link>
           </div>
@@ -254,10 +278,12 @@ export function OpportunitiesPage() {
         </div>
         <div className="flex-1">
           <p className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>
-            الفرص ذات التصنيف A تنفد بسرعة
+            {isAr ? 'الفرص ذات التصنيف A تنفد بسرعة' : 'Grade A opportunities are filling up fast'}
           </p>
           <p className="text-[12px] mt-0.5" style={{ color: tk.textSecondary }}>
-            لديك فرص بعائد أعلى من متوسط المحفظة — استكشفها قبل اكتمال التمويل
+            {isAr
+              ? 'لديك فرص بعائد أعلى من متوسط المحفظة — استكشفها قبل اكتمال التمويل'
+              : 'Returns above your portfolio average — explore them before funding closes'}
           </p>
         </div>
         <button
@@ -265,7 +291,7 @@ export function OpportunitiesPage() {
           className="flex-shrink-0 px-4 py-2 rounded-lg text-[12px] transition-all hover:shadow-md"
           style={{ background: tk.insightBtnBg, color: tk.insightBtnColor, fontWeight: 700 }}
         >
-          عرض فرص A
+          {isAr ? 'عرض فرص A' : 'Show Grade A'}
         </button>
       </div>
 
@@ -273,13 +299,13 @@ export function OpportunitiesPage() {
       <div className="rounded-2xl p-5 mb-6" style={{ background: tk.filterSectionBg, border: tk.filterSectionBorder }}>
         <div className="flex items-center gap-2 mb-3">
           <Shield className="w-4 h-4" strokeWidth={2} style={{ color: tk.iconAccent }} />
-          <span className="text-[14px]" style={{ fontWeight: 700, color: tk.textPrimary }}>اختر الفرص المناسبة لك</span>
+          <span className="text-[14px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{isAr ? 'اختر الفرص المناسبة لك' : 'Pick opportunities that fit you'}</span>
         </div>
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-3 flex-wrap">
             <div className="flex items-center gap-2 ml-2">
               <SlidersHorizontal className="w-4 h-4" strokeWidth={2} style={{ color: tk.filterLabelColor }} />
-              <span className="text-[12px]" style={{ fontWeight: 500, color: tk.filterLabelColor }}>تصفية حسب</span>
+              <span className="text-[12px]" style={{ fontWeight: 500, color: tk.filterLabelColor }}>{isAr ? 'تصفية حسب' : 'Filter by'}</span>
             </div>
             {['all', 'A', 'B', 'C', 'D'].map((risk) => {
               const isActive = selectedRisk === risk;
@@ -298,7 +324,7 @@ export function OpportunitiesPage() {
                   onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = tk.filterChipHoverBg; }}
                   onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = tk.filterChipInactiveBg; }}
                 >
-                  {risk === 'all' ? 'جميع الفرص' : `تصنيف ${risk}`}
+                  {risk === 'all' ? (isAr ? 'جميع الفرص' : 'All') : (isAr ? `تصنيف ${risk}` : `Grade ${risk}`)}
                 </button>
               );
             })}
@@ -322,7 +348,7 @@ export function OpportunitiesPage() {
                     <button
                       key={key}
                       onClick={() => { setSortBy(key); setSortOpen(false); }}
-                      className="w-full text-right px-4 py-2.5 text-[13px] transition-colors"
+                      className="w-full text-start px-4 py-2.5 text-[13px] transition-colors"
                       style={{ fontWeight: isActive ? 700 : 400, color: isActive ? tk.sortMenuActive : tk.sortMenuInactive }}
                       onMouseEnter={e => (e.currentTarget.style.background = tk.sortMenuHover)}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -340,14 +366,28 @@ export function OpportunitiesPage() {
       {/* All Opportunities Title */}
       <div className="flex items-center gap-2 mb-5">
         <TrendingUp className="w-5 h-5" strokeWidth={2} style={{ color: tk.iconAccent }} />
-        <h2 className="text-[18px]" style={{ fontWeight: 700, color: tk.textPrimary }}>جميع الفرص</h2>
-        <span className="text-[13px] mr-1" style={{ color: tk.textMuted }}>({filtered.length})</span>
+        <h2 className="text-[18px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{isAr ? 'جميع الفرص' : 'All Opportunities'}</h2>
+        <span className="text-[13px] mx-1" style={{ color: tk.textMuted }}>({filtered.length})</span>
       </div>
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {current.map((opp) => (
-          <OpportunityCardCompact key={opp.id} {...opp} patternIndex={opp.id % 3} onClick={() => navigate(`/app/opportunities/${opp.id}`)} />
+          <OpportunityCardCompact
+            key={opp.id}
+            borrowerName={isAr ? opp.borrowerNameAr : opp.borrowerNameEn}
+            opportunityId={opp.opportunityId}
+            financingType={isAr ? opp.financingTypeAr : opp.financingTypeEn}
+            roi={opp.roi}
+            risk={opp.risk}
+            tenor={isAr ? `${opp.tenorMonths} شهر` : `${opp.tenorMonths} months`}
+            fundingProgress={opp.fundingProgress}
+            totalAmount={opp.totalAmount}
+            fundedAmount={opp.fundedAmount}
+            categoryIcon={opp.categoryIcon}
+            patternIndex={opp.id % 3}
+            onClick={() => navigate(`/app/opportunities/${opp.id}`)}
+          />
         ))}
       </div>
 
@@ -405,10 +445,10 @@ export function OpportunitiesPage() {
             </div>
             <div>
               <p className="text-[15px] text-white" style={{ fontWeight: 700 }}>
-                احصل على فرص حصرية مع عضوية VIP
+                {isAr ? 'احصل على فرص حصرية مع عضوية VIP' : 'Unlock exclusive opportunities with VIP'}
               </p>
               <p className="text-[12px] text-white/50 mt-0.5">
-                عوائد أعلى • أولوية الوصول • تحليلات متقدمة
+                {isAr ? 'عوائد أعلى • أولوية الوصول • تحليلات متقدمة' : 'Higher returns • Priority access • Advanced analytics'}
               </p>
             </div>
           </div>
@@ -420,7 +460,7 @@ export function OpportunitiesPage() {
               boxShadow: '0 6px 16px rgba(212, 175, 55, 0.3)',
             }}
           >
-            <span>ترقية الآن</span>
+            <span>{isAr ? 'ترقية الآن' : 'Upgrade Now'}</span>
             <Zap className="w-3.5 h-3.5" fill="currentColor" strokeWidth={0} />
           </button>
         </div>

@@ -1,28 +1,34 @@
 import { Link } from 'react-router';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { OpportunityIllustration } from '../illustrations';
+import { useI18n } from '../../i18n';
 
 export function EmptyActiveInvestments() {
+  const { lang } = useI18n();
+  const isAr = lang === 'ar';
+  const Arrow = isAr ? ArrowLeft : ArrowRight;
   return (
     <div
       className="bg-white rounded-2xl pt-8 px-8"
       style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}
     >
-      {/* Title — right-aligned */}
+      {/* Title */}
       <h3 className="text-[18px] text-[#0B1A3A] mb-6" style={{ fontWeight: 700 }}>
-        الاستثمارات النشطة
+        {isAr ? 'الاستثمارات النشطة' : 'Active Investments'}
       </h3>
 
-      {/* Empty State — centered */}
+      {/* Empty State */}
       <div className="flex flex-col items-center pb-8" style={{ minHeight: '426px', justifyContent: 'center' }}>
         <div className="mb-8">
           <OpportunityIllustration size={160} />
         </div>
         <h4 className="text-[18px] text-[#0B1A3A] mb-2 text-center" style={{ fontWeight: 700 }}>
-          لا توجد استثمارات بعد
+          {isAr ? 'لا توجد استثمارات بعد' : 'No investments yet'}
         </h4>
         <p className="text-[14px] text-[#6B7280] mb-8 text-center" style={{ maxWidth: '320px' }}>
-          ابدأ باستكشاف الفرص الاستثمارية المتاحة وقم بأول استثمار لك
+          {isAr
+            ? 'ابدأ باستكشاف الفرص الاستثمارية المتاحة وقم بأول استثمار لك'
+            : 'Browse available opportunities and make your first investment'}
         </p>
         <Link
           to="/app/opportunities"
@@ -35,8 +41,8 @@ export function EmptyActiveInvestments() {
             boxShadow: '0 4px 12px rgba(0, 46, 131, 0.2)',
           }}
         >
-          <ArrowLeft className="w-4 h-4" strokeWidth={2.5} />
-          <span>استكشف الفرص</span>
+          <Arrow className="w-4 h-4" strokeWidth={2.5} />
+          <span>{isAr ? 'استكشف الفرص' : 'Explore Opportunities'}</span>
         </Link>
       </div>
     </div>

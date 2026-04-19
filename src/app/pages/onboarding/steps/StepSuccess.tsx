@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 import { motion } from "motion/react";
-import { ArrowLeft, Eye } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eye } from "lucide-react";
 import confetti from "canvas-confetti";
 import { useNavigate } from "react-router";
+import { useI18n } from "../../../i18n";
 
 function SuccessIllustration() {
   return (
@@ -203,6 +204,9 @@ function FloatingSparkle({ delay, x, y }: { delay: number; x: string; y: string 
 export function StepSuccess() {
   const navigate = useNavigate();
   const fired = useRef(false);
+  const { lang } = useI18n();
+  const isAr = lang === 'ar';
+  const NextArrow = isAr ? ArrowLeft : ArrowRight;
 
   useEffect(() => {
     if (fired.current) return;
@@ -242,7 +246,7 @@ export function StepSuccess() {
         transition={{ delay: 0.5 }}
       >
         <span className="inline-block text-xs font-semibold text-[#16A34A] bg-[#F0FDF4] px-3.5 py-1.5 rounded-full mb-3" style={{ border: '1px solid #DCFCE7' }}>
-          تم التفعيل ✓
+          {isAr ? 'تم التفعيل ✓' : 'Activated ✓'}
         </span>
       </motion.div>
 
@@ -253,12 +257,22 @@ export function StepSuccess() {
         transition={{ delay: 0.7 }}
       >
         <h2 className="text-[22px] font-bold text-[#0F2A44] mb-2">
-          حسابك الاستثماري جاهز الآن
+          {isAr ? 'حسابك الاستثماري جاهز الآن' : 'Your investment account is ready'}
         </h2>
         <p className="text-[13px] text-[#94A3B8] mb-2 leading-relaxed">
-          بناءً على ملفك الاستثماري، ننصحك بفرص ذات مخاطر متوسطة
-          <br />
-          لتحقيق نمو متوازن لمحفظتك.
+          {isAr ? (
+            <>
+              بناءً على ملفك الاستثماري، ننصحك بفرص ذات مخاطر متوسطة
+              <br />
+              لتحقيق نمو متوازن لمحفظتك.
+            </>
+          ) : (
+            <>
+              Based on your investor profile, we recommend medium-risk opportunities
+              <br />
+              for balanced portfolio growth.
+            </>
+          )}
         </p>
       </motion.div>
 
@@ -271,7 +285,7 @@ export function StepSuccess() {
       >
         <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#1D4ED8] bg-[#EFF6FF] px-3.5 py-1.5 rounded-full" style={{ border: '1px solid #DBEAFE' }}>
           <span className="w-1.5 h-1.5 rounded-full bg-[#1D4ED8]" />
-          ملف مخاطر: متوسط
+          {isAr ? 'ملف مخاطر: متوسط' : 'Risk profile: Medium'}
         </span>
       </motion.div>
 
@@ -287,8 +301,8 @@ export function StepSuccess() {
           className="w-full h-[52px] rounded-xl font-bold text-white transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
           style={{ background: 'linear-gradient(135deg, #1D4ED8, #1E40AF)', boxShadow: '0 6px 20px rgba(29,78,216,0.25)' }}
         >
-          <span>ابدأ الاستثمار الآن</span>
-          <ArrowLeft className="size-4" />
+          <span>{isAr ? 'ابدأ الاستثمار الآن' : 'Start investing now'}</span>
+          <NextArrow className="size-4" />
         </button>
         <button
           onClick={() => navigate("/app/portfolio")}
@@ -296,7 +310,7 @@ export function StepSuccess() {
           style={{ border: '1px solid #E5E7EB' }}
         >
           <Eye className="size-4" />
-          <span>عرض محفظتي</span>
+          <span>{isAr ? 'عرض محفظتي' : 'View my portfolio'}</span>
         </button>
       </motion.div>
     </div>
