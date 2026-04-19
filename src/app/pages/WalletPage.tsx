@@ -5,6 +5,7 @@ import { usePersona } from '../demoPersona';
 import { colors } from '../components/fundme';
 import { WithdrawModal } from '../components/WithdrawModal';
 import { AddFundsModal } from '../components/AddFundsModal';
+import { TransactionDetailSheet, type TransactionLike } from '../components/TransactionDetailSheet';
 import {
   Wallet, Plus, ArrowDownToLine, Building2, CreditCard, Download,
   ArrowUpRight, ArrowDownRight, Briefcase, TrendingUp, MoreHorizontal,
@@ -503,6 +504,7 @@ export function WalletPage() {
   const [addBankOpen, setAddBankOpen] = useState(false);
   const [addFundsOpen, setAddFundsOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [activeTx, setActiveTx] = useState<TransactionLike | null>(null);
 
   const groups = [
     { key: 'today', label: isAr ? 'اليوم' : 'Today' },
@@ -730,6 +732,7 @@ export function WalletPage() {
                 return (
                   <div
                     key={`${group.key}-${i}`}
+                    onClick={() => setActiveTx(tx)}
                     className="flex items-center gap-3 px-6 h-[60px] transition-colors cursor-pointer"
                     style={{ borderBottom: `1px solid ${tk.rowDivider}` }}
                     onMouseEnter={e => (e.currentTarget.style.background = tk.rowHover)}
@@ -801,6 +804,11 @@ export function WalletPage() {
         onClose={() => setWithdrawOpen(false)}
         availableBalance={wallet.available}
         bankAccounts={bankAccounts}
+      />
+      <TransactionDetailSheet
+        open={activeTx !== null}
+        onClose={() => setActiveTx(null)}
+        tx={activeTx}
       />
     </div>
   );
