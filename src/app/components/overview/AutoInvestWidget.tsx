@@ -1,187 +1,263 @@
 import { useState } from 'react';
-import { Sparkles, Zap, Target, PieChart, Rocket, Settings2, PauseCircle } from 'lucide-react';
+import { Zap, CheckCircle, Settings2 } from 'lucide-react';
 import { useI18n } from '../../i18n';
-import { usePersona } from '../../demoPersona';
 import { AutoInvestModal } from '../AutoInvestModal';
+
+function GraphIllustration({ active }: { active: boolean }) {
+  const base = active ? '#34d399' : '#60a5fa';
+  const accent = active ? '#5eead4' : '#93c5fd';
+  const node = active ? '#134e4a' : '#1e3a5f';
+  const id = active ? 'aiwA' : 'aiwI';
+
+  return (
+    <svg viewBox="0 0 280 130" fill="none" preserveAspectRatio="xMidYMid meet" className="w-full h-full">
+      <defs>
+        <linearGradient id={`${id}-fill`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={base} stopOpacity="0.22" />
+          <stop offset="100%" stopColor={base} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      {/* Dot grid */}
+      {Array.from({ length: 6 }).map((_, r) =>
+        Array.from({ length: 14 }).map((_, c) => (
+          <circle key={`${r}-${c}`} cx={10 + c * 20} cy={10 + r * 20} r="0.8" fill="white" opacity="0.06" />
+        ))
+      )}
+
+      {/* Area fill under graph */}
+      <polygon points="40,100 70,90 100,76 135,58 165,48 200,32 240,22 240,118 40,118" fill={`url(#${id}-fill)`} opacity="0.9" />
+
+      {/* Dashed flow path — animated */}
+      <path
+        d="M30 95 Q70 95 90 70 T140 55 T200 75"
+        stroke={accent}
+        strokeWidth="1.6"
+        strokeDasharray="5 4"
+        fill="none"
+        opacity="0.4"
+        style={{ animation: 'aiwDash 3s linear infinite' }}
+      />
+
+      {/* Main rising trend line */}
+      <polyline
+        points="40,100 70,90 100,76 135,58 165,48 200,32 240,22"
+        stroke={base}
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+        opacity="0.85"
+      />
+
+      {/* End nodes */}
+      <circle cx="70" cy="90" r="5" fill={node} stroke={base} strokeWidth="1.5" />
+      <circle cx="200" cy="32" r="5" fill={node} stroke={accent} strokeWidth="1.5" />
+
+      {/* Center node with play */}
+      <circle cx="135" cy="58" r="11" fill={base} fillOpacity="0.1" stroke={base} strokeWidth="0.7" opacity="0.7" />
+      <circle cx="135" cy="58" r="6" fill={node} stroke={base} strokeWidth="2" />
+      <polygon points="133,55 133,61 138,58" fill={base} />
+
+      {/* Pulse rings on the latest node — active only */}
+      {active && (
+        <>
+          <circle cx="200" cy="32" r="9" stroke={accent} strokeWidth="1" fill="none" style={{ animation: 'aiwPulse 2s ease-out infinite' }} />
+          <circle cx="200" cy="32" r="13" stroke={accent} strokeWidth="0.7" fill="none" style={{ animation: 'aiwPulse 2s ease-out infinite', animationDelay: '0.5s' }} />
+        </>
+      )}
+    </svg>
+  );
+}
 
 export function AutoInvestWidget() {
   const { lang } = useI18n();
   const isAr = lang === 'ar';
-  const { personaId } = usePersona();
-  const isVIP = personaId === 'vip';
   const [active, setActive] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [hoverCta, setHoverCta] = useState(false);
 
-  const features = [
-    {
-      icon: Zap,
-      title: isAr ? 'تنفيذ تلقائي' : 'Hands-free execution',
-      description: isAr ? 'استثمر دون تدخل يومي' : 'Invest without daily intervention',
-      color: '#0D82F9',
-      bgColor: 'rgba(13, 130, 249, 0.1)',
-    },
-    {
-      icon: Target,
-      title: isAr ? 'معايير مخصّصة' : 'Tailored criteria',
-      description: isAr ? 'تحكّم بالمخاطرة والقطاع والمدّة' : 'Control risk, sector, and tenor',
-      color: '#002E83',
-      bgColor: 'rgba(0, 46, 131, 0.1)',
-    },
-    {
-      icon: PieChart,
-      title: isAr ? 'تنويع تلقائي' : 'Auto diversification',
-      description: isAr ? 'يوزّع رأس المال على عدة فرص' : 'Spreads capital across deals',
-      color: '#10B981',
-      bgColor: 'rgba(16, 185, 129, 0.1)',
-    },
-  ];
-
-  // ── Active state ──
-  if (active) {
-    return (
-      <>
-        <div
-          className="rounded-2xl p-6 h-full flex flex-col items-center justify-center text-center"
-          style={{
-            background: 'linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%)',
-            border: '1px solid rgba(16, 185, 129, 0.2)',
-          }}
-        >
-          <div
-            className="w-14 h-14 rounded-full flex items-center justify-center mb-4"
-            style={{ background: 'rgba(16, 185, 129, 0.15)' }}
-          >
-            <Rocket className="w-7 h-7 text-[#10B981]" strokeWidth={2} />
-          </div>
-          <h3 className="text-[18px] text-[#0B1A3A] mb-2" style={{ fontWeight: 700 }}>
-            {isAr ? 'الاستثمار التلقائي مفعّل' : 'Auto-Invest is active'}
-          </h3>
-          <p className="text-[13px] text-[#6B7280] mb-5 max-w-[260px] leading-relaxed">
-            {isAr
-              ? 'سيقوم النظام بالاستثمار نيابةً عنك حسب معاييرك'
-              : "We'll invest on your behalf based on your criteria"}
-          </p>
-          <div className="flex items-center gap-2 w-full">
-            <button
-              onClick={() => setModalOpen(true)}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl transition-all hover:scale-105"
-              style={{
-                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-                color: '#FFFFFF',
-                fontWeight: 600,
-                fontSize: '13px',
-                boxShadow: '0 6px 16px rgba(16, 185, 129, 0.3)',
-              }}
-            >
-              <Settings2 className="w-4 h-4" strokeWidth={2.5} />
-              <span>{isAr ? 'تعديل الإعدادات' : 'Edit Settings'}</span>
-            </button>
-            <button
-              onClick={() => setActive(false)}
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-[12px] transition-colors"
-              style={{ fontWeight: 500, color: '#6B7280', background: 'transparent' }}
-            >
-              <PauseCircle className="w-4 h-4" strokeWidth={1.8} />
-              {isAr ? 'إيقاف' : 'Pause'}
-            </button>
-          </div>
-        </div>
-        <AutoInvestModal open={modalOpen} onClose={() => setModalOpen(false)} />
-      </>
-    );
-  }
-
-  // ── Default state — same style as WelcomeGuideCard ──
   return (
     <>
+      <style>{`
+        @keyframes aiwDash{to{stroke-dashoffset:-32}}
+        @keyframes aiwPulse{0%{r:9;opacity:0.5}100%{r:20;opacity:0}}
+        @keyframes aiwFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+      `}</style>
       <div
-        className="bg-white rounded-2xl p-6 h-full flex flex-col"
+        className="relative h-full rounded-2xl overflow-hidden flex flex-col"
         style={{
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
-          border: '1px solid rgba(13, 130, 249, 0.1)',
+          background: active
+            ? 'linear-gradient(135deg, rgba(13,148,136,0.10) 0%, #0C1C34 45%, rgba(13,148,136,0.04) 100%)'
+            : 'linear-gradient(135deg, rgba(37,99,235,0.10) 0%, #0C1C34 45%, rgba(96,165,250,0.04) 100%)',
+          border: `1px solid ${active ? 'rgba(52,211,153,0.2)' : 'rgba(96,165,250,0.18)'}`,
+          boxShadow: active
+            ? '0 8px 32px -8px rgba(52,211,153,0.15), 0 0 0 1px rgba(52,211,153,0.12)'
+            : '0 8px 32px -8px rgba(96,165,250,0.12), 0 0 0 1px rgba(96,165,250,0.08)',
+          animation: 'aiwFadeIn 0.5s cubic-bezier(.4,0,.2,1)',
         }}
       >
-        {/* Header */}
-        <div className="flex items-center gap-3">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ background: 'linear-gradient(135deg, #0D82F9 0%, #002E83 100%)' }}
-          >
-            <Sparkles className="w-5 h-5 text-white" strokeWidth={2.5} />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-[17px] text-[#0B1A3A]" style={{ fontWeight: 700 }}>
-              {isAr ? 'الاستثمار التلقائي' : 'Auto-Invest'}
-            </h3>
-            <p className="text-[12px] text-[#6B7280] mt-0.5">
-              {isAr ? 'دع المنصّة تستثمر نيابةً عنك بذكاء' : 'Let the platform invest for you intelligently'}
-            </p>
-          </div>
-        </div>
+        {/* Diagonal texture */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            opacity: 0.025,
+            backgroundImage: `repeating-linear-gradient(-45deg, transparent, transparent 8px, ${active ? '#34d399' : '#60a5fa'} 8px, ${active ? '#34d399' : '#60a5fa'} 9px)`,
+          }}
+        />
+        {/* Corner glow */}
+        <div
+          className="absolute -top-12 -right-12 w-44 h-44 rounded-full pointer-events-none"
+          style={{
+            background: `radial-gradient(circle, ${active ? 'rgba(52,211,153,0.18)' : 'rgba(96,165,250,0.16)'} 0%, transparent 70%)`,
+            filter: 'blur(28px)',
+          }}
+        />
 
-        {/* Tagline strip */}
-        <div className="flex items-center gap-3 mt-4 mb-5">
+        {/* Header — lightning pill in corner */}
+        <div className="relative px-5 pt-5 flex items-start justify-between gap-3">
           <div
-            className="flex-1 h-[8px] rounded-full overflow-hidden"
-            style={{ background: '#EDF0F7' }}
+            className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+            style={{
+              background: active ? 'rgba(52,211,153,0.12)' : 'rgba(96,165,250,0.12)',
+              border: `1px solid ${active ? 'rgba(52,211,153,0.25)' : 'rgba(96,165,250,0.25)'}`,
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
+            }}
           >
-            <div
-              className="h-full rounded-full"
-              style={{
-                width: '100%',
-                background: 'linear-gradient(90deg, #002E83 0%, #0D82F9 60%, #10B981 100%)',
-                opacity: 0.25,
-              }}
+            <Zap
+              className="w-5 h-5"
+              strokeWidth={2}
+              style={{ color: active ? '#34d399' : '#60a5fa' }}
             />
           </div>
-          <span className="text-[11px] text-[#0D82F9] flex-shrink-0" style={{ fontWeight: 700 }}>
-            {isAr ? 'موصى به' : 'Recommended'}
-          </span>
+          {active && (
+            <span
+              className="inline-flex items-center gap-1 h-6 px-2 rounded-md text-[10px] tracking-wide shrink-0 mt-1"
+              style={{
+                fontWeight: 700,
+                background: 'rgba(52,211,153,0.14)',
+                color: '#A7F3D0',
+                border: '1px solid rgba(52,211,153,0.3)',
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#34d399] animate-pulse" />
+              {isAr ? 'مفعّل' : 'ACTIVE'}
+            </span>
+          )}
         </div>
 
-        {/* Features — styled like WelcomeGuide steps */}
-        <div className="space-y-2.5 flex-1">
-          {features.map((f, index) => (
-            <div
-              key={index}
-              className="flex items-start gap-3 p-3.5 rounded-xl transition-all"
-              style={{ background: '#F9FAFB', border: '1px solid transparent' }}
-            >
-              <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: f.bgColor }}
-              >
-                <f.icon className="w-4 h-4" style={{ color: f.color }} strokeWidth={2} />
+        {/* Title block */}
+        <div className="relative px-5 pt-3">
+          <h3 className="text-[18px] mb-1.5" style={{ fontWeight: 700, color: '#f1f5f9', letterSpacing: '-0.01em' }}>
+            {isAr ? 'الاستثمار التلقائي' : 'Auto-Invest'}
+          </h3>
+          {active ? (
+            <p className="text-[12.5px] leading-relaxed" style={{ color: '#94a3b8' }}>
+              {isAr
+                ? 'النظام يستثمر تلقائيًا في الفرص المناسبة لمعاييرك'
+                : 'The system is auto-investing in opportunities that match your criteria'}
+            </p>
+          ) : (
+            <>
+              <p className="text-[12.5px] leading-relaxed mb-2.5" style={{ color: '#94a3b8' }}>
+                {isAr
+                  ? 'حدد معاييرك ودع النظام يستثمر تلقائيًا في الفرص المناسبة لك'
+                  : 'Set your criteria and let the system auto-invest in matching opportunities'}
+              </p>
+              <div className="flex items-center gap-2 text-[11px]" style={{ color: '#64748b' }}>
+                <span>{isAr ? 'بدون رسوم إضافية' : 'No extra fees'}</span>
+                <span className="w-[3px] h-[3px] rounded-full" style={{ background: '#334155' }} />
+                <span>{isAr ? 'تحكم كامل' : 'Full control'}</span>
               </div>
-              <div className="flex-1 min-w-0">
-                <h4 className="text-[13px] mb-0.5" style={{ fontWeight: 600, color: '#0B1A3A' }}>
-                  {f.title}
-                </h4>
-                <p className="text-[11px] text-[#6B7280] leading-relaxed">
-                  {f.description}
-                </p>
+            </>
+          )}
+        </div>
+
+        {/* Illustration — fills middle */}
+        <div className="relative flex-1 min-h-[120px] flex items-center justify-center px-5 my-3">
+          <GraphIllustration active={active} />
+        </div>
+
+        {/* Active stats row */}
+        {active && (
+          <div className="relative px-5 mb-3">
+            <div className="flex items-center justify-between gap-4 px-4 py-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <div>
+                <div className="text-[10px] uppercase mb-0.5" style={{ fontWeight: 600, color: '#64748b', letterSpacing: '0.08em' }}>
+                  {isAr ? 'تنفيذات' : 'Runs'}
+                </div>
+                <div className="text-[15px] font-mono tabular-nums" style={{ fontWeight: 700, color: '#34d399' }}>12</div>
+              </div>
+              <div className="w-px h-8" style={{ background: 'rgba(255,255,255,0.06)' }} />
+              <div className="text-right">
+                <div className="text-[10px] uppercase mb-0.5" style={{ fontWeight: 600, color: '#64748b', letterSpacing: '0.08em' }}>
+                  {isAr ? 'آخر تنفيذ' : 'Last run'}
+                </div>
+                <div className="text-[12px]" style={{ fontWeight: 600, color: '#94a3b8' }}>{isAr ? 'قبل 3 ساعات' : '3h ago'}</div>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        )}
 
-        {/* CTA */}
-        <button
-          onClick={() => { setActive(true); setModalOpen(true); }}
-          className="w-full mt-5 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl transition-all hover:scale-[1.02] cursor-pointer"
-          style={{
-            background: isVIP
-              ? 'linear-gradient(135deg, #2563EB 0%, #3B82F6 100%)'
-              : 'linear-gradient(135deg, #0D82F9 0%, #002E83 100%)',
-            color: '#FFFFFF',
-            fontWeight: 700,
-            fontSize: '14px',
-            boxShadow: '0 8px 24px rgba(13, 130, 249, 0.3)',
-          }}
-        >
-          <Sparkles className="w-4 h-4" strokeWidth={2.5} />
-          <span>{isAr ? 'تفعيل الاستثمار التلقائي' : 'Enable Auto-Invest'}</span>
-        </button>
+        {/* CTA + sub-link pinned to bottom */}
+        <div className="relative px-5 pb-5">
+          {active ? (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setModalOpen(true)}
+                onMouseEnter={() => setHoverCta(true)}
+                onMouseLeave={() => setHoverCta(false)}
+                className="flex-1 h-11 rounded-xl flex items-center justify-center gap-2 text-[13px] cursor-pointer transition-all"
+                style={{
+                  fontWeight: 700,
+                  color: '#34d399',
+                  background: hoverCta ? 'rgba(52,211,153,0.14)' : 'rgba(52,211,153,0.08)',
+                  border: `1px solid ${hoverCta ? 'rgba(52,211,153,0.35)' : 'rgba(52,211,153,0.2)'}`,
+                }}
+              >
+                <Settings2 className="w-4 h-4" strokeWidth={2} />
+                {isAr ? 'تعديل الإعدادات' : 'Edit Settings'}
+              </button>
+              <button
+                onClick={() => setActive(false)}
+                className="h-11 px-3 rounded-xl text-[12px] cursor-pointer transition-colors"
+                style={{ fontWeight: 500, color: '#475569', background: 'transparent' }}
+              >
+                {isAr ? 'إيقاف' : 'Pause'}
+              </button>
+            </div>
+          ) : (
+            <>
+              <button
+                onClick={() => { setActive(true); setModalOpen(true); }}
+                onMouseEnter={() => setHoverCta(true)}
+                onMouseLeave={() => setHoverCta(false)}
+                className="w-full h-12 rounded-xl flex items-center justify-center gap-2 text-[14px] text-white cursor-pointer transition-all"
+                style={{
+                  fontWeight: 700,
+                  background: 'linear-gradient(135deg, #2563eb, #3b82f6)',
+                  border: '1px solid rgba(96,165,250,0.3)',
+                  boxShadow: hoverCta
+                    ? '0 8px 28px -4px rgba(37,99,235,0.55), 0 0 32px -8px rgba(96,165,250,0.35)'
+                    : '0 4px 18px -4px rgba(37,99,235,0.45), 0 0 22px -10px rgba(96,165,250,0.25)',
+                  transform: hoverCta ? 'scale(1.015)' : 'scale(1)',
+                }}
+              >
+                <Zap className="w-4 h-4" strokeWidth={2.5} fill="currentColor" />
+                {isAr ? 'تفعيل الاستثمار التلقائي' : 'Activate Auto-Invest'}
+              </button>
+              <button
+                onClick={() => setModalOpen(true)}
+                className="w-full mt-2.5 text-[12px] cursor-pointer transition-colors"
+                style={{ fontWeight: 500, color: '#64748b', background: 'transparent' }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = '#93c5fd')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = '#64748b')}
+              >
+                {isAr ? 'كيف يعمل؟' : 'How does it work?'}
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <AutoInvestModal open={modalOpen} onClose={() => setModalOpen(false)} />
