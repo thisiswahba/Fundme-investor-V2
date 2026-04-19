@@ -4,36 +4,74 @@ import { EmptyPerformanceSection } from '../components/overview/EmptyPerformance
 import { EmptyActiveInvestments } from '../components/overview/EmptyActiveInvestments';
 import { EmptyTransactionsSection } from '../components/overview/EmptyTransactionsSection';
 import { OpportunitiesPreview } from '../components/overview/OpportunitiesPreview';
-import { AutoInvestWidget } from '../components/overview/AutoInvestWidget';
+import { WelcomeGuideCard } from '../components/overview/WelcomeGuideCard';
+import { Link } from 'react-router';
+import { TrendingUp } from 'lucide-react';
+import { usePersona } from '../demoPersona';
+import { useI18n } from '../i18n';
 
 export function EmptyOverviewPage() {
+  const { persona } = usePersona();
+  const { lang } = useI18n();
+  const isAr = lang === 'ar';
+  const firstName = isAr
+    ? persona.profile.nameAr.split(' ')[0]
+    : persona.profile.nameEn.split(' ')[0];
+
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-5 lg:py-7 pb-24 md:pb-8">
-
-      {/* A. Wallet Card — same hero used by the regular investor */}
-      <div className="mb-5">
-        <EmptyHeroSection />
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 md:pb-8">
+      {/* Page Header */}
+      <div className="flex items-start justify-between gap-6 mb-6">
+        <div>
+          <h1 className="text-[28px] lg:text-[36px] leading-tight mb-2" style={{ color: '#002E83', fontWeight: 700, letterSpacing: '-0.02em' }}>
+            {isAr ? `مرحباً، ${firstName} 👋` : `Welcome, ${firstName} 👋`}
+          </h1>
+          <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(0,0,0,0.6)', fontWeight: 400 }}>
+            {isAr
+              ? 'استثمر في فرص مختارة بعناية، وتابع أداء محفظتك، واستمتع بعوائد مجزية'
+              : 'Invest in curated opportunities, track your portfolio, and enjoy rewarding returns'}
+          </p>
+        </div>
+        <Link
+          to="/app/opportunities"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all hover:scale-105 flex-shrink-0"
+          style={{
+            background: 'linear-gradient(135deg, #0D82F9 0%, #002E83 100%)',
+            color: '#FFFFFF',
+            fontWeight: 600,
+            fontSize: '14px',
+            boxShadow: '0 8px 24px rgba(13, 130, 249, 0.3)',
+          }}
+        >
+          <TrendingUp className="w-4 h-4" strokeWidth={2.5} />
+          <span>{isAr ? 'استثمر الآن' : 'Invest Now'}</span>
+        </Link>
       </div>
 
-      {/* B. Metrics Row — empty/zero state matches the regular layout */}
-      <div className="mb-5">
-        <EmptyKPISummary />
+      {/* Wallet + Onboarding Guide */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
+        <div className="lg:col-span-2 order-2 lg:order-2 flex flex-col gap-5">
+          <EmptyHeroSection />
+          <EmptyKPISummary />
+        </div>
+        <div className="lg:col-span-1 order-1 lg:order-1">
+          <WelcomeGuideCard completedSteps={persona.onboarding.completedSteps} />
+        </div>
       </div>
 
-      {/* C. Performance + Auto-Invest — replaces the regular's investments/repayments slot */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
-        <EmptyPerformanceSection />
-        <AutoInvestWidget />
-      </div>
-
-      {/* D. Opportunities Preview — same as regular */}
-      <div className="mb-5">
+      {/* Opportunities Carousel */}
+      <div className="mb-6">
         <OpportunitiesPreview />
       </div>
 
-      {/* E. Active Investments + Transactions — empty states */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* Performance + Active Investments */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+        <EmptyPerformanceSection />
         <EmptyActiveInvestments />
+      </div>
+
+      {/* Recent Transactions */}
+      <div>
         <EmptyTransactionsSection />
       </div>
     </div>

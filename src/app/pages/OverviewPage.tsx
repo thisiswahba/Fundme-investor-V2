@@ -11,6 +11,7 @@ import { useI18n } from '../i18n';
 import { formatSAR, formatPercentage, formatChartValue } from '../utils/currency';
 import { OpportunitiesPreview } from '../components/overview/OpportunitiesPreview';
 import { EmptyHeroSection } from '../components/overview/EmptyHeroSection';
+import { AutoInvestWidget } from '../components/overview/AutoInvestWidget';
 import {
   InfoTile,
   colors,
@@ -450,6 +451,11 @@ export function OverviewPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
         <ActiveInvestments />
         <RepaymentsCard />
+      </div>
+
+      {/* D2. Auto-Invest Widget */}
+      <div className="mb-5">
+        <AutoInvestWidget />
       </div>
 
       {/* E. Opportunities Preview */}
