@@ -761,16 +761,17 @@ export function ProfilePage() {
 
       {/* ─── Two-column composition ─── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Main column — 2/3 */}
-        <div className="lg:col-span-2 space-y-5">
-          <PersonalInfo />
-          <KYC />
-          <Security />
+        {/* Main column — 2/3 (tabbed) */}
+        <div className="lg:col-span-2">
+          <MainColumnTabs />
         </div>
 
-        {/* Right rail — 1/3 (tabbed) */}
-        <div>
-          <RightRailTabs isVIP={isVIP} />
+        {/* Right rail — 1/3 */}
+        <div className="space-y-5">
+          {isVIP ? <EliteMemberCard /> : <EliteUpgradeCard />}
+          <POAAgreementCard />
+          <QuickLinks />
+          <DangerZone />
         </div>
       </div>
     </div>
@@ -778,26 +779,25 @@ export function ProfilePage() {
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   Right rail tabs
+   Main column tabs
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-type TabId = 'membership' | 'documents' | 'links' | 'account';
+type TabId = 'personal' | 'kyc' | 'security';
 
-function RightRailTabs({ isVIP }: { isVIP: boolean }) {
+function MainColumnTabs() {
   const { lang } = useI18n();
   const isAr = lang === 'ar';
   const tk = useTokens();
-  const [active, setActive] = useState<TabId>('membership');
+  const [active, setActive] = useState<TabId>('personal');
 
   const tabs: { id: TabId; label: string; labelEn: string; icon: React.FC<{ className?: string; strokeWidth?: number }> }[] = [
-    { id: 'membership', label: 'العضوية', labelEn: 'Membership', icon: Crown },
-    { id: 'documents', label: 'الوثائق', labelEn: 'Documents', icon: FileText },
-    { id: 'links', label: 'الروابط', labelEn: 'Links', icon: ExternalLink },
-    { id: 'account', label: 'الحساب', labelEn: 'Account', icon: AlertTriangle },
+    { id: 'personal', label: 'المعلومات الشخصية', labelEn: 'Personal', icon: User },
+    { id: 'kyc', label: 'اعرف عميلك', labelEn: 'KYC', icon: Briefcase },
+    { id: 'security', label: 'الأمان', labelEn: 'Security', icon: Shield },
   ];
 
   return (
-    <div className="space-y-3 lg:sticky lg:top-6">
+    <div className="space-y-4">
       {/* Tab strip */}
       <div
         className="rounded-2xl p-1.5 flex items-center gap-1"
@@ -813,7 +813,7 @@ function RightRailTabs({ isVIP }: { isVIP: boolean }) {
             <button
               key={tab.id}
               onClick={() => setActive(tab.id)}
-              className="flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all cursor-pointer"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl transition-all cursor-pointer"
               style={{
                 background: isActive
                   ? tk.isVIP
@@ -825,8 +825,8 @@ function RightRailTabs({ isVIP }: { isVIP: boolean }) {
               onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = tk.isVIP ? 'rgba(255,255,255,0.03)' : '#FBFCFD'; }}
               onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
             >
-              <tab.icon className="w-4 h-4" strokeWidth={isActive ? 2.2 : 1.8} />
-              <span className="text-[10px]" style={{ fontWeight: isActive ? 700 : 500, letterSpacing: '0.01em' }}>
+              <tab.icon className="w-4 h-4 shrink-0" strokeWidth={isActive ? 2.2 : 1.8} />
+              <span className="text-[12px] truncate" style={{ fontWeight: isActive ? 700 : 500 }}>
                 {isAr ? tab.label : tab.labelEn}
               </span>
             </button>
@@ -836,10 +836,9 @@ function RightRailTabs({ isVIP }: { isVIP: boolean }) {
 
       {/* Active panel */}
       <div>
-        {active === 'membership' && (isVIP ? <EliteMemberCard /> : <EliteUpgradeCard />)}
-        {active === 'documents' && <POAAgreementCard />}
-        {active === 'links' && <QuickLinks />}
-        {active === 'account' && <DangerZone />}
+        {active === 'personal' && <PersonalInfo />}
+        {active === 'kyc' && <KYC />}
+        {active === 'security' && <Security />}
       </div>
     </div>
   );
