@@ -114,6 +114,9 @@ interface Opp {
   comingSoon?: boolean;
   /** ISO datetime when the opportunity opens. Computed at module load. */
   launchAt?: string;
+  completed?: boolean;
+  completedAt?: string;
+  investorCount?: number;
 }
 
 // Stable launch dates relative to load time (used by countdown timers)
@@ -178,6 +181,21 @@ const opportunities: Opp[] = [
     fundingProgress: 0, totalAmount: 1200000, fundedAmount: 0,
     categoryIcon: 'equipment', gradientTone: 'linear-gradient(135deg, #001d5a 0%, #4338CA 100%)',
     recommended: false, comingSoon: true, launchAt: inDays(7, 0, 0),
+  },
+  // ── Completed / Fully funded ──
+  {
+    id: 9, borrowerNameAr: 'شركة الخليج للمقاولات', borrowerNameEn: 'Gulf Contracting Co.', opportunityId: 'FM-0009-018',
+    financingTypeAr: 'تمويل الفواتير', financingTypeEn: 'Invoice Finance', roi: 12.4, risk: 'B', tenorMonths: 12,
+    fundingProgress: 100, totalAmount: 600000, fundedAmount: 600000,
+    categoryIcon: 'invoice', gradientTone: 'linear-gradient(135deg, #001d5a 0%, #0D82F9 100%)',
+    recommended: false, completed: true, completedAt: '2026-03-22', investorCount: 187,
+  },
+  {
+    id: 10, borrowerNameAr: 'مطاعم البحر الذهبي', borrowerNameEn: 'Golden Sea Restaurants', opportunityId: 'FM-0010-744',
+    financingTypeAr: 'تمويل التوسع', financingTypeEn: 'Expansion Finance', roi: 14.1, risk: 'C', tenorMonths: 18,
+    fundingProgress: 100, totalAmount: 425000, fundedAmount: 425000,
+    categoryIcon: 'food', gradientTone: 'linear-gradient(135deg, #001d5a 0%, #0369a1 100%)',
+    recommended: false, completed: true, completedAt: '2026-04-08', investorCount: 142,
   },
 ];
 
@@ -411,6 +429,9 @@ export function OpportunitiesPage() {
             patternIndex={opp.id % 3}
             comingSoon={opp.comingSoon}
             launchAt={opp.launchAt}
+            completed={opp.completed}
+            completedAt={opp.completedAt}
+            investorCount={opp.investorCount}
             onClick={opp.comingSoon ? undefined : () => navigate(`/app/opportunities/${opp.id}`)}
           />
         ))}

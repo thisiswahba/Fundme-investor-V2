@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
 import { formatSAR, formatPercentage } from '../../utils/currency';
-import { ArrowLeft, ArrowRight, Bell, CheckCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Bell, CheckCircle, Users, Calendar, Trophy } from 'lucide-react';
 import { usePersona } from '../../demoPersona';
 import { useI18n } from '../../i18n';
 import { colors } from '../fundme';
@@ -26,6 +26,12 @@ interface OpportunityCardCompactProps {
   launchLabel?: string;
   launchDate?: string;
   patternIndex?: number;
+  /** Campaign has reached 100% funding */
+  completed?: boolean;
+  /** Date the campaign closed (ISO) */
+  completedAt?: string;
+  /** Number of investors who participated */
+  investorCount?: number;
   onClick?: () => void;
 }
 
@@ -277,6 +283,10 @@ function buildCardTokens(isVIP: boolean) {
       notifiedBorder: '1px solid rgba(52,211,153,0.3)',
       notifiedBg: 'rgba(52,211,153,0.12)',
       notifiedColor: '#34D399',
+      completedColor: '#34D399',
+      completedGradient: 'linear-gradient(90deg, #34D399, #10B981)',
+      completedSoftBg: 'rgba(52,211,153,0.10)',
+      completedBorder: '1px solid rgba(52,211,153,0.28)',
       riskConfig: riskConfigDark,
     };
   }
@@ -303,6 +313,10 @@ function buildCardTokens(isVIP: boolean) {
     notifiedBorder: '1px solid #BBF7D0',
     notifiedBg: '#F0FDF4',
     notifiedColor: '#2BB673',
+    completedColor: '#059669',
+    completedGradient: 'linear-gradient(90deg, #10B981, #059669)',
+    completedSoftBg: '#ECFDF5',
+    completedBorder: '1px solid #BBF7D0',
     riskConfig: riskConfigLight,
   };
 }
@@ -322,8 +336,10 @@ export function OpportunityCardCompact({
   fundedAmount,
   comingSoon = false,
   launchAt,
-  launchLabel,
   patternIndex,
+  completed = false,
+  completedAt,
+  investorCount,
   onClick,
 }: OpportunityCardCompactProps) {
   const returnValue = netReturn || roi || 0;
@@ -378,6 +394,21 @@ export function OpportunityCardCompact({
               <div className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px]" style={{ background: 'rgba(255,255,255,0.12)', color: 'white', fontWeight: 600, backdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.1)' }}>
                 <span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B] animate-pulse" />
                 {isAr ? 'قريباً' : 'Soon'}
+              </div>
+            ) : completed ? (
+              <div
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px]"
+                style={{
+                  background: 'rgba(34,197,94,0.18)',
+                  color: '#A7F3D0',
+                  fontWeight: 700,
+                  backdropFilter: 'blur(6px)',
+                  border: '1px solid rgba(167,243,208,0.35)',
+                  letterSpacing: '0.04em',
+                }}
+              >
+                <CheckCircle className="w-3 h-3" strokeWidth={2.5} />
+                {isAr ? 'تم التمويل' : 'Fully Funded'}
               </div>
             ) : (
               <span className="text-[10px] text-white/30 font-mono" style={{ fontWeight: 500 }}>{opportunityId}</span>
@@ -473,6 +504,75 @@ export function OpportunityCardCompact({
                 ) : (
                   <><Bell className="w-3.5 h-3.5" strokeWidth={2} />{isAr ? 'أشعرني عند الإطلاق' : 'Notify me at launch'}</>
                 )}
+              </button>
+            </>
+          ) : completed ? (
+            /* ── Completed / Fully Funded ── */
+            <>
+              {/* Total raised + 100% */}
+              <div className="flex items-baseline justify-between mb-2">
+                <div className="text-[11px]" style={{ color: tk.textMuted }}>
+                  <span className="text-[18px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{formatSAR(totalAmount, { decimals: 0 })}</span>
+                  <span className="mx-1 opacity-60">·</span>
+                  {isAr ? 'تم جمعه' : 'raised'}
+                </div>
+                <span
+                  className="inline-flex items-center gap-1 text-[12px]"
+                  style={{ fontWeight: 700, color: tk.completedColor }}
+                >
+                  <CheckCircle className="w-3.5 h-3.5" strokeWidth={2.5} />
+                  100%
+                </span>
+              </div>
+
+              {/* Filled progress bar in success color */}
+              <div className="w-full h-[7px] rounded-full overflow-hidden mb-3" style={{ background: tk.progressTrackBg }}>
+                <div
+                  className="h-full rounded-full"
+                  style={{
+                    width: '100%',
+                    background: tk.completedGradient,
+                    transition: 'width 1.2s cubic-bezier(0.22, 1, 0.36, 1)',
+                  }}
+                />
+              </div>
+
+              {/* Completion stats row */}
+              <div
+                className="rounded-lg px-3 py-2 mb-3 flex items-center justify-between gap-3"
+                style={{ background: tk.innerCardBg, border: tk.innerCardBorder }}
+              >
+                {investorCount !== undefined && (
+                  <div className="flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5" strokeWidth={1.8} style={{ color: tk.textMuted }} />
+                    <span className="text-[11px]" style={{ color: tk.textSecondary }}>
+                      <span style={{ fontWeight: 700, color: tk.textPrimary }}>{investorCount}</span>
+                      <span className="mx-1">{isAr ? 'مستثمر' : investorCount === 1 ? 'investor' : 'investors'}</span>
+                    </span>
+                  </div>
+                )}
+                {completedAt && (
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5" strokeWidth={1.8} style={{ color: tk.textMuted }} />
+                    <span className="text-[11px]" style={{ color: tk.textSecondary, fontWeight: 500 }}>
+                      {new Date(completedAt).toLocaleDateString(isAr ? 'ar-SA' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* CTA — outline style, not primary */}
+              <button
+                className="w-full h-10 rounded-xl text-[12px] flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                style={{
+                  fontWeight: 600,
+                  color: tk.completedColor,
+                  background: tk.completedSoftBg,
+                  border: tk.completedBorder,
+                }}
+              >
+                <Trophy className="w-3.5 h-3.5" strokeWidth={2} />
+                {isAr ? 'عرض النتائج' : 'View Results'}
               </button>
             </>
           ) : (
