@@ -430,10 +430,45 @@ function RecentTransactions() {
    ────────────────────────────────────────────── */
 
 export function OverviewPage() {
+  const { persona } = usePersona();
+  const { lang } = useI18n();
+  const isAr = lang === 'ar';
+  const firstName = isAr
+    ? persona.profile.nameAr.split(' ')[0]
+    : persona.profile.nameEn.split(' ')[0];
+
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-5 lg:py-7 pb-24 md:pb-8">
-      {/* A + Auto-Invest sidebar — mirrors new investor layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 md:pb-8">
+      {/* Page Header */}
+      <div className="flex items-start justify-between gap-6 mb-6">
+        <div>
+          <h1 className="text-[28px] lg:text-[36px] leading-tight mb-2" style={{ color: '#002E83', fontWeight: 700, letterSpacing: '-0.02em' }}>
+            {isAr ? `مرحباً، ${firstName} 👋` : `Welcome, ${firstName} 👋`}
+          </h1>
+          <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(0,0,0,0.6)', fontWeight: 400 }}>
+            {isAr
+              ? 'استثمر في فرص مختارة بعناية، وتابع أداء محفظتك، واستمتع بعوائد مجزية'
+              : 'Invest in curated opportunities, track your portfolio, and enjoy rewarding returns'}
+          </p>
+        </div>
+        <Link
+          to="/app/opportunities"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all hover:scale-105 flex-shrink-0"
+          style={{
+            background: 'linear-gradient(135deg, #0D82F9 0%, #002E83 100%)',
+            color: '#FFFFFF',
+            fontWeight: 600,
+            fontSize: '14px',
+            boxShadow: '0 8px 24px rgba(13, 130, 249, 0.3)',
+          }}
+        >
+          <TrendingUp className="w-4 h-4" strokeWidth={2.5} />
+          <span>{isAr ? 'استثمر الآن' : 'Invest Now'}</span>
+        </Link>
+      </div>
+
+      {/* Wallet + Auto-Invest — mirrors new investor 2/3 + 1/3 grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
         <div className="lg:col-span-2 order-2 lg:order-2 flex flex-col gap-5">
           <WalletCardSection />
           <MetricsRow />
@@ -443,24 +478,20 @@ export function OverviewPage() {
         </div>
       </div>
 
-      {/* C. Performance Chart */}
-      <div className="mb-5">
-        <PerformanceChart />
-      </div>
-
-      {/* D. Investments + Repayments */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
-        <ActiveInvestments />
-        <RepaymentsCard />
-      </div>
-
-      {/* E. Opportunities Preview */}
-      <div className="mb-5">
+      {/* Opportunities Preview */}
+      <div className="mb-6">
         <OpportunitiesPreview />
       </div>
 
-      {/* F. Recent Transactions */}
-      <div>
+      {/* Performance + Active Investments */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+        <PerformanceChart />
+        <ActiveInvestments />
+      </div>
+
+      {/* Repayments + Recent Transactions */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <RepaymentsCard />
         <RecentTransactions />
       </div>
     </div>

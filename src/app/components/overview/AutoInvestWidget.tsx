@@ -1,236 +1,188 @@
 import { useState } from 'react';
-import { Sparkles, Zap, Target, Settings2, ArrowRight, ArrowLeft, CheckCircle, PauseCircle } from 'lucide-react';
+import { Sparkles, Zap, Target, PieChart, Rocket, Settings2, PauseCircle } from 'lucide-react';
 import { useI18n } from '../../i18n';
 import { usePersona } from '../../demoPersona';
 import { AutoInvestModal } from '../AutoInvestModal';
-import { colors } from '../fundme';
-
-function buildTokens(isVIP: boolean) {
-  if (isVIP) {
-    return {
-      cardBg: colors.dark.card,
-      cardBorder: `1px solid ${colors.dark.border}`,
-      cardShadow: '0 2px 8px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.04)',
-      innerBg: colors.dark.elevated,
-      innerBorder: `1px solid ${colors.dark.border}`,
-      textPrimary: colors.textOnDark.primary,
-      textSecondary: colors.textOnDark.secondary,
-      textMuted: colors.textOnDark.tertiary,
-      labelColor: colors.textOnDark.tertiary,
-      iconBg: colors.dark.hover,
-      iconColor: colors.textOnDark.tertiary,
-      accent: '#60A5FA',
-      accentSoft: 'rgba(96,165,250,0.12)',
-      accentBorder: '1px solid rgba(96,165,250,0.25)',
-      activeAccent: '#34D399',
-      activeSoft: 'rgba(52,211,153,0.12)',
-      activeBorder: '1px solid rgba(52,211,153,0.3)',
-      ctaBg: 'linear-gradient(135deg, #2563EB 0%, #3B82F6 100%)',
-      ctaShadow: '0 6px 20px rgba(37,99,235,0.35)',
-    };
-  }
-  return {
-    cardBg: '#FFFFFF',
-    cardBorder: '1px solid #EEF1F5',
-    cardShadow: '0 1px 2px rgba(15,23,42,0.04)',
-    innerBg: '#FBFCFD',
-    innerBorder: '1px solid #EEF1F5',
-    textPrimary: '#0F172A',
-    textSecondary: '#64748B',
-    textMuted: '#94A3B8',
-    labelColor: '#94A3B8',
-    iconBg: '#F1F5F9',
-    iconColor: '#64748B',
-    accent: '#1D4ED8',
-    accentSoft: '#EFF6FF',
-    accentBorder: '1px solid #DBEAFE',
-    activeAccent: '#059669',
-    activeSoft: '#ECFDF5',
-    activeBorder: '1px solid #BBF7D0',
-    ctaBg: 'linear-gradient(135deg, #1D4ED8 0%, #2563EB 100%)',
-    ctaShadow: '0 6px 20px rgba(37,99,235,0.25)',
-  };
-}
 
 export function AutoInvestWidget() {
-  const { lang, dir } = useI18n();
+  const { lang } = useI18n();
   const isAr = lang === 'ar';
   const { personaId } = usePersona();
-  const tk = buildTokens(personaId === 'vip');
+  const isVIP = personaId === 'vip';
   const [active, setActive] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const Arrow = dir === 'rtl' ? ArrowLeft : ArrowRight;
 
-  const benefits = [
+  const features = [
     {
       icon: Zap,
       title: isAr ? 'تنفيذ تلقائي' : 'Hands-free execution',
-      desc: isAr ? 'يستثمر بالنيابة عنك حسب معاييرك' : 'Invests on your behalf as opportunities match',
+      description: isAr ? 'استثمر دون تدخل يومي' : 'Invest without daily intervention',
+      color: '#0D82F9',
+      bgColor: 'rgba(13, 130, 249, 0.1)',
     },
     {
       icon: Target,
       title: isAr ? 'معايير مخصّصة' : 'Tailored criteria',
-      desc: isAr ? 'تحكّم بمستوى المخاطرة، القطاع، والمدّة' : 'Control risk grade, sector, and tenor',
+      description: isAr ? 'تحكّم بالمخاطرة والقطاع والمدّة' : 'Control risk, sector, and tenor',
+      color: '#002E83',
+      bgColor: 'rgba(0, 46, 131, 0.1)',
     },
     {
-      icon: Sparkles,
+      icon: PieChart,
       title: isAr ? 'تنويع تلقائي' : 'Auto diversification',
-      desc: isAr ? 'يوزّع رأس المال على عدة فرص لتقليل المخاطر' : 'Spreads capital across multiple deals',
+      description: isAr ? 'يوزّع رأس المال على عدة فرص' : 'Spreads capital across deals',
+      color: '#10B981',
+      bgColor: 'rgba(16, 185, 129, 0.1)',
     },
   ];
 
-  return (
-    <>
-      <section
-        className="rounded-2xl overflow-hidden relative h-full flex flex-col"
-        style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}
-      >
-        {/* Hero strip — compact */}
+  // ── Active state ──
+  if (active) {
+    return (
+      <>
         <div
-          className="relative px-5 py-4 overflow-hidden shrink-0"
+          className="rounded-2xl p-6 h-full flex flex-col items-center justify-center text-center"
           style={{
-            background: active
-              ? 'linear-gradient(135deg, #064E3B 0%, #0B3B2E 50%, #0F2A4D 100%)'
-              : 'linear-gradient(135deg, #0B1F3A 0%, #1E3A8A 50%, #2563EB 100%)',
+            background: 'linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%)',
+            border: '1px solid rgba(16, 185, 129, 0.2)',
           }}
         >
           <div
-            className="absolute -top-16 -right-16 w-48 h-48 rounded-full pointer-events-none"
-            style={{
-              background: active
-                ? 'radial-gradient(circle, rgba(52,211,153,0.25) 0%, transparent 70%)'
-                : 'radial-gradient(circle, rgba(96,165,250,0.25) 0%, transparent 70%)',
-              filter: 'blur(8px)',
-            }}
-          />
+            className="w-14 h-14 rounded-full flex items-center justify-center mb-4"
+            style={{ background: 'rgba(16, 185, 129, 0.15)' }}
+          >
+            <Rocket className="w-7 h-7 text-[#10B981]" strokeWidth={2} />
+          </div>
+          <h3 className="text-[18px] text-[#0B1A3A] mb-2" style={{ fontWeight: 700 }}>
+            {isAr ? 'الاستثمار التلقائي مفعّل' : 'Auto-Invest is active'}
+          </h3>
+          <p className="text-[13px] text-[#6B7280] mb-5 max-w-[260px] leading-relaxed">
+            {isAr
+              ? 'سيقوم النظام بالاستثمار نيابةً عنك حسب معاييرك'
+              : "We'll invest on your behalf based on your criteria"}
+          </p>
+          <div className="flex items-center gap-2 w-full">
+            <button
+              onClick={() => setModalOpen(true)}
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl transition-all hover:scale-105"
+              style={{
+                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                color: '#FFFFFF',
+                fontWeight: 600,
+                fontSize: '13px',
+                boxShadow: '0 6px 16px rgba(16, 185, 129, 0.3)',
+              }}
+            >
+              <Settings2 className="w-4 h-4" strokeWidth={2.5} />
+              <span>{isAr ? 'تعديل الإعدادات' : 'Edit Settings'}</span>
+            </button>
+            <button
+              onClick={() => setActive(false)}
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-[12px] transition-colors"
+              style={{ fontWeight: 500, color: '#6B7280', background: 'transparent' }}
+            >
+              <PauseCircle className="w-4 h-4" strokeWidth={1.8} />
+              {isAr ? 'إيقاف' : 'Pause'}
+            </button>
+          </div>
+        </div>
+        <AutoInvestModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      </>
+    );
+  }
 
-          <div className="relative flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                style={{
-                  background: 'rgba(255,255,255,0.1)',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                }}
-              >
-                <Sparkles className="w-4 h-4 text-white" strokeWidth={2} />
-              </div>
-              <div className="min-w-0">
-                <h3 className="text-[14px] text-white truncate" style={{ fontWeight: 700, letterSpacing: '-0.01em' }}>
-                  {isAr ? 'الاستثمار التلقائي' : 'Auto-Invest'}
-                </h3>
-                <p className="text-[11px] truncate" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                  {isAr ? 'استثمر نيابةً عنك' : 'Invest on your behalf'}
-                </p>
-              </div>
-            </div>
-            {active && (
-              <span
-                className="inline-flex items-center gap-1 h-5 px-1.5 rounded text-[9px] tracking-wide shrink-0"
-                style={{
-                  fontWeight: 700,
-                  background: 'rgba(167,243,208,0.18)',
-                  color: '#A7F3D0',
-                  border: '1px solid rgba(167,243,208,0.35)',
-                }}
-              >
-                <span className="w-1 h-1 rounded-full bg-[#34D399] animate-pulse" />
-                {isAr ? 'مفعّل' : 'ON'}
-              </span>
-            )}
+  // ── Default state — same style as WelcomeGuideCard ──
+  return (
+    <>
+      <div
+        className="bg-white rounded-2xl p-6 h-full flex flex-col"
+        style={{
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+          border: '1px solid rgba(13, 130, 249, 0.1)',
+        }}
+      >
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{ background: 'linear-gradient(135deg, #0D82F9 0%, #002E83 100%)' }}
+          >
+            <Sparkles className="w-5 h-5 text-white" strokeWidth={2.5} />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-[17px] text-[#0B1A3A]" style={{ fontWeight: 700 }}>
+              {isAr ? 'الاستثمار التلقائي' : 'Auto-Invest'}
+            </h3>
+            <p className="text-[12px] text-[#6B7280] mt-0.5">
+              {isAr ? 'دع المنصّة تستثمر نيابةً عنك بذكاء' : 'Let the platform invest for you intelligently'}
+            </p>
           </div>
         </div>
 
-        {/* Body — flex-1 fills remaining space */}
-        <div className="px-5 py-4 flex-1 flex flex-col">
-          {/* Benefits list — compact, evenly distributed */}
-          <ul className="space-y-2.5 flex-1">
-            {benefits.map((b, i) => (
-              <li key={i} className="flex items-start gap-2.5">
-                <div
-                  className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-                  style={{ background: tk.accentSoft, border: tk.accentBorder }}
-                >
-                  <b.icon className="w-3 h-3" strokeWidth={2} style={{ color: tk.accent }} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-[12px] leading-tight" style={{ fontWeight: 600, color: tk.textPrimary }}>
-                    {b.title}
-                  </div>
-                  <div className="text-[10.5px] mt-0.5 leading-snug" style={{ color: tk.textMuted }}>
-                    {b.desc}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-
-          {/* Stats row when active */}
-          {active && (
+        {/* Tagline strip */}
+        <div className="flex items-center gap-3 mt-4 mb-5">
+          <div
+            className="flex-1 h-[8px] rounded-full overflow-hidden"
+            style={{ background: '#EDF0F7' }}
+          >
             <div
-              className="grid grid-cols-2 gap-2 mt-3 rounded-lg p-2.5"
-              style={{ background: tk.innerBg, border: tk.innerBorder }}
-            >
-              <div>
-                <div className="text-[9px] uppercase" style={{ fontWeight: 600, color: tk.labelColor, letterSpacing: '0.08em' }}>
-                  {isAr ? 'تنفيذ' : 'Runs'}
-                </div>
-                <div className="text-[15px] font-mono tabular-nums" style={{ fontWeight: 700, color: tk.textPrimary }}>0</div>
-              </div>
-              <div>
-                <div className="text-[9px] uppercase" style={{ fontWeight: 600, color: tk.labelColor, letterSpacing: '0.08em' }}>
-                  {isAr ? 'آخر تنفيذ' : 'Last run'}
-                </div>
-                <div className="text-[12px] mt-0.5" style={{ fontWeight: 600, color: tk.textPrimary }}>
-                  {isAr ? 'لم يبدأ' : 'Not yet'}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* CTA — pinned bottom */}
-          {active ? (
-            <div className="flex items-center gap-2 mt-4">
-              <button
-                onClick={() => setModalOpen(true)}
-                className="flex-1 h-10 rounded-lg flex items-center justify-center gap-1.5 text-[12px] transition-colors cursor-pointer"
-                style={{
-                  fontWeight: 600,
-                  color: tk.activeAccent,
-                  background: tk.activeSoft,
-                  border: tk.activeBorder,
-                }}
-              >
-                <Settings2 className="w-3.5 h-3.5" strokeWidth={2} />
-                {isAr ? 'تعديل' : 'Edit'}
-              </button>
-              <button
-                onClick={() => setActive(false)}
-                className="h-10 px-3 rounded-lg flex items-center justify-center gap-1 text-[11px] transition-colors cursor-pointer"
-                style={{ fontWeight: 500, color: tk.textMuted, background: 'transparent' }}
-                title={isAr ? 'إيقاف' : 'Pause'}
-              >
-                <PauseCircle className="w-3.5 h-3.5" strokeWidth={1.8} />
-                {isAr ? 'إيقاف' : 'Pause'}
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => { setActive(true); setModalOpen(true); }}
-              className="w-full h-10 rounded-lg flex items-center justify-center gap-1.5 text-[12px] text-white transition-all hover:scale-[1.02] cursor-pointer mt-4"
+              className="h-full rounded-full"
               style={{
-                fontWeight: 700,
-                background: tk.ctaBg,
-                boxShadow: tk.ctaShadow,
+                width: '100%',
+                background: 'linear-gradient(90deg, #002E83 0%, #0D82F9 60%, #10B981 100%)',
+                opacity: 0.25,
               }}
-            >
-              <CheckCircle className="w-3.5 h-3.5" strokeWidth={2.5} />
-              {isAr ? 'تفعيل الآن' : 'Enable Now'}
-              <Arrow className="w-3 h-3" strokeWidth={2.5} />
-            </button>
-          )}
+            />
+          </div>
+          <span className="text-[11px] text-[#0D82F9] flex-shrink-0" style={{ fontWeight: 700 }}>
+            {isAr ? 'موصى به' : 'Recommended'}
+          </span>
         </div>
-      </section>
+
+        {/* Features — styled like WelcomeGuide steps */}
+        <div className="space-y-2.5 flex-1">
+          {features.map((f, index) => (
+            <div
+              key={index}
+              className="flex items-start gap-3 p-3.5 rounded-xl transition-all"
+              style={{ background: '#F9FAFB', border: '1px solid transparent' }}
+            >
+              <div
+                className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ background: f.bgColor }}
+              >
+                <f.icon className="w-4 h-4" style={{ color: f.color }} strokeWidth={2} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-[13px] mb-0.5" style={{ fontWeight: 600, color: '#0B1A3A' }}>
+                  {f.title}
+                </h4>
+                <p className="text-[11px] text-[#6B7280] leading-relaxed">
+                  {f.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <button
+          onClick={() => { setActive(true); setModalOpen(true); }}
+          className="w-full mt-5 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl transition-all hover:scale-[1.02] cursor-pointer"
+          style={{
+            background: isVIP
+              ? 'linear-gradient(135deg, #2563EB 0%, #3B82F6 100%)'
+              : 'linear-gradient(135deg, #0D82F9 0%, #002E83 100%)',
+            color: '#FFFFFF',
+            fontWeight: 700,
+            fontSize: '14px',
+            boxShadow: '0 8px 24px rgba(13, 130, 249, 0.3)',
+          }}
+        >
+          <Sparkles className="w-4 h-4" strokeWidth={2.5} />
+          <span>{isAr ? 'تفعيل الاستثمار التلقائي' : 'Enable Auto-Invest'}</span>
+        </button>
+      </div>
 
       <AutoInvestModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </>
