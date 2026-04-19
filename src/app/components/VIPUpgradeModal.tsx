@@ -73,7 +73,7 @@ function StepIntro({ selected, setSelected, isAr }: { selected: QualId[]; setSel
 
   return (
     <div>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.96)', marginBottom: 6 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
         {isAr ? 'الترقية إلى مستثمر VIP' : 'Upgrade to VIP Investor'}
       </h3>
       <p style={{ fontSize: 13, color: '#64748B', marginBottom: 24, lineHeight: 1.6 }}>
@@ -96,7 +96,7 @@ function StepIntro({ selected, setSelected, isAr }: { selected: QualId[]; setSel
                 <q.icon className="w-4 h-4" style={{ color: sel ? '#6366F1' : '#94A3B8' }} strokeWidth={1.8} />
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.96)' }}>{isAr ? q.titleAr : q.titleEn}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{isAr ? q.titleAr : q.titleEn}</div>
                 <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 2 }}>{isAr ? q.descAr : q.descEn}</div>
               </div>
               <div style={{
@@ -121,7 +121,7 @@ function StepUpload({ selected, files, setFiles, isAr }: { selected: QualId[]; f
 
   return (
     <div>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.96)', marginBottom: 6 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
         {isAr ? 'رفع المستندات' : 'Upload Documents'}
       </h3>
       <p style={{ fontSize: 13, color: '#64748B', marginBottom: 24 }}>
@@ -139,17 +139,17 @@ function StepUpload({ selected, files, setFiles, isAr }: { selected: QualId[]; f
           const q = qualifications.find(x => x.id === id)!;
           const file = files[id];
           return (
-            <div key={id} style={{ padding: 16, borderRadius: 14, background: '#0A1A30', border: '1px solid #F1F5F9' }}>
+            <div key={id} style={{ padding: 16, borderRadius: 14, background: '#F8FAFC', border: '1px solid #F1F5F9' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
                 <q.icon className="w-4 h-4 text-[#6366F1]" strokeWidth={1.8} />
-                <span style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.96)' }}>{isAr ? q.titleAr : q.titleEn}</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{isAr ? q.titleAr : q.titleEn}</span>
               </div>
               <p style={{ fontSize: 12, color: '#64748B', marginBottom: 12 }}>{isAr ? q.requirementAr : q.requirementEn}</p>
 
               {file ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 10, background: '#0C1C34', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 10, background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
                   <FileText className="w-4 h-4 text-[#6366F1]" strokeWidth={1.6} />
-                  <span style={{ flex: 1, fontSize: 12, color: 'rgba(255,255,255,0.96)', fontWeight: 500 }}>{file.name}</span>
+                  <span style={{ flex: 1, fontSize: 12, color: '#0F172A', fontWeight: 500 }}>{file.name}</span>
                   <span style={{ fontSize: 10, color: '#94A3B8' }}>{(file.size / 1024).toFixed(0)} KB</span>
                   <button onClick={() => handleFile(id, null)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
                     <Trash2 className="w-3.5 h-3.5 text-[#94A3B8] hover:text-[#EF4444]" strokeWidth={1.8} />
@@ -160,7 +160,7 @@ function StepUpload({ selected, files, setFiles, isAr }: { selected: QualId[]; f
                   onClick={() => { setActiveUpload(id); inputRef.current?.click(); }}
                   style={{
                     width: '100%', padding: '16px 0', borderRadius: 10, cursor: 'pointer',
-                    border: '2px dashed rgba(255,255,255,0.12)', background: '#0C1C34', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                    border: '2px dashed #E5E7EB', background: '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
                     transition: 'all 0.2s',
                   }}
                 >
@@ -180,21 +180,21 @@ function StepUpload({ selected, files, setFiles, isAr }: { selected: QualId[]; f
 function StepReview({ selected, files, isAr }: { selected: QualId[]; files: Record<QualId, File | null>; isAr: boolean }) {
   return (
     <div>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.96)', marginBottom: 6 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
         {isAr ? 'مراجعة الطلب' : 'Review Request'}
       </h3>
       <p style={{ fontSize: 13, color: '#64748B', marginBottom: 24 }}>
         {isAr ? 'تأكد من صحة المعلومات قبل إرسال طلب الترقية' : 'Verify your information before submitting'}
       </p>
 
-      <div style={{ background: '#0A1A30', borderRadius: 14, padding: 20, border: '1px solid #F1F5F9', marginBottom: 16 }}>
+      <div style={{ background: '#F8FAFC', borderRadius: 14, padding: 20, border: '1px solid #F1F5F9', marginBottom: 16 }}>
         {selected.map((id, i) => {
           const q = qualifications.find(x => x.id === id)!;
           const file = files[id];
           return (
             <div key={id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: i < selected.length - 1 ? '1px solid #F1F5F9' : 'none' }}>
               <div>
-                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.96)', fontWeight: 600 }}>{isAr ? q.titleAr : q.titleEn}</div>
+                <div style={{ fontSize: 13, color: '#0F172A', fontWeight: 600 }}>{isAr ? q.titleAr : q.titleEn}</div>
                 {file && <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 2 }}>{file.name}</div>}
               </div>
               {file ? (
@@ -234,7 +234,7 @@ function StepPending({ isAr, onClose }: { isAr: boolean; onClose: () => void }) 
       <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(99,102,241,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
         <Clock className="w-7 h-7 text-[#6366F1]" strokeWidth={1.5} />
       </div>
-      <h3 style={{ fontSize: 20, fontWeight: 700, color: 'rgba(255,255,255,0.96)', marginBottom: 8 }}>
+      <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', marginBottom: 8 }}>
         {isAr ? 'تم إرسال طلب الترقية' : 'Upgrade Request Submitted'}
       </h3>
       <p style={{ fontSize: 13, color: '#64748B', marginBottom: 16, lineHeight: 1.6 }}>
@@ -262,7 +262,7 @@ function StepPending({ isAr, onClose }: { isAr: boolean; onClose: () => void }) 
           onClick={onClose}
           style={{
             flex: 1, height: 46, borderRadius: 14, cursor: 'pointer',
-            background: '#0C1C34', color: '#64748B', border: '1px solid rgba(255,255,255,0.08)',
+            background: '#FFFFFF', color: '#64748B', border: '1px solid #E5E7EB',
             fontSize: 14, fontWeight: 600,
           }}
         >
@@ -313,7 +313,7 @@ export function VIPUpgradeModal({ open, onClose }: { open: boolean; onClose: () 
       onClick={e => { if (e.target === e.currentTarget && !submitting) onClose(); }}
     >
       <div
-        style={{ background: '#0C1C34', width: '100%', maxWidth: 520, borderRadius: 24, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.5)', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
+        style={{ background: '#FFFFFF', width: '100%', maxWidth: 520, borderRadius: 24, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.5)', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
         dir={isAr ? 'rtl' : 'ltr'}
         onClick={e => e.stopPropagation()}
       >
@@ -325,11 +325,11 @@ export function VIPUpgradeModal({ open, onClose }: { open: boolean; onClose: () 
                 <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(99,102,241,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Crown className="w-4 h-4 text-[#6366F1]" strokeWidth={2} />
                 </div>
-                <span style={{ fontSize: 15, fontWeight: 700, color: 'rgba(255,255,255,0.96)' }}>
+                <span style={{ fontSize: 15, fontWeight: 700, color: '#0F172A' }}>
                   {isAr ? 'ترقية VIP' : 'VIP Upgrade'}
                 </span>
               </div>
-              <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 10, border: 'none', background: '#0A1A30', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 10, border: 'none', background: '#F8FAFC', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <X className="w-4 h-4 text-[#94A3B8]" strokeWidth={1.8} />
               </button>
             </div>
@@ -351,7 +351,7 @@ export function VIPUpgradeModal({ open, onClose }: { open: boolean; onClose: () 
             {step > 1 ? (
               <button
                 onClick={() => setStep((step - 1) as Step)}
-                style={{ height: 44, padding: '0 20px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)', background: '#0C1C34', color: '#64748B', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                style={{ height: 44, padding: '0 20px', borderRadius: 12, border: '1px solid #E5E7EB', background: '#FFFFFF', color: '#64748B', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
               >
                 <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} />
                 {isAr ? 'رجوع' : 'Back'}
