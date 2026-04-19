@@ -432,14 +432,15 @@ function RecentTransactions() {
 export function OverviewPage() {
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-5 lg:py-7 pb-24 md:pb-8">
-      {/* A. Wallet Card */}
-      <div className="mb-5">
-        <WalletCardSection />
-      </div>
-
-      {/* B. Metrics Row */}
-      <div className="mb-5">
-        <MetricsRow />
+      {/* A + Auto-Invest sidebar — mirrors new investor layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
+        <div className="lg:col-span-2 order-2 lg:order-2 flex flex-col gap-5">
+          <WalletCardSection />
+          <MetricsRow />
+        </div>
+        <div className="lg:col-span-1 order-1 lg:order-1">
+          <AutoInvestWidget />
+        </div>
       </div>
 
       {/* C. Performance Chart */}
@@ -451,11 +452,6 @@ export function OverviewPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
         <ActiveInvestments />
         <RepaymentsCard />
-      </div>
-
-      {/* D2. Auto-Invest Widget */}
-      <div className="mb-5">
-        <AutoInvestWidget />
       </div>
 
       {/* E. Opportunities Preview */}
