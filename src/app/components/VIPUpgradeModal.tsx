@@ -50,7 +50,7 @@ function Stepper({ current, labels }: { current: number; labels: string[] }) {
               <div style={{
                 width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 11, fontWeight: 700, transition: 'all 0.3s',
-                ...(done ? { background: '#2BB673', color: 'white' } : act ? { background: '#6366F1', color: 'white', boxShadow: '0 0 0 4px rgba(99,102,241,0.15)' } : { background: '#F1F5F9', color: '#94A3B8' }),
+                ...(done ? { background: '#2BB673', color: 'white' } : act ? { background: '#2563EB', color: 'white', boxShadow: '0 0 0 4px rgba(37,99,235,0.15)' } : { background: '#F1F5F9', color: '#94A3B8' }),
               }}>
                 {done ? <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> : s}
               </div>
@@ -89,11 +89,11 @@ function StepIntro({ selected, setSelected, isAr }: { selected: QualId[]; setSel
               style={{
                 width: '100%', padding: '14px 16px', borderRadius: 14, textAlign: 'right', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 12, transition: 'all 0.2s',
-                background: sel ? '#F5F3FF' : 'white', border: sel ? '2px solid #6366F1' : '1px solid #E8ECF2',
+                background: sel ? '#EFF6FF' : 'white', border: sel ? '2px solid #2563EB' : '1px solid #E8ECF2',
               }}
             >
-              <div style={{ width: 36, height: 36, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: sel ? '#EDE9FE' : '#F8FAFC', flexShrink: 0 }}>
-                <q.icon className="w-4 h-4" style={{ color: sel ? '#6366F1' : '#94A3B8' }} strokeWidth={1.8} />
+              <div style={{ width: 36, height: 36, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: sel ? '#DBEAFE' : '#F8FAFC', flexShrink: 0 }}>
+                <q.icon className="w-4 h-4" style={{ color: sel ? '#2563EB' : '#94A3B8' }} strokeWidth={1.8} />
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{isAr ? q.titleAr : q.titleEn}</div>
@@ -101,7 +101,7 @@ function StepIntro({ selected, setSelected, isAr }: { selected: QualId[]; setSel
               </div>
               <div style={{
                 width: 20, height: 20, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                ...(sel ? { background: '#6366F1' } : { border: '2px solid #E2E8F0' }),
+                ...(sel ? { background: '#2563EB' } : { border: '2px solid #E2E8F0' }),
               }}>
                 {sel && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
               </div>
@@ -141,14 +141,14 @@ function StepUpload({ selected, files, setFiles, isAr }: { selected: QualId[]; f
           return (
             <div key={id} style={{ padding: 16, borderRadius: 14, background: '#F8FAFC', border: '1px solid #F1F5F9' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                <q.icon className="w-4 h-4 text-[#6366F1]" strokeWidth={1.8} />
+                <q.icon className="w-4 h-4 text-[#2563EB]" strokeWidth={1.8} />
                 <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{isAr ? q.titleAr : q.titleEn}</span>
               </div>
               <p style={{ fontSize: 12, color: '#64748B', marginBottom: 12 }}>{isAr ? q.requirementAr : q.requirementEn}</p>
 
               {file ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 10, background: '#FFFFFF', border: '1px solid #E5E7EB' }}>
-                  <FileText className="w-4 h-4 text-[#6366F1]" strokeWidth={1.6} />
+                  <FileText className="w-4 h-4 text-[#2563EB]" strokeWidth={1.6} />
                   <span style={{ flex: 1, fontSize: 12, color: '#0F172A', fontWeight: 500 }}>{file.name}</span>
                   <span style={{ fontSize: 10, color: '#94A3B8' }}>{(file.size / 1024).toFixed(0)} KB</span>
                   <button onClick={() => handleFile(id, null)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
@@ -231,8 +231,8 @@ function StepPending({ isAr, onClose }: { isAr: boolean; onClose: () => void }) 
   const navigate = useNavigate();
   return (
     <div style={{ textAlign: 'center', padding: '20px 0' }}>
-      <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(99,102,241,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-        <Clock className="w-7 h-7 text-[#6366F1]" strokeWidth={1.5} />
+      <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(37,99,235,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+        <Clock className="w-7 h-7 text-[#2563EB]" strokeWidth={1.5} />
       </div>
       <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', marginBottom: 8 }}>
         {isAr ? 'تم إرسال طلب الترقية' : 'Upgrade Request Submitted'}
@@ -251,7 +251,7 @@ function StepPending({ isAr, onClose }: { isAr: boolean; onClose: () => void }) 
           onClick={() => { onClose(); navigate('/app/profile'); }}
           style={{
             flex: 1, height: 46, borderRadius: 14, border: 'none', cursor: 'pointer',
-            background: 'linear-gradient(135deg, #6366F1, #7C3AED)', color: 'white',
+            background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', color: 'white',
             fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
           }}
         >
@@ -322,8 +322,8 @@ export function VIPUpgradeModal({ open, onClose }: { open: boolean; onClose: () 
           <div style={{ padding: '20px 24px 0' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(99,102,241,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Crown className="w-4 h-4 text-[#6366F1]" strokeWidth={2} />
+                <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(37,99,235,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Crown className="w-4 h-4 text-[#2563EB]" strokeWidth={2} />
                 </div>
                 <span style={{ fontSize: 15, fontWeight: 700, color: '#0F172A' }}>
                   {isAr ? 'ترقية VIP' : 'VIP Upgrade'}
@@ -363,10 +363,10 @@ export function VIPUpgradeModal({ open, onClose }: { open: boolean; onClose: () 
               style={{
                 height: 44, padding: '0 24px', borderRadius: 12, border: 'none',
                 cursor: canNext && !submitting ? 'pointer' : 'not-allowed',
-                background: canNext ? 'linear-gradient(135deg, #6366F1, #7C3AED)' : '#E2E8F0',
+                background: canNext ? 'linear-gradient(135deg, #2563EB, #1D4ED8)' : '#E2E8F0',
                 color: canNext ? 'white' : '#94A3B8',
                 fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6,
-                boxShadow: canNext ? '0 2px 8px rgba(99,102,241,0.25)' : 'none',
+                boxShadow: canNext ? '0 2px 8px rgba(37,99,235,0.25)' : 'none',
                 opacity: submitting ? 0.7 : 1, transition: 'all 0.2s',
               }}
             >
