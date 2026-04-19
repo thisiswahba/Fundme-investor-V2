@@ -1,13 +1,15 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useI18n } from '../i18n';
+import { usePersona } from '../demoPersona';
+import { colors } from './fundme';
 import { X, Check, CheckCircle, ArrowLeft, ArrowRight, Shield, Clock, Zap, Sparkles } from 'lucide-react';
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Types
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-type Step = 1 | 2 | 3 | 4 | 5 | 6; // 6 = success
+type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
 interface AutoInvestModalProps {
   open: boolean;
@@ -20,10 +22,118 @@ const stepLabels = {
 };
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Tokens
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+type Tokens = ReturnType<typeof buildTokens>;
+
+function buildTokens(isVIP: boolean) {
+  if (isVIP) {
+    return {
+      isVIP: true,
+      overlay: 'rgba(0,0,0,0.6)',
+      modalBg: colors.dark.card,
+      modalBorder: `1px solid ${colors.dark.border}`,
+      modalShadow: '0 24px 80px rgba(0,0,0,0.6)',
+      divider: colors.dark.border,
+      innerBg: colors.dark.elevated,
+      innerBorder: colors.dark.border,
+      textPrimary: colors.textOnDark.primary,
+      textSecondary: colors.textOnDark.secondary,
+      textMuted: colors.textOnDark.tertiary,
+      textLabel: colors.textOnDark.secondary,
+      inputBg: colors.dark.elevated,
+      inputBorder: colors.dark.border,
+      inputFocusBg: colors.dark.card,
+      inputFocusBorder: '#60A5FA',
+      inputFocusRing: '0 0 0 3px rgba(96,165,250,0.15)',
+      primaryText: '#60A5FA',
+      primarySoft: 'rgba(37,99,235,0.15)',
+      successText: '#34D399',
+      successSoft: 'rgba(43,182,115,0.15)',
+      stepDone: colors.success,
+      stepActive: colors.primary,
+      stepActiveRing: '0 0 0 4px rgba(37,99,235,0.2)',
+      stepIdleBg: colors.dark.hover,
+      stepIdleText: colors.textOnDark.tertiary,
+      stepConnectorDone: colors.success,
+      stepConnectorIdle: colors.dark.border,
+      selectedCardBg: 'rgba(37,99,235,0.12)',
+      selectedCardBorder: '#60A5FA',
+      unselectedCardBg: colors.dark.elevated,
+      unselectedCardBorder: colors.dark.border,
+      checkIdleBorder: colors.dark.border,
+      closeBtnBg: colors.dark.hover,
+      closeBtnIcon: colors.textOnDark.tertiary,
+      secondaryBtnBg: 'transparent',
+      secondaryBtnBorder: `1px solid ${colors.dark.border}`,
+      secondaryBtnText: colors.textOnDark.secondary,
+      primaryBtnBg: 'linear-gradient(135deg, #1D4ED8, #2563EB)',
+      primaryBtnShadow: '0 2px 8px rgba(37,99,235,0.4)',
+      primaryBtnDisabledBg: colors.dark.hover,
+      primaryBtnDisabledText: colors.textOnDark.muted,
+      otpIdleBg: colors.dark.elevated,
+      otpFilledBg: 'rgba(37,99,235,0.12)',
+    };
+  }
+  return {
+    isVIP: false,
+    overlay: 'rgba(15,23,42,0.5)',
+    modalBg: '#FFFFFF',
+    modalBorder: 'none',
+    modalShadow: '0 24px 80px rgba(0,0,0,0.15)',
+    divider: '#F1F5F9',
+    innerBg: '#F8FAFC',
+    innerBorder: '#F1F5F9',
+    textPrimary: '#0F172A',
+    textSecondary: '#64748B',
+    textMuted: '#94A3B8',
+    textLabel: '#334155',
+    inputBg: '#F8FAFC',
+    inputBorder: '#E2E8F0',
+    inputFocusBg: '#FFFFFF',
+    inputFocusBorder: '#3B82F6',
+    inputFocusRing: '0 0 0 3px rgba(59,130,246,0.1)',
+    primaryText: '#3B82F6',
+    primarySoft: '#EFF6FF',
+    successText: '#2BB673',
+    successSoft: '#F0FDF4',
+    stepDone: '#2BB673',
+    stepActive: '#3B82F6',
+    stepActiveRing: '0 0 0 4px rgba(59,130,246,0.15)',
+    stepIdleBg: '#F1F5F9',
+    stepIdleText: '#94A3B8',
+    stepConnectorDone: '#2BB673',
+    stepConnectorIdle: '#F1F5F9',
+    selectedCardBg: '#EFF6FF',
+    selectedCardBorder: '#3B82F6',
+    unselectedCardBg: '#FFFFFF',
+    unselectedCardBorder: '#E8ECF2',
+    checkIdleBorder: '#E2E8F0',
+    closeBtnBg: '#F8FAFC',
+    closeBtnIcon: '#94A3B8',
+    secondaryBtnBg: '#FFFFFF',
+    secondaryBtnBorder: '1px solid #E2E8F0',
+    secondaryBtnText: '#64748B',
+    primaryBtnBg: 'linear-gradient(135deg, #1D4ED8, #2563EB)',
+    primaryBtnShadow: '0 2px 8px rgba(37,99,235,0.25)',
+    primaryBtnDisabledBg: '#E2E8F0',
+    primaryBtnDisabledText: '#94A3B8',
+    otpIdleBg: '#F8FAFC',
+    otpFilledBg: '#EFF6FF',
+  };
+}
+
+function useTokens(): Tokens {
+  const { personaId } = usePersona();
+  return buildTokens(personaId === 'vip');
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Stepper
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-function Stepper({ current, labels }: { current: number; labels: string[] }) {
+function Stepper({ current, labels, tk }: { current: number; labels: string[]; tk: Tokens }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 0, padding: '0 4px' }}>
       {labels.map((label, i) => {
@@ -37,19 +147,19 @@ function Stepper({ current, labels }: { current: number; labels: string[] }) {
                 width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 11, fontWeight: 700, transition: 'all 0.3s',
                 ...(done
-                  ? { background: '#2BB673', color: 'white' }
+                  ? { background: tk.stepDone, color: 'white' }
                   : active
-                    ? { background: '#3B82F6', color: 'white', boxShadow: '0 0 0 4px rgba(59,130,246,0.15)' }
-                    : { background: '#F1F5F9', color: '#94A3B8' }),
+                    ? { background: tk.stepActive, color: 'white', boxShadow: tk.stepActiveRing }
+                    : { background: tk.stepIdleBg, color: tk.stepIdleText }),
               }}>
                 {done ? <Check className="w-3.5 h-3.5" strokeWidth={2.5} /> : step}
               </div>
-              <span style={{ fontSize: 10, fontWeight: active ? 600 : 500, color: active ? '#0F172A' : '#94A3B8', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 10, fontWeight: active ? 600 : 500, color: active ? tk.textPrimary : tk.textMuted, whiteSpace: 'nowrap' }}>
                 {label}
               </span>
             </div>
             {i < labels.length - 1 && (
-              <div style={{ flex: 1, height: 2, margin: '0 8px', marginBottom: 18, borderRadius: 1, background: done ? '#2BB673' : '#F1F5F9', transition: 'background 0.3s' }} />
+              <div style={{ flex: 1, height: 2, margin: '0 8px', marginBottom: 18, borderRadius: 1, background: done ? tk.stepConnectorDone : tk.stepConnectorIdle, transition: 'background 0.3s' }} />
             )}
           </div>
         );
@@ -62,7 +172,7 @@ function Stepper({ current, labels }: { current: number; labels: string[] }) {
    Selectable Card
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-function SelectCard({ selected, onClick, children }: { selected: boolean; onClick: () => void; children: React.ReactNode }) {
+function SelectCard({ selected, onClick, children, tk }: { selected: boolean; onClick: () => void; children: React.ReactNode; tk: Tokens }) {
   return (
     <button
       onClick={onClick}
@@ -70,8 +180,8 @@ function SelectCard({ selected, onClick, children }: { selected: boolean; onClic
         width: '100%', padding: '14px 16px', borderRadius: 14, textAlign: 'right', cursor: 'pointer',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
         transition: 'all 0.2s',
-        background: selected ? '#EFF6FF' : 'white',
-        border: selected ? '2px solid #3B82F6' : '1px solid #E8ECF2',
+        background: selected ? tk.selectedCardBg : tk.unselectedCardBg,
+        border: selected ? `2px solid ${tk.selectedCardBorder}` : `1px solid ${tk.unselectedCardBorder}`,
       }}
     >
       <div style={{ flex: 1 }}>{children}</div>
@@ -80,8 +190,8 @@ function SelectCard({ selected, onClick, children }: { selected: boolean; onClic
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         transition: 'all 0.2s',
         ...(selected
-          ? { background: '#3B82F6' }
-          : { border: '2px solid #E2E8F0' }),
+          ? { background: tk.selectedCardBorder }
+          : { border: `2px solid ${tk.checkIdleBorder}` }),
       }}>
         {selected && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
       </div>
@@ -93,20 +203,20 @@ function SelectCard({ selected, onClick, children }: { selected: boolean; onClic
    Step Components
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-function StepAmount({ amount, setAmount, isAr }: { amount: string; setAmount: (v: string) => void; isAr: boolean }) {
+function StepAmount({ amount, setAmount, isAr, tk }: { amount: string; setAmount: (v: string) => void; isAr: boolean; tk: Tokens }) {
   return (
     <div>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 700, color: tk.textPrimary, marginBottom: 6 }}>
         {isAr ? 'الاستثمار التلقائي' : 'Auto Invest'}
       </h3>
-      <p style={{ fontSize: 13, color: '#64748B', marginBottom: 24 }}>
+      <p style={{ fontSize: 13, color: tk.textSecondary, marginBottom: 24 }}>
         {isAr ? 'حدد الحد الأقصى للمبلغ لكل فرصة' : 'Set the maximum amount to invest per opportunity'}
       </p>
-      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#334155', marginBottom: 8 }}>
+      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: tk.textLabel, marginBottom: 8 }}>
         {isAr ? 'المبلغ لكل فرصة' : 'Amount per opportunity'}
       </label>
       <div style={{ position: 'relative' }} dir="ltr">
-        <div style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 13, fontWeight: 600, color: '#94A3B8' }}>SAR</div>
+        <div style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 13, fontWeight: 600, color: tk.textMuted }}>SAR</div>
         <input
           type="text"
           inputMode="numeric"
@@ -116,22 +226,22 @@ function StepAmount({ amount, setAmount, isAr }: { amount: string; setAmount: (v
           autoFocus
           style={{
             width: '100%', height: 52, borderRadius: 12, paddingLeft: 52, paddingRight: 16,
-            fontSize: 18, fontWeight: 700, color: '#0F172A', outline: 'none',
-            border: '1px solid #E2E8F0', background: '#F8FAFC',
+            fontSize: 18, fontWeight: 700, color: tk.textPrimary, outline: 'none',
+            border: `1px solid ${tk.inputBorder}`, background: tk.inputBg,
             transition: 'all 0.2s',
           }}
-          onFocus={e => { e.currentTarget.style.borderColor = '#3B82F6'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.1)'; e.currentTarget.style.background = 'white'; }}
-          onBlur={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.background = '#F8FAFC'; }}
+          onFocus={e => { e.currentTarget.style.borderColor = tk.inputFocusBorder; e.currentTarget.style.boxShadow = tk.inputFocusRing; e.currentTarget.style.background = tk.inputFocusBg; }}
+          onBlur={e => { e.currentTarget.style.borderColor = tk.inputBorder; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.background = tk.inputBg; }}
         />
       </div>
-      <p style={{ fontSize: 11, color: '#94A3B8', marginTop: 8 }}>
+      <p style={{ fontSize: 11, color: tk.textMuted, marginTop: 8 }}>
         {isAr ? 'الحد الأدنى: 1,000 ر.س' : 'Minimum: SAR 1,000'}
       </p>
     </div>
   );
 }
 
-function StepRisk({ selected, setSelected, isAr }: { selected: string[]; setSelected: (v: string[]) => void; isAr: boolean }) {
+function StepRisk({ selected, setSelected, isAr, tk }: { selected: string[]; setSelected: (v: string[]) => void; isAr: boolean; tk: Tokens }) {
   const grades = [
     { key: 'A', label: isAr ? 'منخفض جداً' : 'Very Low', color: '#2BB673' },
     { key: 'B', label: isAr ? 'منخفض' : 'Low', color: '#3B82F6' },
@@ -142,22 +252,22 @@ function StepRisk({ selected, setSelected, isAr }: { selected: string[]; setSele
 
   return (
     <div>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 700, color: tk.textPrimary, marginBottom: 6 }}>
         {isAr ? 'مستوى المخاطر' : 'Risk Preference'}
       </h3>
-      <p style={{ fontSize: 13, color: '#64748B', marginBottom: 24 }}>
+      <p style={{ fontSize: 13, color: tk.textSecondary, marginBottom: 24 }}>
         {isAr ? 'اختر مستويات المخاطر المناسبة لك' : 'Choose your preferred risk bands'}
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {grades.map(g => (
-          <SelectCard key={g.key} selected={selected.includes(g.key)} onClick={() => toggle(g.key)}>
+          <SelectCard key={g.key} selected={selected.includes(g.key)} onClick={() => toggle(g.key)} tk={tk}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ width: 32, height: 32, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: 'white', background: g.color }}>
                 {g.key}
               </div>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{isAr ? `تصنيف ${g.key}` : `Grade ${g.key}`}</div>
-                <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 1 }}>{g.label}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: tk.textPrimary }}>{isAr ? `تصنيف ${g.key}` : `Grade ${g.key}`}</div>
+                <div style={{ fontSize: 11, color: tk.textMuted, marginTop: 1 }}>{g.label}</div>
               </div>
             </div>
           </SelectCard>
@@ -167,7 +277,7 @@ function StepRisk({ selected, setSelected, isAr }: { selected: string[]; setSele
   );
 }
 
-function StepDuration({ selected, setSelected, isAr }: { selected: string[]; setSelected: (v: string[]) => void; isAr: boolean }) {
+function StepDuration({ selected, setSelected, isAr, tk }: { selected: string[]; setSelected: (v: string[]) => void; isAr: boolean; tk: Tokens }) {
   const options = [
     { key: '<4', label: isAr ? 'أقل من 4 أشهر' : 'Less than 4 months', icon: <Zap className="w-4 h-4" strokeWidth={1.8} /> },
     { key: '5-9', label: isAr ? '5 – 9 أشهر' : '5 – 9 months', icon: <Clock className="w-4 h-4" strokeWidth={1.8} /> },
@@ -178,29 +288,36 @@ function StepDuration({ selected, setSelected, isAr }: { selected: string[]; set
 
   return (
     <div>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 700, color: tk.textPrimary, marginBottom: 6 }}>
         {isAr ? 'مدة الاستثمار' : 'Investment Duration'}
       </h3>
-      <p style={{ fontSize: 13, color: '#64748B', marginBottom: 24 }}>
+      <p style={{ fontSize: 13, color: tk.textSecondary, marginBottom: 24 }}>
         {isAr ? 'اختر المدد المفضلة لديك' : 'Choose your preferred durations'}
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {options.map(o => (
-          <SelectCard key={o.key} selected={selected.includes(o.key)} onClick={() => toggle(o.key)}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 32, height: 32, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', color: selected.includes(o.key) ? '#3B82F6' : '#94A3B8', background: selected.includes(o.key) ? '#EFF6FF' : '#F8FAFC' }}>
-                {o.icon}
+        {options.map(o => {
+          const isSelected = selected.includes(o.key);
+          return (
+            <SelectCard key={o.key} selected={isSelected} onClick={() => toggle(o.key)} tk={tk}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{
+                  width: 32, height: 32, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: isSelected ? tk.primaryText : tk.textMuted,
+                  background: isSelected ? tk.primarySoft : tk.innerBg,
+                }}>
+                  {o.icon}
+                </div>
+                <span style={{ fontSize: 14, fontWeight: 600, color: tk.textPrimary }}>{o.label}</span>
               </div>
-              <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{o.label}</span>
-            </div>
-          </SelectCard>
-        ))}
+            </SelectCard>
+          );
+        })}
       </div>
     </div>
   );
 }
 
-function StepReview({ amount, risks, durations, isAr }: { amount: string; risks: string[]; durations: string[]; isAr: boolean }) {
+function StepReview({ amount, risks, durations, isAr, tk }: { amount: string; risks: string[]; durations: string[]; isAr: boolean; tk: Tokens }) {
   const durationLabels: Record<string, { ar: string; en: string }> = {
     '<4': { ar: 'أقل من 4 أشهر', en: '< 4 months' },
     '5-9': { ar: '5–9 أشهر', en: '5–9 months' },
@@ -216,23 +333,23 @@ function StepReview({ amount, risks, durations, isAr }: { amount: string; risks:
 
   return (
     <div>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 700, color: tk.textPrimary, marginBottom: 6 }}>
         {isAr ? 'مراجعة المعايير' : 'Review Criteria'}
       </h3>
-      <p style={{ fontSize: 13, color: '#64748B', marginBottom: 24 }}>
+      <p style={{ fontSize: 13, color: tk.textSecondary, marginBottom: 24 }}>
         {isAr ? 'تأكد من صحة معايير الاستثمار التلقائي' : 'Review your auto invest criteria'}
       </p>
 
-      <div style={{ background: '#F8FAFC', borderRadius: 14, padding: 20, border: '1px solid #F1F5F9' }}>
+      <div style={{ background: tk.innerBg, borderRadius: 14, padding: 20, border: `1px solid ${tk.innerBorder}` }}>
         {rows.map((r, i) => (
-          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: i < rows.length - 1 ? '1px solid #F1F5F9' : 'none' }}>
-            <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 500 }}>{r.label}</span>
-            <span style={{ fontSize: 14, color: '#0F172A', fontWeight: 700 }}>{r.value}</span>
+          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: i < rows.length - 1 ? `1px solid ${tk.divider}` : 'none' }}>
+            <span style={{ fontSize: 12, color: tk.textMuted, fontWeight: 500 }}>{r.label}</span>
+            <span style={{ fontSize: 14, color: tk.textPrimary, fontWeight: 700 }}>{r.value}</span>
           </div>
         ))}
       </div>
 
-      <p style={{ fontSize: 11, color: '#94A3B8', marginTop: 16, lineHeight: 1.6 }}>
+      <p style={{ fontSize: 11, color: tk.textMuted, marginTop: 16, lineHeight: 1.6 }}>
         {isAr
           ? 'بالمتابعة، أنت توافق على الاستثمار تلقائيًا عند توفر فرص مطابقة لمعاييرك.'
           : 'By proceeding, you agree to automatically invest when matching opportunities appear.'}
@@ -241,7 +358,7 @@ function StepReview({ amount, risks, durations, isAr }: { amount: string; risks:
   );
 }
 
-function StepVerify({ otp, setOtp, isAr }: { otp: string[]; setOtp: (v: string[]) => void; isAr: boolean }) {
+function StepVerify({ otp, setOtp, isAr, tk }: { otp: string[]; setOtp: (v: string[]) => void; isAr: boolean; tk: Tokens }) {
   const refs = useRef<(HTMLInputElement | null)[]>([]);
   const [countdown, setCountdown] = useState(60);
 
@@ -269,13 +386,13 @@ function StepVerify({ otp, setOtp, isAr }: { otp: string[]; setOtp: (v: string[]
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
+      <h3 style={{ fontSize: 18, fontWeight: 700, color: tk.textPrimary, marginBottom: 6 }}>
         {isAr ? 'تحقق من هويتك' : 'Verify Your Identity'}
       </h3>
-      <p style={{ fontSize: 13, color: '#64748B', marginBottom: 8 }}>
+      <p style={{ fontSize: 13, color: tk.textSecondary, marginBottom: 8 }}>
         {isAr ? 'أدخل رمز التحقق المرسل إلى جوالك' : 'Enter the OTP sent to your phone'}
       </p>
-      <p style={{ fontSize: 12, color: '#0F172A', fontWeight: 600, marginBottom: 28 }} dir="ltr">+966 5XX XXX XX8</p>
+      <p style={{ fontSize: 12, color: tk.textPrimary, fontWeight: 600, marginBottom: 28 }} dir="ltr">+966 5XX XXX XX8</p>
 
       <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginBottom: 20 }} dir="ltr">
         {otp.map((d, i) => (
@@ -291,18 +408,19 @@ function StepVerify({ otp, setOtp, isAr }: { otp: string[]; setOtp: (v: string[]
             style={{
               width: 56, height: 56, borderRadius: 14, textAlign: 'center', fontSize: 22, fontWeight: 700,
               outline: 'none', transition: 'all 0.2s',
-              border: d ? '2px solid #3B82F6' : '1px solid #E2E8F0',
-              background: d ? '#EFF6FF' : '#F8FAFC', color: '#0F172A',
+              border: d ? `2px solid ${tk.inputFocusBorder}` : `1px solid ${tk.inputBorder}`,
+              background: d ? tk.otpFilledBg : tk.otpIdleBg,
+              color: tk.textPrimary,
             }}
           />
         ))}
       </div>
 
-      <div style={{ fontSize: 12, color: '#94A3B8' }}>
+      <div style={{ fontSize: 12, color: tk.textMuted }}>
         {countdown > 0 ? (
-          <span>{isAr ? 'إعادة الإرسال خلال' : 'Resend in'} <span style={{ fontWeight: 700, color: '#0F172A' }}>{countdown}</span> {isAr ? 'ثانية' : 's'}</span>
+          <span>{isAr ? 'إعادة الإرسال خلال' : 'Resend in'} <span style={{ fontWeight: 700, color: tk.textPrimary }}>{countdown}</span> {isAr ? 'ثانية' : 's'}</span>
         ) : (
-          <button onClick={() => setCountdown(60)} style={{ color: '#3B82F6', fontWeight: 600, cursor: 'pointer', background: 'none', border: 'none', fontSize: 12 }}>
+          <button onClick={() => setCountdown(60)} style={{ color: tk.primaryText, fontWeight: 600, cursor: 'pointer', background: 'none', border: 'none', fontSize: 12 }}>
             {isAr ? 'إعادة إرسال الرمز' : 'Resend code'}
           </button>
         )}
@@ -311,17 +429,17 @@ function StepVerify({ otp, setOtp, isAr }: { otp: string[]; setOtp: (v: string[]
   );
 }
 
-function StepSuccess({ isAr, onClose }: { isAr: boolean; onClose: () => void }) {
+function StepSuccess({ isAr, onClose, tk }: { isAr: boolean; onClose: () => void; tk: Tokens }) {
   const navigate = useNavigate();
   return (
     <div style={{ textAlign: 'center', padding: '16px 0' }}>
-      <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-        <CheckCircle className="w-8 h-8 text-[#2BB673]" strokeWidth={1.5} />
+      <div style={{ width: 64, height: 64, borderRadius: '50%', background: tk.successSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+        <CheckCircle className="w-8 h-8" strokeWidth={1.5} style={{ color: tk.successText }} />
       </div>
-      <h3 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', marginBottom: 8 }}>
+      <h3 style={{ fontSize: 20, fontWeight: 700, color: tk.textPrimary, marginBottom: 8 }}>
         {isAr ? 'تم تفعيل الاستثمار التلقائي' : 'Auto Invest Activated'}
       </h3>
-      <p style={{ fontSize: 13, color: '#64748B', marginBottom: 32, lineHeight: 1.6 }}>
+      <p style={{ fontSize: 13, color: tk.textSecondary, marginBottom: 32, lineHeight: 1.6 }}>
         {isAr ? 'سيتم الاستثمار تلقائيًا عند توفر الفرص المطابقة لمعاييرك' : 'You will automatically invest when matching opportunities appear'}
       </p>
       <div style={{ display: 'flex', gap: 10 }}>
@@ -329,7 +447,7 @@ function StepSuccess({ isAr, onClose }: { isAr: boolean; onClose: () => void }) 
           onClick={() => { onClose(); navigate('/app/opportunities'); }}
           style={{
             flex: 1, height: 46, borderRadius: 14, border: 'none', cursor: 'pointer',
-            background: 'linear-gradient(135deg, #1D4ED8, #2563EB)', color: 'white',
+            background: tk.primaryBtnBg, color: 'white',
             fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
           }}
         >
@@ -340,7 +458,7 @@ function StepSuccess({ isAr, onClose }: { isAr: boolean; onClose: () => void }) 
           onClick={onClose}
           style={{
             flex: 1, height: 46, borderRadius: 14, cursor: 'pointer',
-            background: 'white', color: '#64748B', border: '1px solid #E2E8F0',
+            background: tk.secondaryBtnBg, color: tk.secondaryBtnText, border: tk.secondaryBtnBorder,
             fontSize: 14, fontWeight: 600,
           }}
         >
@@ -358,6 +476,7 @@ function StepSuccess({ isAr, onClose }: { isAr: boolean; onClose: () => void }) 
 export function AutoInvestModal({ open, onClose }: AutoInvestModalProps) {
   const { lang } = useI18n();
   const isAr = lang === 'ar';
+  const tk = useTokens();
   const [step, setStep] = useState<Step>(1);
   const [amount, setAmount] = useState('5,000');
   const [risks, setRisks] = useState<string[]>(['A', 'B']);
@@ -402,51 +521,51 @@ export function AutoInvestModal({ open, onClose }: AutoInvestModalProps) {
 
   return (
     <div
-      style={{ position: 'fixed', inset: 0, zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(15,23,42,0.5)', backdropFilter: 'blur(4px)' }}
+      style={{ position: 'fixed', inset: 0, zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', background: tk.overlay, backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget && !verifying) onClose(); }}
     >
       <div
-        style={{ background: 'white', width: '100%', maxWidth: 480, borderRadius: 24, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.15)', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
+        style={{ background: tk.modalBg, border: tk.modalBorder, width: '100%', maxWidth: 480, borderRadius: 24, overflow: 'hidden', boxShadow: tk.modalShadow, maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
         dir={isAr ? 'rtl' : 'ltr'}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
         {step <= 5 && (
-          <div style={{ padding: '20px 24px 0', borderBottom: step === 6 ? 'none' : undefined }}>
+          <div style={{ padding: '20px 24px 0' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(59,130,246,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Zap className="w-4 h-4 text-[#3B82F6]" strokeWidth={2} />
+                <div style={{ width: 32, height: 32, borderRadius: 10, background: tk.primarySoft, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Zap className="w-4 h-4" strokeWidth={2} style={{ color: tk.primaryText }} />
                 </div>
-                <span style={{ fontSize: 15, fontWeight: 700, color: '#0F172A' }}>
+                <span style={{ fontSize: 15, fontWeight: 700, color: tk.textPrimary }}>
                   {isAr ? 'الاستثمار التلقائي' : 'Auto Invest'}
                 </span>
               </div>
-              <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 10, border: 'none', background: '#F8FAFC', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <X className="w-4 h-4 text-[#94A3B8]" strokeWidth={1.8} />
+              <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 10, border: 'none', background: tk.closeBtnBg, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <X className="w-4 h-4" strokeWidth={1.8} style={{ color: tk.closeBtnIcon }} />
               </button>
             </div>
-            <Stepper current={step} labels={labels} />
+            <Stepper current={step} labels={labels} tk={tk} />
           </div>
         )}
 
         {/* Content */}
         <div style={{ padding: 24, overflowY: 'auto', flex: 1 }}>
-          {step === 1 && <StepAmount amount={amount} setAmount={setAmount} isAr={isAr} />}
-          {step === 2 && <StepRisk selected={risks} setSelected={setRisks} isAr={isAr} />}
-          {step === 3 && <StepDuration selected={durations} setSelected={setDurations} isAr={isAr} />}
-          {step === 4 && <StepReview amount={amount} risks={risks} durations={durations} isAr={isAr} />}
-          {step === 5 && <StepVerify otp={otp} setOtp={setOtp} isAr={isAr} />}
-          {step === 6 && <StepSuccess isAr={isAr} onClose={onClose} />}
+          {step === 1 && <StepAmount amount={amount} setAmount={setAmount} isAr={isAr} tk={tk} />}
+          {step === 2 && <StepRisk selected={risks} setSelected={setRisks} isAr={isAr} tk={tk} />}
+          {step === 3 && <StepDuration selected={durations} setSelected={setDurations} isAr={isAr} tk={tk} />}
+          {step === 4 && <StepReview amount={amount} risks={risks} durations={durations} isAr={isAr} tk={tk} />}
+          {step === 5 && <StepVerify otp={otp} setOtp={setOtp} isAr={isAr} tk={tk} />}
+          {step === 6 && <StepSuccess isAr={isAr} onClose={onClose} tk={tk} />}
         </div>
 
         {/* Footer */}
         {step <= 5 && (
-          <div style={{ padding: '16px 24px 20px', borderTop: '1px solid #F1F5F9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+          <div style={{ padding: '16px 24px 20px', borderTop: `1px solid ${tk.divider}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
             {step > 1 ? (
               <button
                 onClick={handleBack}
-                style={{ height: 44, padding: '0 20px', borderRadius: 12, border: '1px solid #E2E8F0', background: 'white', color: '#64748B', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                style={{ height: 44, padding: '0 20px', borderRadius: 12, border: tk.secondaryBtnBorder, background: tk.secondaryBtnBg, color: tk.secondaryBtnText, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
               >
                 <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} />
                 {isAr ? 'رجوع' : 'Back'}
@@ -457,10 +576,10 @@ export function AutoInvestModal({ open, onClose }: AutoInvestModalProps) {
               disabled={!canNext || verifying}
               style={{
                 height: 44, padding: '0 24px', borderRadius: 12, border: 'none', cursor: canNext && !verifying ? 'pointer' : 'not-allowed',
-                background: canNext ? 'linear-gradient(135deg, #1D4ED8, #2563EB)' : '#E2E8F0',
-                color: canNext ? 'white' : '#94A3B8',
+                background: canNext ? tk.primaryBtnBg : tk.primaryBtnDisabledBg,
+                color: canNext ? 'white' : tk.primaryBtnDisabledText,
                 fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6,
-                boxShadow: canNext ? '0 2px 8px rgba(37,99,235,0.25)' : 'none',
+                boxShadow: canNext ? tk.primaryBtnShadow : 'none',
                 opacity: verifying ? 0.7 : 1, transition: 'all 0.2s',
               }}
             >

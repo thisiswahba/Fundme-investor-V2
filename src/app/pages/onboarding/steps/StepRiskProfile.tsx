@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useOnboarding } from "../OnboardingContext";
-import { ArrowLeft, ArrowRight, GraduationCap, Briefcase, TrendingUp, Wallet, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, GraduationCap, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 interface Question {
@@ -13,125 +13,92 @@ interface Question {
 }
 
 const SECTIONS = [
-  { title: "المعلومات الأساسية", icon: GraduationCap },
-  { title: "الخبرة الاستثمارية", icon: TrendingUp },
-  { title: "القدرة المالية", icon: Wallet },
-  { title: "مصدر الدخل", icon: Briefcase },
-  { title: "أسئلة الامتثال", icon: ShieldCheck },
+  { title: "الملف الاستثماري", icon: GraduationCap },
+  { title: "نبذة عنك", icon: ShieldCheck },
 ];
 
 const QUESTIONS: Question[] = [
-  // Section 1 — Basic Info
+  // Section 1 — Investor Profile
   {
     id: "education",
     section: 0,
-    question: "ما هو مستواك التعليمي؟",
+    question: "ما هو أعلى مستوى تعليمي حصلت عليه؟",
     options: [
       { label: "ثانوي أو أقل" },
+      { label: "دبلوم" },
       { label: "بكالوريوس" },
-      { label: "ماجستير" },
-      { label: "دكتوراه" },
+      { label: "دراسات عليا" },
     ],
   },
   {
     id: "employment",
     section: 0,
-    question: "ما هي حالتك الوظيفية؟",
+    question: "ما هي حالتك الوظيفية الحالية؟",
     options: [
-      { label: "موظف حكومي" },
-      { label: "موظف قطاع خاص" },
+      { label: "موظف" },
       { label: "صاحب عمل" },
       { label: "متقاعد" },
       { label: "غير موظف" },
     ],
   },
-  // Section 2 — Investment Experience
   {
     id: "has_experience",
-    section: 1,
-    question: "هل لديك خبرة سابقة في الاستثمار؟",
+    section: 0,
+    question: "هل لديك خبرة أو معرفة في قطاع الاستثمار أو التمويل؟",
     options: [
       { label: "نعم" },
       { label: "لا" },
     ],
   },
   {
-    id: "experience_type",
-    section: 1,
-    question: "ما نوع الاستثمارات التي لديك خبرة فيها؟",
-    subtitle: "اختر الأقرب لخبرتك",
-    conditional: { questionId: "has_experience", answerIndex: 0 },
-    options: [
-      { label: "أسهم وصناديق استثمارية" },
-      { label: "عقارات" },
-      { label: "تمويل جماعي" },
-      { label: "تداول عملات أو سلع" },
-    ],
-  },
-  {
-    id: "experience_years",
-    section: 1,
-    question: "كم سنة من الخبرة الاستثمارية لديك؟",
-    conditional: { questionId: "has_experience", answerIndex: 0 },
-    options: [
-      { label: "أقل من سنة" },
-      { label: "من 1 إلى 3 سنوات" },
-      { label: "من 3 إلى 5 سنوات" },
-      { label: "أكثر من 5 سنوات" },
-    ],
-  },
-  // Section 3 — Financial Capacity
-  {
     id: "annual_income",
-    section: 2,
-    question: "ما هو دخلك السنوي التقريبي؟",
+    section: 0,
+    question: "ما هو دخلك السنوي التقريبي (بالريال السعودي)؟",
     options: [
-      { label: "أقل من 100,000 ريال" },
-      { label: "100,000 - 300,000 ريال" },
-      { label: "300,000 - 600,000 ريال" },
-      { label: "أكثر من 600,000 ريال" },
+      { label: "أقل من 200,000 ريال" },
+      { label: "من 200,000 إلى 500,000 ريال" },
+      { label: "من 500,000 إلى 1,000,000 ريال" },
+      { label: "أكثر من 1,000,000 ريال" },
     ],
   },
   {
     id: "net_worth",
-    section: 2,
-    question: "ما هو صافي ثروتك التقريبي؟",
-    subtitle: "بدون احتساب مسكنك الأساسي",
+    section: 0,
+    question: "ما هو صافي ثروتك التقريبي (بالريال السعودي)؟",
     options: [
-      { label: "أقل من 200,000 ريال" },
-      { label: "200,000 - 1,000,000 ريال" },
-      { label: "1,000,000 - 5,000,000 ريال" },
+      { label: "أقل من 1,000,000 ريال" },
+      { label: "من 1,000,000 إلى 3,000,000 ريال" },
+      { label: "من 3,000,000 إلى 5,000,000 ريال" },
       { label: "أكثر من 5,000,000 ريال" },
     ],
   },
-  // Section 4 — Source of Income
   {
     id: "income_source",
-    section: 3,
+    section: 0,
     question: "ما هو مصدر دخلك الرئيسي؟",
     options: [
-      { label: "راتب شهري" },
-      { label: "أعمال تجارية" },
+      { label: "راتب" },
+      { label: "دخل من أعمال تجارية" },
       { label: "عوائد استثمارية" },
-      { label: "إيرادات عقارية" },
       { label: "مصادر أخرى" },
     ],
   },
-  // Section 5 — Compliance
+  // Section 2 — About You
   {
-    id: "pep",
-    section: 4,
-    question: "هل أنت شخص مكشوف سياسياً؟",
-    subtitle: "شخص يشغل أو شغل منصباً عاماً بارزاً",
+    id: "senior_position",
+    section: 1,
+    question: "هل تم تعيينك في أي منصب قيادي أو رفيع المستوى داخل أو خارج المملكة العربية السعودية؟",
+    subtitle: "(مثل: وزير، سفير، عضو مجلس الشورى، أو منصب حكومي/تنفيذي رفيع)",
     options: [
       { label: "نعم" },
       { label: "لا" },
     ],
   },
   {
-    id: "senior_position",
-    section: 4,
-    question: "هل تشغل منصباً قيادياً في جهة حكومية أو شركة مدرجة؟",
+    id: "international_org",
+    section: 1,
+    question: "هل تشغل حالياً منصباً إدارياً رفيعاً في أي منظمة دولية؟",
+    subtitle: "(مثل: الأمم المتحدة، البنك الدولي، صندوق النقد الدولي، أو منظمات مماثلة)",
     options: [
       { label: "نعم" },
       { label: "لا" },
@@ -139,8 +106,9 @@ const QUESTIONS: Question[] = [
   },
   {
     id: "family_relation",
-    section: 4,
-    question: "هل لديك صلة قرابة بشخص يشغل منصباً حكومياً بارزاً؟",
+    section: 1,
+    question: "هل تربطك صلة قرابة أو علاقة زوجية (حتى الدرجة الثانية) بشخص يشغل منصباً حكومياً أو دولياً رفيع المستوى داخل أو خارج المملكة العربية السعودية؟",
+    subtitle: "(مثل: والد، زوج، طفل، شقيق، أو قريب وثيق في منصب قيادي أو رفيع المستوى)",
     options: [
       { label: "نعم" },
       { label: "لا" },
@@ -178,15 +146,7 @@ export function StepRiskProfile() {
   const SectionIcon = SECTIONS[currentSection].icon;
 
   function selectAnswer(optionIndex: number) {
-    const newAnswers = { ...answers, [question.id]: optionIndex };
-
-    // Clear conditional follow-ups if the parent answer changes
-    if (question.id === "has_experience" && optionIndex !== 0) {
-      delete newAnswers["experience_type"];
-      delete newAnswers["experience_years"];
-    }
-
-    setAnswers(newAnswers);
+    setAnswers({ ...answers, [question.id]: optionIndex });
   }
 
   function handleNext() {
@@ -214,7 +174,7 @@ export function StepRiskProfile() {
   return (
     <div>
       {/* Section header */}
-      <div className="flex items-center gap-2.5 mb-1">
+      <div className="flex items-center gap-2.5 mb-6">
         <div className="w-8 h-8 rounded-lg bg-[#F1F4F9] flex items-center justify-center">
           <SectionIcon className="size-4 text-[#315FDB]" />
         </div>
@@ -228,22 +188,6 @@ export function StepRiskProfile() {
             </span>
           </div>
         </div>
-      </div>
-
-      {/* Section dots */}
-      <div className="flex gap-1 mb-6 mt-3">
-        {SECTIONS.map((_, i) => (
-          <div
-            key={i}
-            className={`h-1 flex-1 rounded-sm transition-all duration-500 ${
-              i < currentSection
-                ? "bg-[#A7D98B]"
-                : i === currentSection
-                  ? "bg-[#315FDB]"
-                  : "bg-[#E3E8F1]"
-            }`}
-          />
-        ))}
       </div>
 
       <AnimatePresence mode="wait">

@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router';
-import { Bell, User, ChevronDown, Settings, LogOut, UserCircle, Globe, Users, FlaskConical } from 'lucide-react';
+import { Bell, User, ChevronDown, Settings, LogOut, UserCircle, Globe, Users, FlaskConical, Crown, ShieldCheck } from 'lucide-react';
 import logoLight from '../../assets/logo-light.png';
 import logoDark from '../../assets/logo-dark.png';
 import { useI18n } from '../i18n';
 import { usePersona, type PersonaId } from '../demoPersona';
+import { SupportChat } from './SupportChat';
 
 export function Layout() {
   const { lang, setLang, t, dir } = useI18n();
@@ -45,9 +46,38 @@ export function Layout() {
       <nav className="border-b sticky top-0 z-50" style={{ background: personaId === 'vip' ? '#08162A' : '#FFFFFF', borderColor: personaId === 'vip' ? 'rgba(255,255,255,0.08)' : '#E5E7EB' }}>
         <div className="max-w-[1400px] mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center">
+            {/* Logo + Tier Tag */}
+            <div className="flex items-center gap-2.5">
               <img src={personaId === 'vip' ? logoLight : logoDark} alt="FundMe" className="h-14 w-auto" />
+              {personaId === 'vip' ? (
+                <span
+                  className="inline-flex items-center gap-1 h-6 px-2 rounded-md text-[10px] tracking-wide"
+                  style={{
+                    fontWeight: 700,
+                    background: 'linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(79,70,229,0.22) 100%)',
+                    border: '1px solid rgba(165,180,252,0.35)',
+                    color: '#A5B4FC',
+                    boxShadow: '0 0 12px rgba(99,102,241,0.25)',
+                  }}
+                >
+                  <Crown className="w-3 h-3" strokeWidth={2.5} />
+                  VIP
+                </span>
+              ) : (
+                <span
+                  className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-md text-[10px] tracking-[0.02em]"
+                  style={{
+                    fontWeight: 600,
+                    background: 'linear-gradient(135deg, #F8FAFC 0%, #EEF2F7 100%)',
+                    border: '1px solid #DCE3EC',
+                    color: '#0B1F3A',
+                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.8), 0 1px 2px rgba(11,31,58,0.04)',
+                  }}
+                >
+                  <ShieldCheck className="w-3 h-3" strokeWidth={2.2} style={{ color: '#1D4ED8' }} />
+                  {isAr ? 'مستثمر عادي' : 'Regular Investor'}
+                </span>
+              )}
             </div>
 
             {/* Navigation Tabs */}
@@ -190,6 +220,9 @@ export function Layout() {
           ))}
         </div>
       </div>
+
+      {/* ─── Support Chat (opposite corner of persona switcher) ─── */}
+      <SupportChat />
 
       {/* ─── Demo Persona Switcher (floating) ─── */}
       <div
