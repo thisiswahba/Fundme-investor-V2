@@ -82,21 +82,20 @@ export function AutoInvestWidget() {
   return (
     <>
       <section
-        className="rounded-2xl overflow-hidden relative"
+        className="rounded-2xl overflow-hidden relative h-full flex flex-col"
         style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}
       >
-        {/* Hero strip */}
+        {/* Hero strip — compact */}
         <div
-          className="relative px-6 pt-6 pb-5 overflow-hidden"
+          className="relative px-5 py-4 overflow-hidden shrink-0"
           style={{
             background: active
               ? 'linear-gradient(135deg, #064E3B 0%, #0B3B2E 50%, #0F2A4D 100%)'
               : 'linear-gradient(135deg, #0B1F3A 0%, #1E3A8A 50%, #2563EB 100%)',
           }}
         >
-          {/* atmospheric glow */}
           <div
-            className="absolute -top-16 -right-16 w-56 h-56 rounded-full pointer-events-none"
+            className="absolute -top-16 -right-16 w-48 h-48 rounded-full pointer-events-none"
             style={{
               background: active
                 ? 'radial-gradient(circle, rgba(52,211,153,0.25) 0%, transparent 70%)'
@@ -105,32 +104,29 @@ export function AutoInvestWidget() {
             }}
           />
 
-          <div className="relative flex items-start justify-between gap-4">
-            <div className="flex items-start gap-3">
+          <div className="relative flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
               <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+                className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
                 style={{
                   background: 'rgba(255,255,255,0.1)',
                   border: '1px solid rgba(255,255,255,0.15)',
-                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)',
                 }}
               >
-                <Sparkles className="w-5 h-5 text-white" strokeWidth={2} />
+                <Sparkles className="w-4 h-4 text-white" strokeWidth={2} />
               </div>
-              <div>
-                <h3 className="text-[16px] text-white" style={{ fontWeight: 700, letterSpacing: '-0.01em' }}>
+              <div className="min-w-0">
+                <h3 className="text-[14px] text-white truncate" style={{ fontWeight: 700, letterSpacing: '-0.01em' }}>
                   {isAr ? 'الاستثمار التلقائي' : 'Auto-Invest'}
                 </h3>
-                <p className="text-[12px] mt-0.5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.65)' }}>
-                  {isAr
-                    ? 'حدّد معاييرك ودع المنصّة تستثمر نيابةً عنك'
-                    : 'Set your criteria once — we invest for you'}
+                <p className="text-[11px] truncate" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                  {isAr ? 'استثمر نيابةً عنك' : 'Invest on your behalf'}
                 </p>
               </div>
             </div>
             {active && (
               <span
-                className="inline-flex items-center gap-1 h-6 px-2 rounded-md text-[10px] tracking-wide shrink-0"
+                className="inline-flex items-center gap-1 h-5 px-1.5 rounded text-[9px] tracking-wide shrink-0"
                 style={{
                   fontWeight: 700,
                   background: 'rgba(167,243,208,0.18)',
@@ -138,30 +134,30 @@ export function AutoInvestWidget() {
                   border: '1px solid rgba(167,243,208,0.35)',
                 }}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-[#34D399] animate-pulse" />
-                {isAr ? 'مفعّل' : 'ACTIVE'}
+                <span className="w-1 h-1 rounded-full bg-[#34D399] animate-pulse" />
+                {isAr ? 'مفعّل' : 'ON'}
               </span>
             )}
           </div>
         </div>
 
-        {/* Body */}
-        <div className="p-6">
-          {/* Benefits list */}
-          <ul className="space-y-3 mb-5">
+        {/* Body — flex-1 fills remaining space */}
+        <div className="px-5 py-4 flex-1 flex flex-col">
+          {/* Benefits list — compact, evenly distributed */}
+          <ul className="space-y-2.5 flex-1">
             {benefits.map((b, i) => (
-              <li key={i} className="flex items-start gap-3">
+              <li key={i} className="flex items-start gap-2.5">
                 <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+                  className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
                   style={{ background: tk.accentSoft, border: tk.accentBorder }}
                 >
-                  <b.icon className="w-3.5 h-3.5" strokeWidth={2} style={{ color: tk.accent }} />
+                  <b.icon className="w-3 h-3" strokeWidth={2} style={{ color: tk.accent }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[13px] leading-snug" style={{ fontWeight: 600, color: tk.textPrimary }}>
+                  <div className="text-[12px] leading-tight" style={{ fontWeight: 600, color: tk.textPrimary }}>
                     {b.title}
                   </div>
-                  <div className="text-[11px] mt-0.5 leading-relaxed" style={{ color: tk.textMuted }}>
+                  <div className="text-[10.5px] mt-0.5 leading-snug" style={{ color: tk.textMuted }}>
                     {b.desc}
                   </div>
                 </div>
@@ -172,32 +168,32 @@ export function AutoInvestWidget() {
           {/* Stats row when active */}
           {active && (
             <div
-              className="grid grid-cols-2 gap-3 mb-5 rounded-xl p-3"
+              className="grid grid-cols-2 gap-2 mt-3 rounded-lg p-2.5"
               style={{ background: tk.innerBg, border: tk.innerBorder }}
             >
               <div>
-                <div className="text-[10px] uppercase mb-1" style={{ fontWeight: 600, color: tk.labelColor, letterSpacing: '0.08em' }}>
-                  {isAr ? 'استثمارات تلقائية' : 'Auto investments'}
+                <div className="text-[9px] uppercase" style={{ fontWeight: 600, color: tk.labelColor, letterSpacing: '0.08em' }}>
+                  {isAr ? 'تنفيذ' : 'Runs'}
                 </div>
-                <div className="text-[18px] font-mono tabular-nums" style={{ fontWeight: 700, color: tk.textPrimary }}>0</div>
+                <div className="text-[15px] font-mono tabular-nums" style={{ fontWeight: 700, color: tk.textPrimary }}>0</div>
               </div>
               <div>
-                <div className="text-[10px] uppercase mb-1" style={{ fontWeight: 600, color: tk.labelColor, letterSpacing: '0.08em' }}>
+                <div className="text-[9px] uppercase" style={{ fontWeight: 600, color: tk.labelColor, letterSpacing: '0.08em' }}>
                   {isAr ? 'آخر تنفيذ' : 'Last run'}
                 </div>
-                <div className="text-[13px]" style={{ fontWeight: 600, color: tk.textPrimary }}>
-                  {isAr ? 'لم يبدأ بعد' : 'Not yet'}
+                <div className="text-[12px] mt-0.5" style={{ fontWeight: 600, color: tk.textPrimary }}>
+                  {isAr ? 'لم يبدأ' : 'Not yet'}
                 </div>
               </div>
             </div>
           )}
 
-          {/* CTA */}
+          {/* CTA — pinned bottom */}
           {active ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mt-4">
               <button
                 onClick={() => setModalOpen(true)}
-                className="flex-1 h-11 rounded-xl flex items-center justify-center gap-2 text-[13px] transition-colors cursor-pointer"
+                className="flex-1 h-10 rounded-lg flex items-center justify-center gap-1.5 text-[12px] transition-colors cursor-pointer"
                 style={{
                   fontWeight: 600,
                   color: tk.activeAccent,
@@ -205,32 +201,32 @@ export function AutoInvestWidget() {
                   border: tk.activeBorder,
                 }}
               >
-                <Settings2 className="w-4 h-4" strokeWidth={2} />
-                {isAr ? 'تعديل الإعدادات' : 'Edit settings'}
+                <Settings2 className="w-3.5 h-3.5" strokeWidth={2} />
+                {isAr ? 'تعديل' : 'Edit'}
               </button>
               <button
                 onClick={() => setActive(false)}
-                className="h-11 px-3 rounded-xl flex items-center justify-center gap-1.5 text-[12px] transition-colors cursor-pointer"
+                className="h-10 px-3 rounded-lg flex items-center justify-center gap-1 text-[11px] transition-colors cursor-pointer"
                 style={{ fontWeight: 500, color: tk.textMuted, background: 'transparent' }}
                 title={isAr ? 'إيقاف' : 'Pause'}
               >
-                <PauseCircle className="w-4 h-4" strokeWidth={1.8} />
-                <span className="hidden sm:inline">{isAr ? 'إيقاف' : 'Pause'}</span>
+                <PauseCircle className="w-3.5 h-3.5" strokeWidth={1.8} />
+                {isAr ? 'إيقاف' : 'Pause'}
               </button>
             </div>
           ) : (
             <button
               onClick={() => { setActive(true); setModalOpen(true); }}
-              className="w-full h-11 rounded-xl flex items-center justify-center gap-2 text-[13px] text-white transition-all hover:scale-[1.02] cursor-pointer"
+              className="w-full h-10 rounded-lg flex items-center justify-center gap-1.5 text-[12px] text-white transition-all hover:scale-[1.02] cursor-pointer mt-4"
               style={{
                 fontWeight: 700,
                 background: tk.ctaBg,
                 boxShadow: tk.ctaShadow,
               }}
             >
-              <CheckCircle className="w-4 h-4" strokeWidth={2.5} />
-              {isAr ? 'تفعيل الاستثمار التلقائي' : 'Enable Auto-Invest'}
-              <Arrow className="w-3.5 h-3.5" strokeWidth={2.5} />
+              <CheckCircle className="w-3.5 h-3.5" strokeWidth={2.5} />
+              {isAr ? 'تفعيل الآن' : 'Enable Now'}
+              <Arrow className="w-3 h-3" strokeWidth={2.5} />
             </button>
           )}
         </div>
