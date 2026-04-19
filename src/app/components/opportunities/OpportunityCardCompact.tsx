@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { formatSAR, formatPercentage } from '../../utils/currency';
-import { ArrowLeft, ArrowRight, Bell, CheckCircle, Clock } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Bell, CheckCircle, Mail, X, Sparkles } from 'lucide-react';
 import { usePersona } from '../../demoPersona';
 import { useI18n } from '../../i18n';
 import { colors } from '../fundme';
@@ -19,10 +20,234 @@ interface OpportunityCardCompactProps {
   categoryIcon?: 'invoice' | 'capital' | 'equipment' | 'expansion' | 'food' | 'innovation';
   gradientTone?: string;
   comingSoon?: boolean;
+  /** ISO datetime string when the opportunity launches */
+  launchAt?: string;
   launchLabel?: string;
   launchDate?: string;
   patternIndex?: number;
   onClick?: () => void;
+}
+
+/* ── Live countdown hook ── */
+
+interface Countdown {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  done: boolean;
+}
+
+function useCountdown(targetIso?: string): Countdown {
+  const compute = (): Countdown => {
+    if (!targetIso) return { days: 0, hours: 0, minutes: 0, seconds: 0, done: true };
+    const diff = new Date(targetIso).getTime() - Date.now();
+    if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, done: true };
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+    return { days, hours, minutes, seconds, done: false };
+  };
+
+  const [state, setState] = useState<Countdown>(compute);
+
+  useEffect(() => {
+    if (!targetIso) return;
+    setState(compute());
+    const id = setInterval(() => setState(compute()), 1000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetIso]);
+
+  return state;
+}
+
+/* ── Animated digit cell ── */
+
+function DigitCell({ value, label, color }: { value: number; label: string; color: string }) {
+  const display = String(value).padStart(2, '0');
+  return (
+    <div className="flex flex-col items-center">
+      <div
+        className="relative w-[38px] h-[42px] rounded-lg overflow-hidden flex items-center justify-center"
+        style={{
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: 'inset 0 -8px 12px rgba(0,0,0,0.15), 0 1px 0 rgba(255,255,255,0.05)',
+        }}
+      >
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.span
+            key={display}
+            initial={{ y: -22, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 22, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 26, mass: 0.6 }}
+            className="absolute text-[20px] font-mono tabular-nums"
+            style={{ fontWeight: 700, color, letterSpacing: '-0.02em' }}
+          >
+            {display}
+          </motion.span>
+        </AnimatePresence>
+      </div>
+      <span className="text-[8.5px] uppercase mt-1.5" style={{ fontWeight: 600, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.4)' }}>
+        {label}
+      </span>
+    </div>
+  );
+}
+
+function CountdownBlock({ targetIso, isAr, accent }: { targetIso?: string; isAr: boolean; accent: string }) {
+  const { days, hours, minutes, seconds, done } = useCountdown(targetIso);
+  const labels = isAr
+    ? { d: 'يوم', h: 'ساعة', m: 'دقيقة', s: 'ثانية' }
+    : { d: 'Days', h: 'Hrs', m: 'Min', s: 'Sec' };
+  if (done) {
+    return (
+      <div className="text-center py-2 text-[14px]" style={{ fontWeight: 600, color: accent }}>
+        {isAr ? 'تم الإطلاق' : 'Launched'}
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-start justify-between gap-1.5" dir="ltr">
+      <DigitCell value={days} label={labels.d} color={accent} />
+      <span className="text-[18px] mt-2.5 opacity-30" style={{ fontWeight: 700, color: accent }}>:</span>
+      <DigitCell value={hours} label={labels.h} color={accent} />
+      <span className="text-[18px] mt-2.5 opacity-30" style={{ fontWeight: 700, color: accent }}>:</span>
+      <DigitCell value={minutes} label={labels.m} color={accent} />
+      <span className="text-[18px] mt-2.5 opacity-30" style={{ fontWeight: 700, color: accent }}>:</span>
+      <DigitCell value={seconds} label={labels.s} color={accent} />
+    </div>
+  );
+}
+
+/* ── Notify confirmation modal ── */
+
+function NotifyConfirmModal({ open, onClose, borrowerName, launchAt, isAr }: {
+  open: boolean;
+  onClose: () => void;
+  borrowerName: string;
+  launchAt?: string;
+  isAr: boolean;
+}) {
+  const { persona } = usePersona();
+  if (!open) return null;
+
+  const launchDateStr = launchAt
+    ? new Date(launchAt).toLocaleDateString(isAr ? 'ar-SA' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' })
+    : '';
+
+  return (
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+      style={{ background: 'rgba(15,23,42,0.55)', backdropFilter: 'blur(6px)' }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.92, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ type: 'spring', stiffness: 280, damping: 24 }}
+        className="relative w-full max-w-[420px] bg-white rounded-[20px] overflow-hidden"
+        style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.25)' }}
+        onClick={(e) => e.stopPropagation()}
+        dir={isAr ? 'rtl' : 'ltr'}
+      >
+        {/* Header with celebratory gradient */}
+        <div
+          className="relative px-6 pt-7 pb-6 text-center overflow-hidden"
+          style={{ background: 'linear-gradient(160deg, #0B1F3A 0%, #1E3A8A 50%, #4338CA 100%)' }}
+        >
+          <div
+            className="absolute -top-16 left-1/2 -translate-x-1/2 w-48 h-48 rounded-full pointer-events-none"
+            style={{ background: 'radial-gradient(circle, rgba(165,180,252,0.35) 0%, transparent 70%)', filter: 'blur(10px)' }}
+          />
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+          >
+            <X className="w-4 h-4" strokeWidth={2} />
+          </button>
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: 'spring', stiffness: 220, damping: 14, delay: 0.1 }}
+            className="relative w-16 h-16 rounded-2xl mx-auto mb-3 flex items-center justify-center"
+            style={{
+              background: 'linear-gradient(135deg, #A5B4FC 0%, #818CF8 100%)',
+              boxShadow: '0 10px 30px rgba(129,140,248,0.4), inset 0 1px 0 rgba(255,255,255,0.5)',
+            }}
+          >
+            <Bell className="w-7 h-7" strokeWidth={2} style={{ color: '#1E1B4B' }} />
+            <Sparkles className="absolute -top-1 -right-1 w-4 h-4" strokeWidth={2.5} style={{ color: '#FCD34D' }} />
+          </motion.div>
+          <h3 className="text-[18px] text-white" style={{ fontWeight: 700 }}>
+            {isAr ? 'تم تفعيل التنبيه!' : "You're subscribed!"}
+          </h3>
+          <p className="text-[12px] text-white/60 mt-1">
+            {isAr ? 'سنخبرك فور إطلاق الفرصة' : "We'll notify you the moment it launches"}
+          </p>
+        </div>
+
+        {/* Body */}
+        <div className="px-6 py-5 space-y-3.5">
+          {/* Opportunity name */}
+          <div className="flex items-start gap-3 p-3.5 rounded-xl" style={{ background: '#F8FAFC', border: '1px solid #EEF1F5' }}>
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: '#EEF2FF' }}>
+              <Sparkles className="w-4 h-4" strokeWidth={2} style={{ color: '#6366F1' }} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[10px] uppercase mb-0.5" style={{ fontWeight: 600, color: '#94A3B8', letterSpacing: '0.08em' }}>
+                {isAr ? 'الفرصة' : 'Opportunity'}
+              </div>
+              <div className="text-[13px]" style={{ fontWeight: 600, color: '#0F172A' }}>{borrowerName}</div>
+            </div>
+          </div>
+
+          {/* Launch date */}
+          {launchDateStr && (
+            <div className="flex items-start gap-3 p-3.5 rounded-xl" style={{ background: '#F8FAFC', border: '1px solid #EEF1F5' }}>
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: '#FEF3C7' }}>
+                <Bell className="w-4 h-4" strokeWidth={2} style={{ color: '#D97706' }} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] uppercase mb-0.5" style={{ fontWeight: 600, color: '#94A3B8', letterSpacing: '0.08em' }}>
+                  {isAr ? 'يفتح في' : 'Launching on'}
+                </div>
+                <div className="text-[13px]" style={{ fontWeight: 600, color: '#0F172A' }}>{launchDateStr}</div>
+              </div>
+            </div>
+          )}
+
+          {/* Email */}
+          <div className="flex items-start gap-3 p-3.5 rounded-xl" style={{ background: '#F8FAFC', border: '1px solid #EEF1F5' }}>
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: '#ECFDF5' }}>
+              <Mail className="w-4 h-4" strokeWidth={2} style={{ color: '#059669' }} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[10px] uppercase mb-0.5" style={{ fontWeight: 600, color: '#94A3B8', letterSpacing: '0.08em' }}>
+                {isAr ? 'سنرسل التنبيه إلى' : 'Notification will reach'}
+              </div>
+              <div className="text-[13px] font-mono truncate" dir="ltr" style={{ fontWeight: 600, color: '#0F172A' }}>{persona.profile.email}</div>
+            </div>
+          </div>
+
+          <button
+            onClick={onClose}
+            className="w-full h-11 rounded-xl text-[14px] text-white transition-all hover:scale-[1.02] mt-2 cursor-pointer"
+            style={{
+              fontWeight: 600,
+              background: 'linear-gradient(135deg, #1D4ED8 0%, #2563EB 100%)',
+              boxShadow: '0 4px 16px rgba(37,99,235,0.25)',
+            }}
+          >
+            {isAr ? 'تم' : 'Got it'}
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
 }
 
 /* ── SVG Pattern Overlays ── */
@@ -179,13 +404,14 @@ export function OpportunityCardCompact({
   totalAmount,
   fundedAmount,
   comingSoon = false,
+  launchAt,
   launchLabel,
-  launchDate,
   patternIndex,
   onClick,
 }: OpportunityCardCompactProps) {
   const returnValue = netReturn || roi || 0;
   const [notified, setNotified] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [animatedProgress, setAnimatedProgress] = useState(0);
   const { personaId } = usePersona();
   const { lang } = useI18n();
@@ -274,16 +500,32 @@ export function OpportunityCardCompact({
           {comingSoon ? (
             /* ── Coming Soon ── */
             <>
-              <div className="rounded-xl p-3 mb-3" style={{ background: tk.innerCardBg, border: tk.innerCardBorder }}>
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px]" style={{ fontWeight: 500, color: tk.textSecondary }}>{isAr ? 'يفتح خلال' : 'Opens in'}</span>
-                  <span className="text-[20px]" style={{ fontWeight: 700, color: tk.textPrimary }}>
-                    {launchLabel?.replace('يفتح خلال ', '') || (isAr ? '5 أيام' : '5 days')}
+              <div
+                className="rounded-xl px-3.5 py-3 mb-3 relative overflow-hidden"
+                style={{
+                  background: 'linear-gradient(140deg, #0B1220 0%, #1A1F3A 100%)',
+                  border: '1px solid rgba(165,180,252,0.18)',
+                }}
+              >
+                <div
+                  className="absolute -top-12 -right-8 w-32 h-32 rounded-full pointer-events-none"
+                  style={{ background: 'radial-gradient(circle, rgba(165,180,252,0.18) 0%, transparent 70%)', filter: 'blur(8px)' }}
+                />
+                <div className="relative flex items-center justify-between mb-2">
+                  <span className="text-[10px] uppercase" style={{ fontWeight: 600, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em' }}>
+                    {isAr ? 'يفتح خلال' : 'Launches in'}
                   </span>
+                  <span className="flex items-center gap-1 text-[9px]" style={{ color: '#A5B4FC', fontWeight: 600 }}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#A5B4FC] animate-pulse" />
+                    LIVE
+                  </span>
+                </div>
+                <div className="relative">
+                  <CountdownBlock targetIso={launchAt} isAr={isAr} accent="#A5B4FC" />
                 </div>
               </div>
               <button
-                onClick={(e) => { e.stopPropagation(); setNotified(true); }}
+                onClick={(e) => { e.stopPropagation(); setNotified(true); setConfirmOpen(true); }}
                 className="w-full h-10 rounded-xl text-[12px] flex items-center justify-center gap-1.5 transition-all"
                 style={{
                   fontWeight: 600,
@@ -291,7 +533,6 @@ export function OpportunityCardCompact({
                     ? { background: tk.notifiedBg, color: tk.notifiedColor, border: tk.notifiedBorder }
                     : { background: 'transparent', color: tk.notifyColor, border: tk.notifyBorder }),
                 }}
-                disabled={notified}
               >
                 {notified ? (
                   <><CheckCircle className="w-3.5 h-3.5" strokeWidth={2} />{isAr ? 'تم تفعيل التنبيه' : 'Notification on'}</>
@@ -299,6 +540,13 @@ export function OpportunityCardCompact({
                   <><Bell className="w-3.5 h-3.5" strokeWidth={2} />{isAr ? 'أشعرني عند الإطلاق' : 'Notify me at launch'}</>
                 )}
               </button>
+              <NotifyConfirmModal
+                open={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                borrowerName={borrowerName}
+                launchAt={launchAt}
+                isAr={isAr}
+              />
             </>
           ) : (
             /* ── Active Funding ── */

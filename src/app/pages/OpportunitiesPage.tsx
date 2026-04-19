@@ -111,7 +111,15 @@ interface Opp {
   categoryIcon: 'invoice' | 'capital' | 'equipment' | 'expansion' | 'food' | 'innovation';
   gradientTone: string;
   recommended: boolean;
+  comingSoon?: boolean;
+  /** ISO datetime when the opportunity opens. Computed at module load. */
+  launchAt?: string;
 }
+
+// Stable launch dates relative to load time (used by countdown timers)
+const now = Date.now();
+const inDays = (d: number, h = 0, m = 0) =>
+  new Date(now + d * 86400_000 + h * 3600_000 + m * 60_000).toISOString();
 
 const opportunities: Opp[] = [
   {
@@ -155,6 +163,21 @@ const opportunities: Opp[] = [
     fundingProgress: 18, totalAmount: 400000, fundedAmount: 72000,
     categoryIcon: 'innovation', gradientTone: 'linear-gradient(135deg, #001d5a 0%, #1e3a8a 100%)',
     recommended: false,
+  },
+  // ── Coming soon ──
+  {
+    id: 7, borrowerNameAr: 'مجموعة الواحة الزراعية', borrowerNameEn: 'Al-Waha Agricultural Group', opportunityId: 'FM-0007-902',
+    financingTypeAr: 'تمويل التوسع', financingTypeEn: 'Expansion Finance', roi: 13.6, risk: 'B', tenorMonths: 18,
+    fundingProgress: 0, totalAmount: 800000, fundedAmount: 0,
+    categoryIcon: 'expansion', gradientTone: 'linear-gradient(135deg, #001d5a 0%, #4338CA 100%)',
+    recommended: false, comingSoon: true, launchAt: inDays(2, 14, 30),
+  },
+  {
+    id: 8, borrowerNameAr: 'شركة الطاقة المتجددة', borrowerNameEn: 'Renewable Energy Co.', opportunityId: 'FM-0008-451',
+    financingTypeAr: 'تمويل المعدات', financingTypeEn: 'Equipment Finance', roi: 11.2, risk: 'A', tenorMonths: 30,
+    fundingProgress: 0, totalAmount: 1200000, fundedAmount: 0,
+    categoryIcon: 'equipment', gradientTone: 'linear-gradient(135deg, #001d5a 0%, #4338CA 100%)',
+    recommended: false, comingSoon: true, launchAt: inDays(7, 0, 0),
   },
 ];
 
@@ -386,7 +409,9 @@ export function OpportunitiesPage() {
             fundedAmount={opp.fundedAmount}
             categoryIcon={opp.categoryIcon}
             patternIndex={opp.id % 3}
-            onClick={() => navigate(`/app/opportunities/${opp.id}`)}
+            comingSoon={opp.comingSoon}
+            launchAt={opp.launchAt}
+            onClick={opp.comingSoon ? undefined : () => navigate(`/app/opportunities/${opp.id}`)}
           />
         ))}
       </div>
