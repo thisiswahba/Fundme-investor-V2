@@ -46,38 +46,9 @@ export function Layout() {
       <nav className="border-b sticky top-0 z-50" style={{ background: personaId === 'vip' ? '#08162A' : '#FFFFFF', borderColor: personaId === 'vip' ? 'rgba(255,255,255,0.08)' : '#E5E7EB' }}>
         <div className="max-w-[1400px] mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo + Tier Tag */}
-            <div className="flex items-center gap-2.5">
+            {/* Logo */}
+            <div className="flex items-center">
               <img src={personaId === 'vip' ? logoLight : logoDark} alt="FundMe" className="h-14 w-auto" />
-              {personaId === 'vip' ? (
-                <span
-                  className="inline-flex items-center gap-1 h-6 px-2 rounded-md text-[10px] tracking-wide"
-                  style={{
-                    fontWeight: 700,
-                    background: 'linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(79,70,229,0.22) 100%)',
-                    border: '1px solid rgba(165,180,252,0.35)',
-                    color: '#A5B4FC',
-                    boxShadow: '0 0 12px rgba(99,102,241,0.25)',
-                  }}
-                >
-                  <Crown className="w-3 h-3" strokeWidth={2.5} />
-                  VIP
-                </span>
-              ) : (
-                <span
-                  className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-md text-[10px] tracking-[0.02em]"
-                  style={{
-                    fontWeight: 600,
-                    background: 'linear-gradient(135deg, #F8FAFC 0%, #EEF2F7 100%)',
-                    border: '1px solid #DCE3EC',
-                    color: '#0B1F3A',
-                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.8), 0 1px 2px rgba(11,31,58,0.04)',
-                  }}
-                >
-                  <ShieldCheck className="w-3 h-3" strokeWidth={2.2} style={{ color: '#1D4ED8' }} />
-                  {isAr ? 'مستثمر عادي' : 'Regular Investor'}
-                </span>
-              )}
             </div>
 
             {/* Navigation Tabs */}
@@ -123,14 +94,27 @@ export function Layout() {
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className={`flex items-center gap-2 p-1.5 pr-3 rounded-lg transition-colors ${personaId === 'vip' ? 'hover:bg-white/[0.06]' : 'hover:bg-[#F1F4F9]'}`}
+                  className={`flex items-center gap-2.5 p-1.5 pr-3 rounded-lg transition-colors ${personaId === 'vip' ? 'hover:bg-white/[0.06]' : 'hover:bg-[#F1F4F9]'}`}
                 >
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${personaId === 'vip' ? 'bg-gradient-to-br from-[#6366F1] to-[#4F46E5]' : 'bg-gradient-to-br from-[#1D4ED8] to-[#1E40AF]'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${personaId === 'vip' ? 'bg-gradient-to-br from-[#6366F1] to-[#4F46E5]' : 'bg-gradient-to-br from-[#1D4ED8] to-[#1E40AF]'}`}>
                     <User className="w-4 h-4 text-white" strokeWidth={1.5} />
                   </div>
-                  <span className={`hidden lg:block text-[14px] ${personaId === 'vip' ? 'text-white/80' : 'text-[#0B1A3A]'}`} style={{ fontWeight: 500 }}>
-                    {userName}
-                  </span>
+                  <div className="hidden lg:flex flex-col items-start leading-tight">
+                    <span className={`text-[13px] ${personaId === 'vip' ? 'text-white/80' : 'text-[#0B1A3A]'}`} style={{ fontWeight: 600 }}>
+                      {userName}
+                    </span>
+                    <span
+                      className={`flex items-center gap-1 text-[10px] mt-0.5 ${personaId === 'vip' ? 'text-[#A5B4FC]' : 'text-[#1D4ED8]'}`}
+                      style={{ fontWeight: 500 }}
+                    >
+                      {personaId === 'vip' ? (
+                        <Crown className="w-2.5 h-2.5" strokeWidth={2.5} />
+                      ) : (
+                        <ShieldCheck className="w-2.5 h-2.5" strokeWidth={2.2} />
+                      )}
+                      {personaId === 'vip' ? 'VIP' : (isAr ? 'مستثمر عادي' : 'Regular Investor')}
+                    </span>
+                  </div>
                   <ChevronDown
                     className={`hidden lg:block w-3.5 h-3.5 text-[#94A3B8] transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`}
                     strokeWidth={1.5}
@@ -140,7 +124,7 @@ export function Layout() {
                 {/* Dropdown */}
                 {userMenuOpen && (
                   <div
-                    className="absolute top-full mt-2 w-56 bg-white rounded-xl overflow-hidden z-50"
+                    className="absolute top-full mt-2 w-64 bg-white rounded-xl overflow-hidden z-50"
                     style={{
                       boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
                       border: '1px solid #E5E7EB',
@@ -148,9 +132,37 @@ export function Layout() {
                     }}
                   >
                     {/* User info */}
-                    <div className="px-4 py-3 border-b" style={{ borderColor: '#F1F5F9' }}>
+                    <div className="px-4 py-3.5 border-b" style={{ borderColor: '#F1F5F9' }}>
                       <div className="text-[13px] text-[#0F172A]" style={{ fontWeight: 600 }}>{userName}</div>
-                      <div className="text-[11px] text-[#94A3B8]">{persona.profile.email}</div>
+                      {personaId === 'vip' ? (
+                        <span
+                          className="inline-flex items-center gap-1 h-5 px-1.5 rounded-md text-[10px] tracking-wide mt-1.5"
+                          style={{
+                            fontWeight: 700,
+                            background: 'linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(79,70,229,0.18) 100%)',
+                            border: '1px solid rgba(165,180,252,0.3)',
+                            color: '#4F46E5',
+                          }}
+                        >
+                          <Crown className="w-2.5 h-2.5" strokeWidth={2.5} />
+                          VIP
+                        </span>
+                      ) : (
+                        <span
+                          className="inline-flex items-center gap-1 h-5 px-1.5 rounded-md text-[10px] tracking-[0.02em] mt-1.5"
+                          style={{
+                            fontWeight: 600,
+                            background: 'linear-gradient(135deg, #F8FAFC 0%, #EEF2F7 100%)',
+                            border: '1px solid #DCE3EC',
+                            color: '#0B1F3A',
+                            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.8)',
+                          }}
+                        >
+                          <ShieldCheck className="w-2.5 h-2.5" strokeWidth={2.2} style={{ color: '#1D4ED8' }} />
+                          {isAr ? 'مستثمر عادي' : 'Regular Investor'}
+                        </span>
+                      )}
+                      <div className="text-[11px] text-[#94A3B8] mt-1.5">{persona.profile.email}</div>
                     </div>
 
                     {/* Menu items */}
