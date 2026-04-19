@@ -1010,8 +1010,8 @@ export function OpportunityDetailPage() {
                                 <td className="px-4 py-3 text-[13px]" style={{ fontWeight: isCurrent ? 700 : 600, color: tk.textPrimary }}>
                                   {monthLabel}
                                 </td>
-                                <td className="px-4 py-3 text-[12px] font-mono" dir="ltr" style={{ color: tk.textSecondary, fontWeight: 500 }}>
-                                  {row.date}
+                                <td className="px-4 py-3 text-start text-[12px] font-mono" style={{ color: tk.textSecondary, fontWeight: 500 }}>
+                                  <span dir="ltr">{row.date}</span>
                                 </td>
                                 <td className="px-4 py-3 text-end text-[14px] tabular-nums" style={{ fontWeight: 700, color: tk.textPrimary }}>
                                   {formatSAR(row.amount, { decimals: 0 })}
