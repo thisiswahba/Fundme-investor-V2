@@ -64,59 +64,61 @@ function useCountdown(targetIso?: string): Countdown {
   return state;
 }
 
-/* ── Animated digit cell (compact) ── */
+/* ── Animated digit segment ── */
 
-function DigitCell({ value, label, color }: { value: number; label: string; color: string }) {
+function DigitSegment({ value, suffix, color, mutedColor }: {
+  value: number;
+  suffix: string;
+  color: string;
+  mutedColor: string;
+}) {
   const display = String(value).padStart(2, '0');
   return (
-    <div className="flex flex-col items-center">
-      <div className="relative h-[18px] w-[22px] overflow-hidden flex items-center justify-center">
+    <span className="inline-flex items-baseline gap-0.5">
+      <span className="relative inline-block h-[14px] w-[16px] overflow-hidden align-baseline">
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.span
             key={display}
-            initial={{ y: -14, opacity: 0 }}
+            initial={{ y: -12, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 14, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 360, damping: 28, mass: 0.5 }}
-            className="absolute text-[14px] font-mono tabular-nums"
-            style={{ fontWeight: 700, color, letterSpacing: '-0.02em', lineHeight: 1 }}
+            exit={{ y: 12, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 30, mass: 0.45 }}
+            className="absolute inset-0 text-[13px] font-mono tabular-nums text-center"
+            style={{ fontWeight: 600, color, letterSpacing: '-0.02em', lineHeight: '14px' }}
           >
             {display}
           </motion.span>
         </AnimatePresence>
-      </div>
-      <span
-        className="text-[8px] uppercase mt-0.5"
-        style={{ fontWeight: 600, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.35)' }}
-      >
-        {label}
       </span>
-    </div>
+      <span className="text-[10px]" style={{ fontWeight: 500, color: mutedColor }}>{suffix}</span>
+    </span>
   );
 }
 
-function CountdownBlock({ targetIso, isAr, accent }: { targetIso?: string; isAr: boolean; accent: string }) {
+function CountdownBlock({ targetIso, isAr, color, mutedColor }: {
+  targetIso?: string;
+  isAr: boolean;
+  color: string;
+  mutedColor: string;
+}) {
   const { days, hours, minutes, seconds, done } = useCountdown(targetIso);
   const labels = isAr
-    ? { d: 'يوم', h: 'س', m: 'د', s: 'ث' }
-    : { d: 'D', h: 'H', m: 'M', s: 'S' };
+    ? { d: 'ي', h: 'س', m: 'د', s: 'ث' }
+    : { d: 'd', h: 'h', m: 'm', s: 's' };
   if (done) {
     return (
-      <div className="text-center py-1 text-[12px]" style={{ fontWeight: 600, color: accent }}>
+      <span className="text-[12px]" style={{ fontWeight: 600, color }}>
         {isAr ? 'تم الإطلاق' : 'Launched'}
-      </div>
+      </span>
     );
   }
   return (
-    <div className="flex items-start gap-1.5" dir="ltr">
-      <DigitCell value={days} label={labels.d} color={accent} />
-      <span className="text-[12px] mt-[1px] opacity-30" style={{ fontWeight: 700, color: accent }}>:</span>
-      <DigitCell value={hours} label={labels.h} color={accent} />
-      <span className="text-[12px] mt-[1px] opacity-30" style={{ fontWeight: 700, color: accent }}>:</span>
-      <DigitCell value={minutes} label={labels.m} color={accent} />
-      <span className="text-[12px] mt-[1px] opacity-30" style={{ fontWeight: 700, color: accent }}>:</span>
-      <DigitCell value={seconds} label={labels.s} color={accent} />
-    </div>
+    <span className="inline-flex items-baseline gap-1.5 font-mono" dir="ltr">
+      <DigitSegment value={days} suffix={labels.d} color={color} mutedColor={mutedColor} />
+      <DigitSegment value={hours} suffix={labels.h} color={color} mutedColor={mutedColor} />
+      <DigitSegment value={minutes} suffix={labels.m} color={color} mutedColor={mutedColor} />
+      <DigitSegment value={seconds} suffix={labels.s} color={color} mutedColor={mutedColor} />
+    </span>
   );
 }
 
@@ -370,19 +372,27 @@ export function OpportunityCardCompact({
             /* ── Coming Soon ── */
             <>
               <div
-                className="rounded-xl px-3 py-2.5 mb-3 relative overflow-hidden flex items-center justify-between gap-3"
-                style={{
-                  background: 'linear-gradient(140deg, #0B1220 0%, #1A1F3A 100%)',
-                  border: '1px solid rgba(165,180,252,0.18)',
-                }}
+                className="rounded-xl px-3 py-2.5 mb-3 flex items-center justify-between gap-3"
+                style={{ background: tk.innerCardBg, border: tk.innerCardBorder }}
               >
                 <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#A5B4FC] animate-pulse" />
-                  <span className="text-[9px] uppercase" style={{ fontWeight: 600, color: 'rgba(255,255,255,0.55)', letterSpacing: '0.1em' }}>
+                  <span
+                    className="w-1.5 h-1.5 rounded-full animate-pulse"
+                    style={{ background: tk.notifyColor }}
+                  />
+                  <span
+                    className="text-[10px] uppercase"
+                    style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.08em' }}
+                  >
                     {isAr ? 'يفتح خلال' : 'Opens in'}
                   </span>
                 </div>
-                <CountdownBlock targetIso={launchAt} isAr={isAr} accent="#A5B4FC" />
+                <CountdownBlock
+                  targetIso={launchAt}
+                  isAr={isAr}
+                  color={tk.textPrimary}
+                  mutedColor={tk.textMuted}
+                />
               </div>
               <button
                 onClick={(e) => {
