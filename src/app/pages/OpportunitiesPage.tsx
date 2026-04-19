@@ -336,6 +336,40 @@ export function OpportunitiesPage() {
         </button>
       </div>
 
+      {/* ===== VIP UPGRADE BANNER (above filters) ===== */}
+      <div
+        className="relative overflow-hidden rounded-[16px] mb-6"
+        style={{ background: 'linear-gradient(135deg, #001A4D 0%, #002E83 100%)', border: '1px solid rgba(212, 175, 55, 0.15)' }}
+      >
+        <div className="absolute top-0 left-0 w-[200px] h-[200px] rounded-full opacity-15 blur-[60px]" style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.4) 0%, transparent 70%)' }} />
+        <div className="relative z-10 flex items-center justify-between gap-6 px-8 py-6">
+          <div className="flex items-center gap-4 flex-1">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(212, 175, 55, 0.15)', border: '1.5px solid rgba(212, 175, 55, 0.3)' }}>
+              <Crown className="w-6 h-6" style={{ color: '#D4AF37' }} strokeWidth={1.5} />
+            </div>
+            <div>
+              <p className="text-[15px] text-white" style={{ fontWeight: 700 }}>
+                {isAr ? 'احصل على فرص حصرية مع عضوية VIP' : 'Unlock exclusive opportunities with VIP'}
+              </p>
+              <p className="text-[12px] text-white/50 mt-0.5">
+                {isAr ? 'عوائد أعلى • أولوية الوصول • تحليلات متقدمة' : 'Higher returns • Priority access • Advanced analytics'}
+              </p>
+            </div>
+          </div>
+          <button
+            className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] transition-all hover:scale-105"
+            style={{
+              background: 'linear-gradient(135deg, #D4AF37 0%, #FFD700 100%)',
+              color: '#002E83', fontWeight: 700, fontSize: '13px',
+              boxShadow: '0 6px 16px rgba(212, 175, 55, 0.3)',
+            }}
+          >
+            <span>{isAr ? 'ترقية الآن' : 'Upgrade Now'}</span>
+            <Zap className="w-3.5 h-3.5" fill="currentColor" strokeWidth={0} />
+          </button>
+        </div>
+      </div>
+
       {/* ===== 3. FILTER SECTION ===== */}
       <div className="rounded-2xl p-5 mb-6" style={{ background: tk.filterSectionBg, border: tk.filterSectionBorder }}>
         <div className="flex items-center gap-2 mb-3">
@@ -478,39 +512,6 @@ export function OpportunitiesPage() {
         </div>
       )}
 
-      {/* ===== 4. BOTTOM VIP BANNER ===== */}
-      <div
-        className="relative overflow-hidden rounded-[16px] mt-10"
-        style={{ background: 'linear-gradient(135deg, #001A4D 0%, #002E83 100%)', border: '1px solid rgba(212, 175, 55, 0.15)' }}
-      >
-        <div className="absolute top-0 left-0 w-[200px] h-[200px] rounded-full opacity-15 blur-[60px]" style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.4) 0%, transparent 70%)' }} />
-        <div className="relative z-10 flex items-center justify-between gap-6 px-8 py-6">
-          <div className="flex items-center gap-4 flex-1">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(212, 175, 55, 0.15)', border: '1.5px solid rgba(212, 175, 55, 0.3)' }}>
-              <Crown className="w-6 h-6" style={{ color: '#D4AF37' }} strokeWidth={1.5} />
-            </div>
-            <div>
-              <p className="text-[15px] text-white" style={{ fontWeight: 700 }}>
-                {isAr ? 'احصل على فرص حصرية مع عضوية VIP' : 'Unlock exclusive opportunities with VIP'}
-              </p>
-              <p className="text-[12px] text-white/50 mt-0.5">
-                {isAr ? 'عوائد أعلى • أولوية الوصول • تحليلات متقدمة' : 'Higher returns • Priority access • Advanced analytics'}
-              </p>
-            </div>
-          </div>
-          <button
-            className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] transition-all hover:scale-105"
-            style={{
-              background: 'linear-gradient(135deg, #D4AF37 0%, #FFD700 100%)',
-              color: '#002E83', fontWeight: 700, fontSize: '13px',
-              boxShadow: '0 6px 16px rgba(212, 175, 55, 0.3)',
-            }}
-          >
-            <span>{isAr ? 'ترقية الآن' : 'Upgrade Now'}</span>
-            <Zap className="w-3.5 h-3.5" fill="currentColor" strokeWidth={0} />
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
