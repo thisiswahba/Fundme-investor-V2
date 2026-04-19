@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowRight, ArrowLeft, SlidersHorizontal, ChevronDown, TrendingUp, Lightbulb, Zap, Crown, ArrowLeft as ArrowL, Shield } from 'lucide-react';
 import { OpportunityCardCompact } from '../components/opportunities/OpportunityCardCompact';
+import { VIPUpgradeModal } from '../components/VIPUpgradeModal';
 import { Link, useNavigate } from 'react-router';
 import { usePersona } from '../demoPersona';
 import { useI18n } from '../i18n';
@@ -218,6 +219,7 @@ export function OpportunitiesPage() {
   const [sortBy, setSortBy] = useState<SortKey>('default');
   const [sortOpen, setSortOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [vipModalOpen, setVipModalOpen] = useState(false);
   const itemsPerPage = 9;
 
   let filtered = selectedRisk === 'all' ? opportunities : opportunities.filter(o => o.risk === selectedRisk);
@@ -357,7 +359,8 @@ export function OpportunitiesPage() {
             </div>
           </div>
           <button
-            className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] transition-all hover:scale-105"
+            onClick={() => setVipModalOpen(true)}
+            className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-[10px] transition-all hover:scale-105 cursor-pointer"
             style={{
               background: 'linear-gradient(135deg, #D4AF37 0%, #FFD700 100%)',
               color: '#002E83', fontWeight: 700, fontSize: '13px',
@@ -369,6 +372,8 @@ export function OpportunitiesPage() {
           </button>
         </div>
       </div>
+
+      <VIPUpgradeModal open={vipModalOpen} onClose={() => setVipModalOpen(false)} />
 
       {/* ===== 3. FILTER SECTION ===== */}
       <div className="rounded-2xl p-5 mb-6" style={{ background: tk.filterSectionBg, border: tk.filterSectionBorder }}>
