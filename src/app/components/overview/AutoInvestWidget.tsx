@@ -210,14 +210,12 @@ export function AutoInvestWidget() {
               onClick={() => { setActive(true); setModalOpen(true); }}
               onMouseEnter={() => setHoverCta(true)}
               onMouseLeave={() => setHoverCta(false)}
-              className="w-full h-12 rounded-xl flex items-center justify-center gap-2 text-[14px] text-white cursor-pointer transition-all"
+              className="w-full h-12 rounded-xl flex items-center justify-center gap-2 text-[14px] cursor-pointer transition-all"
               style={{
-                fontWeight: 700,
-                background: 'linear-gradient(135deg, #1D4ED8, #2563EB)',
-                boxShadow: hoverCta
-                  ? '0 8px 24px -4px rgba(37,99,235,0.45), 0 0 28px -10px rgba(96,165,250,0.4)'
-                  : '0 4px 16px -4px rgba(37,99,235,0.35), 0 0 18px -10px rgba(96,165,250,0.25)',
-                transform: hoverCta ? 'scale(1.015)' : 'scale(1)',
+                fontWeight: 600,
+                color: '#1D4ED8',
+                background: hoverCta ? '#EFF6FF' : '#FFFFFF',
+                border: '1px solid #DBEAFE',
               }}
             >
               {isAr ? 'تفعيل الاستثمار التلقائي' : 'Activate Auto-Invest'}
