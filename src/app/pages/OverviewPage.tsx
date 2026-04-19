@@ -12,10 +12,7 @@ import { formatSAR, formatPercentage, formatChartValue } from '../utils/currency
 import { OpportunitiesPreview } from '../components/overview/OpportunitiesPreview';
 import { EmptyHeroSection } from '../components/overview/EmptyHeroSection';
 import { AutoInvestWidget } from '../components/overview/AutoInvestWidget';
-import {
-  InfoTile,
-  colors,
-} from '../components/fundme';
+import { colors } from '../components/fundme';
 
 /* ──────────────────────────────────────────────
    A. Wallet Card — matches empty state design
@@ -36,16 +33,39 @@ function MetricsRow() {
   const p = persona.portfolio;
 
   const metrics = [
-    { icon: <TrendingUp className="w-3.5 h-3.5" strokeWidth={1.8} />, label: isAr ? 'إجمالي المستثمر' : 'Total Invested', value: formatSAR(p.totalInvested, { decimals: 0 }) },
-    { icon: <Target className="w-3.5 h-3.5" strokeWidth={1.8} />, label: isAr ? 'إجمالي العوائد' : 'Total Returns', value: formatSAR(p.realizedReturns, { decimals: 0 }), valueColor: colors.success },
-    { icon: <PieChart className="w-3.5 h-3.5" strokeWidth={1.8} />, label: isAr ? 'الاستثمارات النشطة' : 'Active Investments', value: isAr ? `${p.activeInvestments} صفقة` : `${p.activeInvestments} deals` },
-    { icon: <Wallet className="w-3.5 h-3.5" strokeWidth={1.8} />, label: isAr ? 'متوسط العائد' : 'Avg. Return', value: formatPercentage(p.averageReturn), valueColor: colors.success },
+    { icon: <TrendingUp className="w-4 h-4" strokeWidth={1.8} />, label: isAr ? 'إجمالي المستثمر' : 'Total Invested', value: formatSAR(p.totalInvested, { decimals: 0 }) },
+    { icon: <Target className="w-4 h-4" strokeWidth={1.8} />, label: isAr ? 'إجمالي العوائد' : 'Total Returns', value: formatSAR(p.realizedReturns, { decimals: 0 }), valueColor: colors.success },
+    { icon: <PieChart className="w-4 h-4" strokeWidth={1.8} />, label: isAr ? 'الاستثمارات النشطة' : 'Active Investments', value: isAr ? `${p.activeInvestments} صفقة` : `${p.activeInvestments} deals` },
+    { icon: <Wallet className="w-4 h-4" strokeWidth={1.8} />, label: isAr ? 'متوسط العائد' : 'Avg. Return', value: formatPercentage(p.averageReturn), valueColor: colors.success },
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 flex-1">
       {metrics.map((m, i) => (
-        <InfoTile key={i} icon={m.icon} label={m.label} value={m.value} surface="light" valueColor={m.valueColor} />
+        <div
+          key={i}
+          className="rounded-xl p-5 transition-all duration-150 hover:shadow-sm h-full flex flex-col justify-between"
+          style={{
+            background: '#FFFFFF',
+            border: '1px solid #F1F5F9',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+          }}
+        >
+          <div>
+            <div
+              className="w-8 h-8 rounded-lg flex items-center justify-center mb-3"
+              style={{ background: '#F1F5F9', color: '#94A3B8' }}
+            >
+              {m.icon}
+            </div>
+            <div className="text-[10px] uppercase tracking-[0.06em] mb-1" style={{ fontWeight: 600, color: '#94A3B8' }}>
+              {m.label}
+            </div>
+          </div>
+          <div className="text-[18px] leading-tight" style={{ fontWeight: 700, color: m.valueColor || '#0F172A' }}>
+            {m.value}
+          </div>
+        </div>
       ))}
     </div>
   );
