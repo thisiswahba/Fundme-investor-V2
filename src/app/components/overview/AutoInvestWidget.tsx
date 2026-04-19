@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Zap, CheckCircle, Settings2 } from 'lucide-react';
+import { Settings2 } from 'lucide-react';
 import { useI18n } from '../../i18n';
 import { AutoInvestModal } from '../AutoInvestModal';
 
@@ -112,25 +112,11 @@ export function AutoInvestWidget() {
           }}
         />
 
-        {/* Header — lightning pill in corner */}
-        <div className="relative px-5 pt-5 flex items-start justify-between gap-3">
-          <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-            style={{
-              background: active ? 'rgba(52,211,153,0.12)' : 'rgba(96,165,250,0.12)',
-              border: `1px solid ${active ? 'rgba(52,211,153,0.25)' : 'rgba(96,165,250,0.25)'}`,
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)',
-            }}
-          >
-            <Zap
-              className="w-5 h-5"
-              strokeWidth={2}
-              style={{ color: active ? '#34d399' : '#60a5fa' }}
-            />
-          </div>
-          {active && (
+        {/* Active pill — only shown when active */}
+        {active && (
+          <div className="relative px-5 pt-5 flex items-start justify-end">
             <span
-              className="inline-flex items-center gap-1 h-6 px-2 rounded-md text-[10px] tracking-wide shrink-0 mt-1"
+              className="inline-flex items-center gap-1 h-6 px-2 rounded-md text-[10px] tracking-wide shrink-0"
               style={{
                 fontWeight: 700,
                 background: 'rgba(52,211,153,0.14)',
@@ -141,11 +127,11 @@ export function AutoInvestWidget() {
               <span className="w-1.5 h-1.5 rounded-full bg-[#34d399] animate-pulse" />
               {isAr ? 'مفعّل' : 'ACTIVE'}
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Title block */}
-        <div className="relative px-5 pt-3">
+        <div className={`relative px-5 ${active ? 'pt-3' : 'pt-5'}`}>
           <h3 className="text-[18px] mb-1.5" style={{ fontWeight: 700, color: '#f1f5f9', letterSpacing: '-0.01em' }}>
             {isAr ? 'الاستثمار التلقائي' : 'Auto-Invest'}
           </h3>
@@ -225,35 +211,23 @@ export function AutoInvestWidget() {
               </button>
             </div>
           ) : (
-            <>
-              <button
-                onClick={() => { setActive(true); setModalOpen(true); }}
-                onMouseEnter={() => setHoverCta(true)}
-                onMouseLeave={() => setHoverCta(false)}
-                className="w-full h-12 rounded-xl flex items-center justify-center gap-2 text-[14px] text-white cursor-pointer transition-all"
-                style={{
-                  fontWeight: 700,
-                  background: 'linear-gradient(135deg, #2563eb, #3b82f6)',
-                  border: '1px solid rgba(96,165,250,0.3)',
-                  boxShadow: hoverCta
-                    ? '0 8px 28px -4px rgba(37,99,235,0.55), 0 0 32px -8px rgba(96,165,250,0.35)'
-                    : '0 4px 18px -4px rgba(37,99,235,0.45), 0 0 22px -10px rgba(96,165,250,0.25)',
-                  transform: hoverCta ? 'scale(1.015)' : 'scale(1)',
-                }}
-              >
-                <Zap className="w-4 h-4" strokeWidth={2.5} fill="currentColor" />
-                {isAr ? 'تفعيل الاستثمار التلقائي' : 'Activate Auto-Invest'}
-              </button>
-              <button
-                onClick={() => setModalOpen(true)}
-                className="w-full mt-2.5 text-[12px] cursor-pointer transition-colors"
-                style={{ fontWeight: 500, color: '#64748b', background: 'transparent' }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = '#93c5fd')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = '#64748b')}
-              >
-                {isAr ? 'كيف يعمل؟' : 'How does it work?'}
-              </button>
-            </>
+            <button
+              onClick={() => { setActive(true); setModalOpen(true); }}
+              onMouseEnter={() => setHoverCta(true)}
+              onMouseLeave={() => setHoverCta(false)}
+              className="w-full h-12 rounded-xl flex items-center justify-center gap-2 text-[14px] text-white cursor-pointer transition-all"
+              style={{
+                fontWeight: 700,
+                background: 'linear-gradient(135deg, #2563eb, #3b82f6)',
+                border: '1px solid rgba(96,165,250,0.3)',
+                boxShadow: hoverCta
+                  ? '0 8px 28px -4px rgba(37,99,235,0.55), 0 0 32px -8px rgba(96,165,250,0.35)'
+                  : '0 4px 18px -4px rgba(37,99,235,0.45), 0 0 22px -10px rgba(96,165,250,0.25)',
+                transform: hoverCta ? 'scale(1.015)' : 'scale(1)',
+              }}
+            >
+              {isAr ? 'تفعيل الاستثمار التلقائي' : 'Activate Auto-Invest'}
+            </button>
           )}
         </div>
       </div>
