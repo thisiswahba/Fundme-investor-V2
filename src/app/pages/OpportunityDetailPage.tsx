@@ -937,16 +937,15 @@ export function OpportunityDetailPage() {
             </div>
 
             {(() => {
-              const upcoming = opp.schedule.filter(r => r.status === 'upcoming');
               const current = opp.schedule.filter(r => r.status === 'current');
               const future = opp.schedule.filter(r => r.status === 'future');
               const remainingCount = current.length + future.length;
               const remainingAmount = [...current, ...future].reduce((s, r) => s + r.amount, 0);
 
               function statusLabel(s: string) {
-                if (s === 'current') return isAr ? 'خلال ٥ أيام' : 'In 5 days';
+                if (s === 'current') return isAr ? 'مستحق' : 'Due';
                 if (s === 'upcoming') return isAr ? 'تم السداد' : 'Paid';
-                return isAr ? 'مستقبلي' : 'Future';
+                return isAr ? 'قادم' : 'Upcoming';
               }
               function statusStyle(s: string) {
                 if (s === 'current') return { bg: tk.infoBg, text: tk.infoText };
@@ -959,66 +958,83 @@ export function OpportunityDetailPage() {
                 'مايو': 'May', 'يونيو': 'June', 'يوليو': 'July', 'أغسطس': 'August',
                 'سبتمبر': 'September', 'أكتوبر': 'October', 'نوفمبر': 'November', 'ديسمبر': 'December',
               };
-              const renderRow = (row: typeof opp.schedule[0], i: number, isLast: boolean, isCurrent: boolean) => {
-                const st = statusStyle(row.status);
-                const monthLabel = isAr ? row.month : (monthEnMap[row.month] || row.month);
-                return (
-                  <div key={`${row.date}-${i}`} className="flex items-stretch gap-4">
-                    <div className="flex flex-col items-center w-8 flex-shrink-0">
-                      <div
-                        className="w-3 h-3 rounded-full flex-shrink-0"
-                        style={{
-                          backgroundColor: row.status === 'upcoming' ? tk.successText : isCurrent ? tk.primary : (tk.isVIP ? tk.divider : '#E5E7EB'),
-                          boxShadow: isCurrent ? `0 0 0 4px ${tk.timelineDotRing}` : 'none',
-                        }}
-                      />
-                      {!isLast && (
-                        <div className="w-px flex-1 min-h-[40px]" style={{ backgroundColor: row.status === 'upcoming' ? tk.timelinePastLine : tk.timelineFutureLine }} />
-                      )}
-                    </div>
-                    <div
-                      className={`flex-1 flex items-center justify-between pb-5 ${isCurrent ? 'rounded-[10px] -mt-2 -mr-3 p-3 mb-2' : ''}`}
-                      style={isCurrent ? { backgroundColor: tk.scheduleCurrentRowBg } : {}}
-                    >
-                      <div>
-                        <div className="text-[13px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{monthLabel}</div>
-                        <div className="text-[11px] mt-0.5" style={{ color: tk.textMuted }} dir="ltr">{row.date}</div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-[15px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{formatSAR(row.amount, { decimals: 0 })}</span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ backgroundColor: st.bg, color: st.text, fontWeight: 500 }}>
-                          {statusLabel(row.status)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              };
 
               return (
                 <div>
-                  {upcoming.length > 0 && (
-                    <div className="mb-2">
-                      <div className="text-[11px] mb-3 mx-12" style={{ fontWeight: 600, color: tk.successText }}>{t('opp.paid')} ({upcoming.length})</div>
-                      {upcoming.map((row, i) => renderRow(row, i, false, false))}
+                  {/* Table */}
+                  <div
+                    className="rounded-[12px] overflow-hidden"
+                    style={{ border: `1px solid ${tk.divider}` }}
+                  >
+                    <div className="overflow-x-auto">
+                      <table className="w-full" style={{ borderCollapse: 'collapse' }}>
+                        <thead>
+                          <tr style={{ backgroundColor: tk.innerSurface, borderBottom: `1px solid ${tk.divider}` }}>
+                            <th className="text-start px-4 py-3 text-[11px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em', width: '60px' }}>
+                              #
+                            </th>
+                            <th className="text-start px-4 py-3 text-[11px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em' }}>
+                              {isAr ? 'الشهر' : 'Month'}
+                            </th>
+                            <th className="text-start px-4 py-3 text-[11px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em' }}>
+                              {isAr ? 'تاريخ الاستحقاق' : 'Due Date'}
+                            </th>
+                            <th className="text-end px-4 py-3 text-[11px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em' }}>
+                              {isAr ? 'المبلغ' : 'Amount'}
+                            </th>
+                            <th className="text-end px-4 py-3 text-[11px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em' }}>
+                              {isAr ? 'الحالة' : 'Status'}
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {opp.schedule.map((row, i) => {
+                            const st = statusStyle(row.status);
+                            const monthLabel = isAr ? row.month : (monthEnMap[row.month] || row.month);
+                            const isCurrent = row.status === 'current';
+                            const isLast = i === opp.schedule.length - 1;
+                            return (
+                              <tr
+                                key={`${row.date}-${i}`}
+                                style={{
+                                  borderBottom: isLast ? 'none' : `1px solid ${tk.divider}`,
+                                  backgroundColor: isCurrent ? tk.scheduleCurrentRowBg : 'transparent',
+                                  transition: 'background-color 0.15s',
+                                }}
+                                onMouseEnter={(e) => { if (!isCurrent) e.currentTarget.style.backgroundColor = tk.innerSurface; }}
+                                onMouseLeave={(e) => { if (!isCurrent) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                              >
+                                <td className="px-4 py-3 text-[12px] font-mono tabular-nums" style={{ color: tk.textMuted, fontWeight: 500 }}>
+                                  {String(i + 1).padStart(2, '0')}
+                                </td>
+                                <td className="px-4 py-3 text-[13px]" style={{ fontWeight: isCurrent ? 700 : 600, color: tk.textPrimary }}>
+                                  {monthLabel}
+                                </td>
+                                <td className="px-4 py-3 text-[12px] font-mono" dir="ltr" style={{ color: tk.textSecondary, fontWeight: 500 }}>
+                                  {row.date}
+                                </td>
+                                <td className="px-4 py-3 text-end text-[14px] tabular-nums" style={{ fontWeight: 700, color: tk.textPrimary }}>
+                                  {formatSAR(row.amount, { decimals: 0 })}
+                                </td>
+                                <td className="px-4 py-3 text-end">
+                                  <span
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px]"
+                                    style={{ backgroundColor: st.bg, color: st.text, fontWeight: 600 }}
+                                  >
+                                    {isCurrent && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: st.text }} />}
+                                    {statusLabel(row.status)}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
                     </div>
-                  )}
+                  </div>
 
-                  {current.length > 0 && (
-                    <div className="mb-2">
-                      <div className="text-[11px] mb-3 mx-12" style={{ fontWeight: 600, color: tk.infoText }}>{t('opp.currentPayment')}</div>
-                      {current.map((row, i) => renderRow(row, i, false, true))}
-                    </div>
-                  )}
-
-                  {future.length > 0 && (
-                    <div>
-                      <div className="text-[11px] mb-3 mx-12" style={{ fontWeight: 600, color: tk.textMuted }}>{t('opp.futurePayments')} ({future.length})</div>
-                      {future.map((row, i) => renderRow(row, i, i === future.length - 1, false))}
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-3 mt-4 pt-4 border-t" style={{ borderColor: tk.divider }}>
+                  {/* Totals footer */}
+                  <div className="flex items-center gap-3 mt-4">
                     <div className="flex-1 flex items-center justify-between py-2.5 px-3 rounded-[8px]" style={{ backgroundColor: tk.innerSurface }}>
                       <span className="text-[11px]" style={{ fontWeight: 500, color: tk.textMuted }}>{t('opp.totalPayments')}</span>
                       <span className="text-[13px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{opp.paymentCount}</span>
