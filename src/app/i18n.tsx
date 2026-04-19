@@ -122,6 +122,9 @@ const translations: Record<string, Record<Lang, string>> = {
   'opp.netReturn': { ar: 'صافي العائد', en: 'Net Return' },
   'opp.viewPortfolio': { ar: 'عرض استثماراتي', en: 'View My Investments' },
   'opp.browseMore': { ar: 'تصفح فرص أخرى', en: 'Browse More Opportunities' },
+  'opp.reinvest': { ar: 'استثمر مرة أخرى', en: 'Invest Again' },
+  'opp.totalInvested': { ar: 'إجمالي استثمارك', en: 'Total Invested' },
+  'opp.investments': { ar: 'استثمارات', en: 'investments' },
 
   // Modal
   'modal.breakdown': { ar: 'تفاصيل الاستثمار', en: 'Investment Breakdown' },

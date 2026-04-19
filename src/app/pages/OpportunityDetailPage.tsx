@@ -4,7 +4,7 @@ import {
   ArrowRight, ArrowLeft, Building2, Shield, CheckCircle,
   FileText, Users, Banknote, MapPin, Calendar,
   DollarSign, Repeat, AlertTriangle, Download,
-  X, Info, Loader2, ShieldCheck,
+  X, Info, Loader2, ShieldCheck, Plus,
 } from 'lucide-react';
 import { formatSAR } from '../utils/currency';
 import confetti from 'canvas-confetti';
@@ -625,6 +625,8 @@ export function OpportunityDetailPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [invested, setInvested] = useState(false);
   const [investedAmount, setInvestedAmount] = useState(0);
+  const [investmentCount, setInvestmentCount] = useState(0);
+  const [reinvesting, setReinvesting] = useState(false);
 
   const expectedReturn = Math.round(amount * (opp.roi / 100) * (opp.duration / 12));
   const grades = ['E', 'D', 'C', 'B', 'A'];
@@ -1171,7 +1173,7 @@ export function OpportunityDetailPage() {
         <div className="hidden lg:block w-[380px] flex-shrink-0">
           <div className="rounded-2xl p-8 sticky top-20" style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.isVIP ? '0 8px 32px rgba(0,0,0,0.4)' : '0 4px 20px rgba(0,0,0,0.08)' }}>
 
-          {invested ? (
+          {invested && !reinvesting ? (
             <div>
               <div className="flex items-center justify-center mb-5">
                 <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: tk.successBg }}>
@@ -1182,7 +1184,16 @@ export function OpportunityDetailPage() {
               <div className="text-[13px] text-center mb-6" style={{ color: tk.textSecondary }}>{t('opp.investedSubtitle')}</div>
 
               <div className="rounded-[12px] p-4 mb-4 text-center" style={{ backgroundColor: tk.innerSurface }}>
-                <div className="text-[12px] mb-1" style={{ fontWeight: 500, color: tk.textMuted }}>{t('opp.yourInvestment')}</div>
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <span className="text-[12px]" style={{ fontWeight: 500, color: tk.textMuted }}>
+                    {investmentCount > 1 ? t('opp.totalInvested') : t('opp.yourInvestment')}
+                  </span>
+                  {investmentCount > 1 && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-md" style={{ background: tk.successBg, color: tk.successText, fontWeight: 600 }}>
+                      {investmentCount}× {t('opp.investments')}
+                    </span>
+                  )}
+                </div>
                 <div className="text-[28px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{formatSAR(investedAmount, { decimals: 0 })}</div>
               </div>
 
@@ -1218,16 +1229,30 @@ export function OpportunityDetailPage() {
               </div>
 
               <button
+                onClick={() => { setReinvesting(true); setAmount(opp.minInvestment); }}
+                className="w-full h-12 rounded-[12px] text-[14px] text-white transition-all duration-200 active:scale-[0.98] mb-2 flex items-center justify-center gap-2"
+                style={{
+                  background: `linear-gradient(135deg, ${tk.primary} 0%, ${tk.primary} 100%)`,
+                  fontWeight: 600,
+                  boxShadow: tk.primaryShadow,
+                }}
+              >
+                <Plus className="w-4 h-4" strokeWidth={2.5} />
+                {t('opp.reinvest')}
+              </button>
+              <button
                 onClick={() => navigate('/app/portfolio')}
-                className="w-full h-12 rounded-[12px] text-[14px] text-white transition-all duration-200 active:scale-[0.98] mb-2"
-                style={{ backgroundColor: tk.primary, fontWeight: 600 }}
+                className="w-full h-11 rounded-[12px] text-[13px] transition-colors mb-2"
+                style={{ fontWeight: 600, border: tk.secondaryBtnBorder, color: tk.textPrimary, background: 'transparent' }}
+                onMouseEnter={e => (e.currentTarget.style.background = tk.secondaryBtnHover)}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 {t('opp.viewPortfolio')}
               </button>
               <button
                 onClick={() => navigate('/app/opportunities')}
                 className="w-full h-10 rounded-[12px] text-[13px] transition-colors"
-                style={{ fontWeight: 500, border: tk.secondaryBtnBorder, color: tk.textSecondary, background: 'transparent' }}
+                style={{ fontWeight: 500, color: tk.textSecondary, background: 'transparent' }}
                 onMouseEnter={e => (e.currentTarget.style.background = tk.secondaryBtnHover)}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
@@ -1236,7 +1261,19 @@ export function OpportunityDetailPage() {
             </div>
           ) : (
             <div>
-            <h3 className="text-[22px] text-center mb-1" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.startInvesting')}</h3>
+            {reinvesting && (
+              <button
+                onClick={() => setReinvesting(false)}
+                className="flex items-center gap-1.5 text-[12px] mb-4 transition-colors hover:opacity-80"
+                style={{ color: tk.textSecondary, fontWeight: 500 }}
+              >
+                <BackArrow className="w-3.5 h-3.5" strokeWidth={2} />
+                {isAr ? 'العودة للملخص' : 'Back to summary'}
+              </button>
+            )}
+            <h3 className="text-[22px] text-center mb-1" style={{ fontWeight: 700, color: tk.textPrimary }}>
+              {reinvesting ? (isAr ? 'استثمر مرة أخرى' : 'Invest Again') : t('opp.startInvesting')}
+            </h3>
             <p className="text-[14px] text-center mb-6" style={{ color: tk.textSecondary }}>{t('opp.enterAmount')}</p>
 
             <div className="mb-6">
@@ -1379,7 +1416,9 @@ export function OpportunityDetailPage() {
         onClose={() => setModalOpen(false)}
         onSuccess={() => {
           setInvested(true);
-          setInvestedAmount(amount);
+          setInvestedAmount((prev) => prev + amount);
+          setInvestmentCount((prev) => prev + 1);
+          setReinvesting(false);
         }}
         amount={amount}
         roi={opp.roi}
