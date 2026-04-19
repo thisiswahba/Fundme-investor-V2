@@ -64,33 +64,67 @@ function useCountdown(targetIso?: string): Countdown {
   return state;
 }
 
-/* ── Animated digit segment ── */
+/* ── Animated time segment with full word suffix ── */
 
-function DigitSegment({ value, suffix, color, mutedColor }: {
+type Unit = 'd' | 'h' | 'm' | 's';
+
+const UNIT_LABELS: Record<'ar' | 'en', Record<Unit, { one: string; two: string; few: string; many: string }>> = {
+  ar: {
+    d: { one: 'يوم', two: 'يومان', few: 'أيام', many: 'يوماً' },
+    h: { one: 'ساعة', two: 'ساعتان', few: 'ساعات', many: 'ساعة' },
+    m: { one: 'دقيقة', two: 'دقيقتان', few: 'دقائق', many: 'دقيقة' },
+    s: { one: 'ثانية', two: 'ثانيتان', few: 'ثوانٍ', many: 'ثانية' },
+  },
+  en: {
+    d: { one: 'day', two: 'days', few: 'days', many: 'days' },
+    h: { one: 'hour', two: 'hours', few: 'hours', many: 'hours' },
+    m: { one: 'minute', two: 'minutes', few: 'minutes', many: 'minutes' },
+    s: { one: 'second', two: 'seconds', few: 'seconds', many: 'seconds' },
+  },
+};
+
+function pluralize(n: number, unit: Unit, isAr: boolean): string {
+  const set = UNIT_LABELS[isAr ? 'ar' : 'en'][unit];
+  if (n === 1) return set.one;
+  if (n === 2) return set.two;
+  if (n >= 3 && n <= 10) return set.few;
+  return set.many;
+}
+
+function TimeSegment({ value, unit, isAr, color, mutedColor }: {
   value: number;
-  suffix: string;
+  unit: Unit;
+  isAr: boolean;
   color: string;
   mutedColor: string;
 }) {
-  const display = String(value).padStart(2, '0');
+  const word = pluralize(value, unit, isAr);
+  const display = String(value);
   return (
-    <span className="inline-flex items-baseline gap-0.5">
-      <span className="relative inline-block h-[14px] w-[16px] overflow-hidden align-baseline">
+    <span className="inline-flex items-baseline gap-1">
+      <span
+        className="relative inline-block overflow-hidden align-baseline tabular-nums text-center"
+        style={{
+          height: '15px',
+          minWidth: `${Math.max(display.length, 1) * 9}px`,
+          lineHeight: '15px',
+        }}
+      >
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.span
             key={display}
-            initial={{ y: -12, opacity: 0 }}
+            initial={{ y: -13, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 12, opacity: 0 }}
+            exit={{ y: 13, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 380, damping: 30, mass: 0.45 }}
-            className="absolute inset-0 text-[13px] font-mono tabular-nums text-center"
-            style={{ fontWeight: 600, color, letterSpacing: '-0.02em', lineHeight: '14px' }}
+            className="absolute inset-0 text-[13px]"
+            style={{ fontWeight: 700, color, letterSpacing: '-0.01em', lineHeight: '15px' }}
           >
             {display}
           </motion.span>
         </AnimatePresence>
       </span>
-      <span className="text-[10px]" style={{ fontWeight: 500, color: mutedColor }}>{suffix}</span>
+      <span className="text-[11px]" style={{ fontWeight: 500, color: mutedColor }}>{word}</span>
     </span>
   );
 }
@@ -102,9 +136,7 @@ function CountdownBlock({ targetIso, isAr, color, mutedColor }: {
   mutedColor: string;
 }) {
   const { days, hours, minutes, seconds, done } = useCountdown(targetIso);
-  const labels = isAr
-    ? { d: 'ي', h: 'س', m: 'د', s: 'ث' }
-    : { d: 'd', h: 'h', m: 'm', s: 's' };
+
   if (done) {
     return (
       <span className="text-[12px]" style={{ fontWeight: 600, color }}>
@@ -112,12 +144,28 @@ function CountdownBlock({ targetIso, isAr, color, mutedColor }: {
       </span>
     );
   }
+
+  // Show only the two most significant non-zero units to keep the line tight
+  const segments: { unit: Unit; value: number }[] = [
+    { unit: 'd', value: days },
+    { unit: 'h', value: hours },
+    { unit: 'm', value: minutes },
+    { unit: 's', value: seconds },
+  ];
+  const firstNonZero = segments.findIndex((s) => s.value > 0);
+  const start = firstNonZero === -1 ? segments.length - 2 : firstNonZero;
+  const visible = segments.slice(start, start + 2);
+
   return (
-    <span className="inline-flex items-baseline gap-1.5 font-mono" dir="ltr">
-      <DigitSegment value={days} suffix={labels.d} color={color} mutedColor={mutedColor} />
-      <DigitSegment value={hours} suffix={labels.h} color={color} mutedColor={mutedColor} />
-      <DigitSegment value={minutes} suffix={labels.m} color={color} mutedColor={mutedColor} />
-      <DigitSegment value={seconds} suffix={labels.s} color={color} mutedColor={mutedColor} />
+    <span className="inline-flex items-baseline gap-2 whitespace-nowrap" dir={isAr ? 'rtl' : 'ltr'}>
+      {visible.map((s, i) => (
+        <span key={s.unit} className="inline-flex items-baseline gap-1">
+          <TimeSegment value={s.value} unit={s.unit} isAr={isAr} color={color} mutedColor={mutedColor} />
+          {i < visible.length - 1 && (
+            <span className="text-[10px] mx-0.5 opacity-30" style={{ color }}>·</span>
+          )}
+        </span>
+      ))}
     </span>
   );
 }
