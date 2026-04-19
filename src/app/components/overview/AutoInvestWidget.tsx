@@ -88,28 +88,26 @@ export function AutoInvestWidget() {
         className="relative h-full rounded-2xl overflow-hidden flex flex-col"
         style={{
           background: active
-            ? 'linear-gradient(135deg, rgba(13,148,136,0.10) 0%, #0C1C34 45%, rgba(13,148,136,0.04) 100%)'
-            : 'linear-gradient(135deg, rgba(37,99,235,0.10) 0%, #0C1C34 45%, rgba(96,165,250,0.04) 100%)',
-          border: `1px solid ${active ? 'rgba(52,211,153,0.2)' : 'rgba(96,165,250,0.18)'}`,
-          boxShadow: active
-            ? '0 8px 32px -8px rgba(52,211,153,0.15), 0 0 0 1px rgba(52,211,153,0.12)'
-            : '0 8px 32px -8px rgba(96,165,250,0.12), 0 0 0 1px rgba(96,165,250,0.08)',
+            ? 'linear-gradient(160deg, #0F2A3E 0%, #0B1F3A 50%, #08172E 100%)'
+            : 'linear-gradient(160deg, #122544 0%, #0B1F3A 55%, #08172E 100%)',
+          border: `1px solid ${active ? 'rgba(52,211,153,0.18)' : 'rgba(96,165,250,0.15)'}`,
+          boxShadow: '0 12px 32px -12px rgba(8,23,46,0.5), 0 0 0 1px rgba(255,255,255,0.02)',
           animation: 'aiwFadeIn 0.5s cubic-bezier(.4,0,.2,1)',
         }}
       >
-        {/* Diagonal texture */}
+        {/* Soft corner glow */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute -top-16 -right-16 w-52 h-52 rounded-full pointer-events-none"
           style={{
-            opacity: 0.025,
-            backgroundImage: `repeating-linear-gradient(-45deg, transparent, transparent 8px, ${active ? '#34d399' : '#60a5fa'} 8px, ${active ? '#34d399' : '#60a5fa'} 9px)`,
+            background: `radial-gradient(circle, ${active ? 'rgba(52,211,153,0.18)' : 'rgba(96,165,250,0.18)'} 0%, transparent 65%)`,
+            filter: 'blur(32px)',
           }}
         />
-        {/* Corner glow */}
+        {/* Bottom-left ambient glow */}
         <div
-          className="absolute -top-12 -right-12 w-44 h-44 rounded-full pointer-events-none"
+          className="absolute -bottom-20 -left-12 w-48 h-48 rounded-full pointer-events-none"
           style={{
-            background: `radial-gradient(circle, ${active ? 'rgba(52,211,153,0.18)' : 'rgba(96,165,250,0.16)'} 0%, transparent 70%)`,
+            background: `radial-gradient(circle, ${active ? 'rgba(52,211,153,0.08)' : 'rgba(37,99,235,0.10)'} 0%, transparent 65%)`,
             filter: 'blur(28px)',
           }}
         />
