@@ -1,107 +1,21 @@
 import { useState } from 'react';
-import { Wallet, ArrowRight, ArrowDownToLine, X, Building2, CreditCard, ArrowUpFromLine } from 'lucide-react';
-import { Link } from 'react-router';
+import { Wallet, ArrowRight, ArrowDownToLine } from 'lucide-react';
 import Component48Px from '../../../imports/48Px';
 import { usePersona } from '../../demoPersona';
 import { useI18n } from '../../i18n';
 import { formatSAR } from '../../utils/currency';
-
-/* ── Withdraw Modal ─────────────────────────── */
-
-function WithdrawModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { lang } = useI18n();
-  const isAr = lang === 'ar';
-
-  if (!open) return null;
-
-  return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center" onClick={onClose}>
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-
-      {/* Modal */}
-      <div
-        className="relative w-full max-w-[440px] mx-4 rounded-2xl overflow-hidden"
-        style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.2)' }}
-        onClick={e => e.stopPropagation()}
-        dir={isAr ? 'rtl' : 'ltr'}
-      >
-        {/* Header — gradient */}
-        <div
-          className="relative p-6 pb-8 text-center"
-          style={{ background: 'linear-gradient(135deg, #0B1F3A 0%, #0F2A4D 50%, #143766 100%)' }}
-        >
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-          >
-            <X className="w-4 h-4" strokeWidth={2} />
-          </button>
-          <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}>
-            <ArrowUpFromLine className="w-5 h-5 text-white" strokeWidth={2} />
-          </div>
-          <h2 className="text-[18px] text-white" style={{ fontWeight: 700 }}>
-            {isAr ? 'سحب من المحفظة' : 'Withdraw Funds'}
-          </h2>
-          <p className="text-[12px] text-white/50 mt-1">
-            {isAr ? 'اختر طريقة السحب المناسبة' : 'Choose your preferred withdrawal method'}
-          </p>
-        </div>
-
-        {/* Options */}
-        <div className="bg-white p-5 space-y-3">
-          {/* Bank Transfer */}
-          <button
-            className="w-full flex items-center gap-4 p-4 rounded-xl text-right hover:bg-[#F8FAFC] transition-colors cursor-pointer group"
-            style={{ border: '1px solid #E8ECF2' }}
-          >
-            <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#EFF6FF' }}>
-              <Building2 className="w-5 h-5 text-[#3B82F6]" strokeWidth={1.6} />
-            </div>
-            <div className="flex-1">
-              <div className="text-[14px] text-[#0F172A]" style={{ fontWeight: 600 }}>
-                {isAr ? 'تحويل بنكي' : 'Bank Transfer'}
-              </div>
-              <div className="text-[12px] text-[#94A3B8] mt-0.5">
-                {isAr ? 'يصل خلال ١-٣ يوم عمل' : 'Arrives in 1-3 business days'}
-              </div>
-            </div>
-            <span className="text-[10px] px-2 py-1 rounded-md shrink-0" style={{ background: '#F0FDF4', color: '#2BB673', fontWeight: 600 }}>
-              {isAr ? 'مجاني' : 'Free'}
-            </span>
-          </button>
-
-          {/* Instant / Card */}
-          <button
-            className="w-full flex items-center gap-4 p-4 rounded-xl text-right hover:bg-[#F8FAFC] transition-colors cursor-pointer group"
-            style={{ border: '1px solid #E8ECF2' }}
-          >
-            <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#EFF6FF' }}>
-              <CreditCard className="w-5 h-5 text-[#3B82F6]" strokeWidth={1.6} />
-            </div>
-            <div className="flex-1">
-              <div className="text-[14px] text-[#0F172A]" style={{ fontWeight: 600 }}>
-                {isAr ? 'سحب فوري' : 'Instant Withdrawal'}
-              </div>
-              <div className="text-[12px] text-[#94A3B8] mt-0.5">
-                {isAr ? 'إلى بطاقة الخصم — فوري' : 'To debit card — Instant'}
-              </div>
-            </div>
-            <span className="text-[10px] px-2 py-1 rounded-md shrink-0" style={{ background: '#EFF6FF', color: '#3B82F6', fontWeight: 600 }}>
-              {isAr ? 'فوري' : 'Instant'}
-            </span>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+import { AddFundsModal } from '../AddFundsModal';
+import { WithdrawModal } from '../WithdrawModal';
+import { bankAccounts } from '../../utils/bankAccounts';
 
 /* ── Hero Section ───────────────────────────── */
 
 export function EmptyHeroSection() {
   const { persona } = usePersona();
+  const { lang } = useI18n();
+  const isAr = lang === 'ar';
   const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [depositOpen, setDepositOpen] = useState(false);
   const walletDisplay = persona.wallet.total > 0
     ? formatSAR(persona.wallet.total)
     : '0';
@@ -155,9 +69,9 @@ export function EmptyHeroSection() {
 
           {/* CTA Buttons */}
           <div className="flex flex-wrap gap-3 mt-1">
-            <Link
-              to="/app/wallet"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl transition-all hover:scale-105 whitespace-nowrap shrink-0"
+            <button
+              onClick={() => setDepositOpen(true)}
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl transition-all hover:scale-105 whitespace-nowrap shrink-0 cursor-pointer"
               style={{
                 background: 'linear-gradient(135deg, #1D4ED8 0%, #2563EB 100%)',
                 color: '#FFFFFF',
@@ -168,7 +82,7 @@ export function EmptyHeroSection() {
             >
               <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
               <span>إيداع في المحفظة</span>
-            </Link>
+            </button>
 
             <button
               onClick={() => setWithdrawOpen(true)}
@@ -188,7 +102,13 @@ export function EmptyHeroSection() {
         </div>
       </div>
 
-      <WithdrawModal open={withdrawOpen} onClose={() => setWithdrawOpen(false)} />
+      <WithdrawModal
+        open={withdrawOpen}
+        onClose={() => setWithdrawOpen(false)}
+        availableBalance={persona.wallet.available}
+        bankAccounts={bankAccounts}
+      />
+      <AddFundsModal open={depositOpen} onClose={() => setDepositOpen(false)} isAr={isAr} />
     </>
   );
 }

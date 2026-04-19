@@ -2,6 +2,102 @@ import { useState } from 'react';
 import { ArrowRight, ArrowLeft, SlidersHorizontal, ChevronDown, TrendingUp, Lightbulb, Zap, Crown, ArrowLeft as ArrowL, Shield } from 'lucide-react';
 import { OpportunityCardCompact } from '../components/opportunities/OpportunityCardCompact';
 import { Link, useNavigate } from 'react-router';
+import { usePersona } from '../demoPersona';
+import { colors } from '../components/fundme';
+
+function buildTokens(isVIP: boolean) {
+  if (isVIP) {
+    return {
+      isVIP: true,
+      textPrimary: colors.textOnDark.primary,
+      textSecondary: colors.textOnDark.secondary,
+      textMuted: colors.textOnDark.tertiary,
+      textFaint: colors.textOnDark.muted,
+      titleAccent: '#60A5FA',
+      returnAccent: '#34D399',
+      cardBg: colors.dark.card,
+      cardBorder: `1px solid ${colors.dark.border}`,
+      insightBg: colors.dark.card,
+      insightBorder: '1px solid rgba(96,165,250,0.2)',
+      insightIconBg: 'rgba(37,99,235,0.15)',
+      insightIconColor: '#60A5FA',
+      insightBtnBg: colors.primary,
+      insightBtnColor: '#fff',
+      filterSectionBg: colors.dark.elevated,
+      filterSectionBorder: `1px solid ${colors.dark.border}`,
+      filterLabelColor: colors.textOnDark.tertiary,
+      filterChipActiveBg: colors.primary,
+      filterChipActiveColor: '#fff',
+      filterChipInactiveBg: colors.dark.card,
+      filterChipInactiveColor: colors.textOnDark.secondary,
+      filterChipInactiveBorder: colors.dark.border,
+      filterChipHoverBg: colors.dark.hover,
+      sortBtnBg: colors.dark.card,
+      sortBtnBorder: colors.dark.border,
+      sortBtnText: colors.textOnDark.primary,
+      sortBtnHover: colors.dark.hover,
+      sortMenuBg: colors.dark.elevated,
+      sortMenuShadow: '0 8px 24px rgba(0,0,0,0.4)',
+      sortMenuActive: '#60A5FA',
+      sortMenuInactive: colors.textOnDark.primary,
+      sortMenuHover: colors.dark.hover,
+      pageBtnBg: colors.dark.card,
+      pageBtnHover: colors.dark.hover,
+      pageBtnColor: colors.textOnDark.primary,
+      pageBtnDisabledBg: colors.dark.hover,
+      pageBtnDisabledColor: colors.textOnDark.muted,
+      pageBtnShadow: '0 2px 8px rgba(0,0,0,0.3)',
+      iconAccent: '#60A5FA',
+    };
+  }
+  return {
+    isVIP: false,
+    textPrimary: '#0B1A3A',
+    textSecondary: '#6B7280',
+    textMuted: '#9CA3AF',
+    textFaint: '#CBD5E1',
+    titleAccent: '#0D82F9',
+    returnAccent: '#10B981',
+    cardBg: '#FFFFFF',
+    cardBorder: '1px solid #EDF0F7',
+    insightBg: '#FFFFFF',
+    insightBorder: '1px solid rgba(13, 130, 249, 0.12)',
+    insightIconBg: 'rgba(13, 130, 249, 0.1)',
+    insightIconColor: '#0D82F9',
+    insightBtnBg: '#002E83',
+    insightBtnColor: '#fff',
+    filterSectionBg: '#F8FAFC',
+    filterSectionBorder: '1px solid #EDF0F7',
+    filterLabelColor: '#9CA3AF',
+    filterChipActiveBg: '#002E83',
+    filterChipActiveColor: '#fff',
+    filterChipInactiveBg: '#FFFFFF',
+    filterChipInactiveColor: '#6B7280',
+    filterChipInactiveBorder: '#E5E9F0',
+    filterChipHoverBg: '#EDF0F7',
+    sortBtnBg: '#FFFFFF',
+    sortBtnBorder: '#E5E9F0',
+    sortBtnText: '#0B1A3A',
+    sortBtnHover: '#EDF0F7',
+    sortMenuBg: '#FFFFFF',
+    sortMenuShadow: '0 8px 24px rgba(0,0,0,0.12)',
+    sortMenuActive: '#002E83',
+    sortMenuInactive: '#0B1A3A',
+    sortMenuHover: '#F1F4F9',
+    pageBtnBg: '#FFFFFF',
+    pageBtnHover: '#F1F4F9',
+    pageBtnColor: '#0B1A3A',
+    pageBtnDisabledBg: '#F1F4F9',
+    pageBtnDisabledColor: '#CBD5E1',
+    pageBtnShadow: '0 2px 8px rgba(0,0,0,0.08)',
+    iconAccent: '#002E83',
+  };
+}
+
+function useTokens() {
+  const { personaId } = usePersona();
+  return buildTokens(personaId === 'vip');
+}
 
 const opportunities = [
   {
@@ -56,6 +152,7 @@ const riskOrder = { A: 1, B: 2, C: 3, D: 4, E: 5 };
 
 export function OpportunitiesPage() {
   const navigate = useNavigate();
+  const tk = useTokens();
   const [selectedRisk, setSelectedRisk] = useState<string>('all');
   const [sortBy, setSortBy] = useState<SortKey>('default');
   const [sortOpen, setSortOpen] = useState(false);
@@ -76,13 +173,13 @@ export function OpportunitiesPage() {
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 md:pb-8">
       {/* Page Header */}
       <div className="mb-6">
-        <h1 className="text-[28px] text-[#0B1A3A] mb-2" style={{ fontWeight: 700 }}>
+        <h1 className="text-[28px] mb-2" style={{ fontWeight: 700, color: tk.textPrimary }}>
           الفرص الاستثمارية
         </h1>
         <div className="flex items-center gap-2 text-[13px]">
-          <span className="text-[#0D82F9]" style={{ fontWeight: 600 }}>{opportunities.length} فرصة متاحة</span>
-          <span className="text-[#CBD5E1]">•</span>
-          <span className="text-[#6B7280]">متوسط العائد <span className="text-[#10B981]" style={{ fontWeight: 700 }}>{avgRoi}%</span></span>
+          <span style={{ fontWeight: 600, color: tk.titleAccent }}>{opportunities.length} فرصة متاحة</span>
+          <span style={{ color: tk.textFaint }}>•</span>
+          <span style={{ color: tk.textSecondary }}>متوسط العائد <span style={{ fontWeight: 700, color: tk.returnAccent }}>{avgRoi}%</span></span>
         </div>
       </div>
 
@@ -149,77 +246,91 @@ export function OpportunitiesPage() {
 
       {/* ===== 2. SMART INSIGHT BANNER ===== */}
       <div
-        className="flex items-center gap-4 px-6 py-4 rounded-2xl mb-8 bg-white"
-        style={{ border: '1px solid rgba(13, 130, 249, 0.12)' }}
+        className="flex items-center gap-4 px-6 py-4 rounded-2xl mb-8"
+        style={{ background: tk.insightBg, border: tk.insightBorder }}
       >
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(13, 130, 249, 0.1)' }}>
-          <Lightbulb className="w-5 h-5 text-[#0D82F9]" strokeWidth={2} />
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: tk.insightIconBg }}>
+          <Lightbulb className="w-5 h-5" strokeWidth={2} style={{ color: tk.insightIconColor }} />
         </div>
         <div className="flex-1">
-          <p className="text-[14px] text-[#0B1A3A]" style={{ fontWeight: 600 }}>
+          <p className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>
             الفرص ذات التصنيف A تنفد بسرعة
           </p>
-          <p className="text-[12px] text-[#6B7280] mt-0.5">
+          <p className="text-[12px] mt-0.5" style={{ color: tk.textSecondary }}>
             لديك فرص بعائد أعلى من متوسط المحفظة — استكشفها قبل اكتمال التمويل
           </p>
         </div>
         <button
           onClick={() => handleRiskFilter('A')}
           className="flex-shrink-0 px-4 py-2 rounded-lg text-[12px] transition-all hover:shadow-md"
-          style={{ background: '#002E83', color: 'white', fontWeight: 700 }}
+          style={{ background: tk.insightBtnBg, color: tk.insightBtnColor, fontWeight: 700 }}
         >
           عرض فرص A
         </button>
       </div>
 
       {/* ===== 3. FILTER SECTION ===== */}
-      <div className="rounded-2xl p-5 mb-6 bg-[#F8FAFC]" style={{ border: '1px solid #EDF0F7' }}>
+      <div className="rounded-2xl p-5 mb-6" style={{ background: tk.filterSectionBg, border: tk.filterSectionBorder }}>
         <div className="flex items-center gap-2 mb-3">
-          <Shield className="w-4 h-4 text-[#002E83]" strokeWidth={2} />
-          <span className="text-[14px] text-[#0B1A3A]" style={{ fontWeight: 700 }}>اختر الفرص المناسبة لك</span>
+          <Shield className="w-4 h-4" strokeWidth={2} style={{ color: tk.iconAccent }} />
+          <span className="text-[14px]" style={{ fontWeight: 700, color: tk.textPrimary }}>اختر الفرص المناسبة لك</span>
         </div>
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-3 flex-wrap">
             <div className="flex items-center gap-2 ml-2">
-              <SlidersHorizontal className="w-4 h-4 text-[#9CA3AF]" strokeWidth={2} />
-              <span className="text-[12px] text-[#9CA3AF]" style={{ fontWeight: 500 }}>تصفية حسب</span>
+              <SlidersHorizontal className="w-4 h-4" strokeWidth={2} style={{ color: tk.filterLabelColor }} />
+              <span className="text-[12px]" style={{ fontWeight: 500, color: tk.filterLabelColor }}>تصفية حسب</span>
             </div>
-            {['all', 'A', 'B', 'C', 'D'].map((risk) => (
-              <button
-                key={risk}
-                onClick={() => handleRiskFilter(risk)}
-                className={`px-4 py-2 rounded-lg text-[13px] transition-all ${
-                  selectedRisk === risk
-                    ? 'bg-[#002E83] text-white shadow-md'
-                    : 'bg-white text-[#6B7280] hover:bg-[#EDF0F7] border border-[#E5E9F0]'
-                }`}
-                style={{ fontWeight: selectedRisk === risk ? 700 : 500 }}
-              >
-                {risk === 'all' ? 'جميع الفرص' : `تصنيف ${risk}`}
-              </button>
-            ))}
+            {['all', 'A', 'B', 'C', 'D'].map((risk) => {
+              const isActive = selectedRisk === risk;
+              return (
+                <button
+                  key={risk}
+                  onClick={() => handleRiskFilter(risk)}
+                  className="px-4 py-2 rounded-lg text-[13px] transition-all"
+                  style={{
+                    fontWeight: isActive ? 700 : 500,
+                    background: isActive ? tk.filterChipActiveBg : tk.filterChipInactiveBg,
+                    color: isActive ? tk.filterChipActiveColor : tk.filterChipInactiveColor,
+                    border: isActive ? 'none' : `1px solid ${tk.filterChipInactiveBorder}`,
+                    boxShadow: isActive ? '0 1px 3px rgba(0,0,0,0.12)' : 'none',
+                  }}
+                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = tk.filterChipHoverBg; }}
+                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = tk.filterChipInactiveBg; }}
+                >
+                  {risk === 'all' ? 'جميع الفرص' : `تصنيف ${risk}`}
+                </button>
+              );
+            })}
           </div>
           <div className="relative">
             <button
               onClick={() => setSortOpen(!sortOpen)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-[13px] text-[#0B1A3A] hover:bg-[#EDF0F7] transition-all border border-[#E5E9F0]"
-              style={{ fontWeight: 500 }}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] transition-all"
+              style={{ background: tk.sortBtnBg, color: tk.sortBtnText, border: `1px solid ${tk.sortBtnBorder}`, fontWeight: 500 }}
+              onMouseEnter={e => (e.currentTarget.style.background = tk.sortBtnHover)}
+              onMouseLeave={e => (e.currentTarget.style.background = tk.sortBtnBg)}
             >
               <span>{sortLabels[sortBy]}</span>
               <ChevronDown className={`w-4 h-4 transition-transform ${sortOpen ? 'rotate-180' : ''}`} />
             </button>
             {sortOpen && (
-              <div className="absolute top-full left-0 mt-2 bg-white rounded-xl py-2 z-20 min-w-[180px]" style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}>
-                {(Object.keys(sortLabels) as SortKey[]).map((key) => (
-                  <button
-                    key={key}
-                    onClick={() => { setSortBy(key); setSortOpen(false); }}
-                    className={`w-full text-right px-4 py-2.5 text-[13px] hover:bg-[#F1F4F9] transition-colors ${sortBy === key ? 'text-[#002E83]' : 'text-[#0B1A3A]'}`}
-                    style={{ fontWeight: sortBy === key ? 700 : 400 }}
-                  >
-                    {sortLabels[key]}
-                  </button>
-                ))}
+              <div className="absolute top-full left-0 mt-2 rounded-xl py-2 z-20 min-w-[180px]" style={{ background: tk.sortMenuBg, boxShadow: tk.sortMenuShadow, border: tk.isVIP ? tk.cardBorder : 'none' }}>
+                {(Object.keys(sortLabels) as SortKey[]).map((key) => {
+                  const isActive = sortBy === key;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => { setSortBy(key); setSortOpen(false); }}
+                      className="w-full text-right px-4 py-2.5 text-[13px] transition-colors"
+                      style={{ fontWeight: isActive ? 700 : 400, color: isActive ? tk.sortMenuActive : tk.sortMenuInactive }}
+                      onMouseEnter={e => (e.currentTarget.style.background = tk.sortMenuHover)}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      {sortLabels[key]}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -228,9 +339,9 @@ export function OpportunitiesPage() {
 
       {/* All Opportunities Title */}
       <div className="flex items-center gap-2 mb-5">
-        <TrendingUp className="w-5 h-5 text-[#002E83]" strokeWidth={2} />
-        <h2 className="text-[18px] text-[#0B1A3A]" style={{ fontWeight: 700 }}>جميع الفرص</h2>
-        <span className="text-[13px] text-[#9CA3AF] mr-1">({filtered.length})</span>
+        <TrendingUp className="w-5 h-5" strokeWidth={2} style={{ color: tk.iconAccent }} />
+        <h2 className="text-[18px]" style={{ fontWeight: 700, color: tk.textPrimary }}>جميع الفرص</h2>
+        <span className="text-[13px] mr-1" style={{ color: tk.textMuted }}>({filtered.length})</span>
       </div>
 
       {/* Grid */}
@@ -246,21 +357,35 @@ export function OpportunitiesPage() {
           <button
             onClick={() => { if (currentPage > 1) { setCurrentPage(currentPage - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); } }}
             disabled={currentPage === 1}
-            className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${currentPage > 1 ? 'bg-white hover:bg-[#F1F4F9] text-[#0B1A3A]' : 'bg-[#F1F4F9] text-[#CBD5E1] cursor-not-allowed'}`}
-            style={{ boxShadow: currentPage > 1 ? '0 2px 8px rgba(0, 0, 0, 0.08)' : 'none' }}
+            className="flex items-center justify-center w-12 h-12 rounded-xl transition-all"
+            style={{
+              background: currentPage > 1 ? tk.pageBtnBg : tk.pageBtnDisabledBg,
+              color: currentPage > 1 ? tk.pageBtnColor : tk.pageBtnDisabledColor,
+              boxShadow: currentPage > 1 ? tk.pageBtnShadow : 'none',
+              cursor: currentPage > 1 ? 'pointer' : 'not-allowed',
+            }}
+            onMouseEnter={e => { if (currentPage > 1) e.currentTarget.style.background = tk.pageBtnHover; }}
+            onMouseLeave={e => { if (currentPage > 1) e.currentTarget.style.background = tk.pageBtnBg; }}
           >
             <ArrowLeft className="w-6 h-6" strokeWidth={2} />
           </button>
-          <div className="flex items-center gap-3 px-6 py-3 bg-white rounded-xl" style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)' }}>
-            <span className="text-[16px] text-[#0B1A3A]" style={{ fontWeight: 700 }}>{currentPage}</span>
-            <span className="text-[16px] text-[#94A3B8]">/</span>
-            <span className="text-[16px] text-[#94A3B8]" style={{ fontWeight: 500 }}>{totalPages}</span>
+          <div className="flex items-center gap-3 px-6 py-3 rounded-xl" style={{ background: tk.pageBtnBg, boxShadow: tk.pageBtnShadow }}>
+            <span className="text-[16px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{currentPage}</span>
+            <span className="text-[16px]" style={{ color: tk.textMuted }}>/</span>
+            <span className="text-[16px]" style={{ fontWeight: 500, color: tk.textMuted }}>{totalPages}</span>
           </div>
           <button
             onClick={() => { if (currentPage < totalPages) { setCurrentPage(currentPage + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); } }}
             disabled={currentPage === totalPages}
-            className={`flex items-center justify-center w-12 h-12 rounded-xl transition-all ${currentPage < totalPages ? 'bg-white hover:bg-[#F1F4F9] text-[#0B1A3A]' : 'bg-[#F1F4F9] text-[#CBD5E1] cursor-not-allowed'}`}
-            style={{ boxShadow: currentPage < totalPages ? '0 2px 8px rgba(0, 0, 0, 0.08)' : 'none' }}
+            className="flex items-center justify-center w-12 h-12 rounded-xl transition-all"
+            style={{
+              background: currentPage < totalPages ? tk.pageBtnBg : tk.pageBtnDisabledBg,
+              color: currentPage < totalPages ? tk.pageBtnColor : tk.pageBtnDisabledColor,
+              boxShadow: currentPage < totalPages ? tk.pageBtnShadow : 'none',
+              cursor: currentPage < totalPages ? 'pointer' : 'not-allowed',
+            }}
+            onMouseEnter={e => { if (currentPage < totalPages) e.currentTarget.style.background = tk.pageBtnHover; }}
+            onMouseLeave={e => { if (currentPage < totalPages) e.currentTarget.style.background = tk.pageBtnBg; }}
           >
             <ArrowRight className="w-6 h-6" strokeWidth={2} />
           </button>

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { formatSAR, formatPercentage } from '../../utils/currency';
 import { ArrowLeft, Bell, CheckCircle, Clock } from 'lucide-react';
+import { usePersona } from '../../demoPersona';
+import { colors } from '../fundme';
 
 interface OpportunityCardCompactProps {
   borrowerName: string;
@@ -80,13 +82,76 @@ const patterns = [Pattern1, Pattern2, Pattern3];
 
 /* ── Risk Config ── */
 
-const riskConfig: Record<string, { label: string; color: string; bg: string; border: string }> = {
+const riskConfigLight: Record<string, { label: string; color: string; bg: string; border: string }> = {
   A: { label: 'A · منخفض جداً', color: '#2BB673', bg: '#F0FDF4', border: '#BBF7D0' },
   B: { label: 'B · منخفض', color: '#2BB673', bg: '#F0FDF4', border: '#BBF7D0' },
   C: { label: 'C · متوسط', color: '#D97706', bg: '#FFFBEB', border: '#FDE68A' },
   D: { label: 'D · مرتفع', color: '#EF4444', bg: '#FEF2F2', border: '#FECACA' },
   E: { label: 'E · مرتفع جداً', color: '#EF4444', bg: '#FEF2F2', border: '#FECACA' },
 };
+
+const riskConfigDark: Record<string, { label: string; color: string; bg: string; border: string }> = {
+  A: { label: 'A · منخفض جداً', color: '#34D399', bg: 'rgba(52,211,153,0.12)', border: 'rgba(52,211,153,0.3)' },
+  B: { label: 'B · منخفض', color: '#34D399', bg: 'rgba(52,211,153,0.12)', border: 'rgba(52,211,153,0.3)' },
+  C: { label: 'C · متوسط', color: '#FBBF24', bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.3)' },
+  D: { label: 'D · مرتفع', color: '#F87171', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' },
+  E: { label: 'E · مرتفع جداً', color: '#F87171', bg: 'rgba(248,113,113,0.12)', border: 'rgba(248,113,113,0.3)' },
+};
+
+function buildCardTokens(isVIP: boolean) {
+  if (isVIP) {
+    return {
+      isVIP: true,
+      cardBg: colors.dark.card,
+      cardBorder: `1px solid ${colors.dark.border}`,
+      shadow: '0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.15)',
+      shadowHover: '0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2)',
+      textPrimary: colors.textOnDark.primary,
+      textSecondary: colors.textOnDark.secondary,
+      textMuted: colors.textOnDark.tertiary,
+      pillBg: colors.dark.elevated,
+      pillBorder: `1px solid ${colors.dark.border}`,
+      pillColor: colors.textOnDark.secondary,
+      innerCardBg: colors.dark.elevated,
+      innerCardBorder: '1px solid rgba(255,255,255,0.06)',
+      progressTrackBg: colors.dark.hover,
+      progressGradient: 'linear-gradient(90deg, #60A5FA, #22D3EE)',
+      ctaBg: 'linear-gradient(135deg, #1D4ED8 0%, #2563EB 100%)',
+      fundedPctColor: '#34D399',
+      notifyBorder: '1px solid rgba(165,180,252,0.3)',
+      notifyColor: '#A5B4FC',
+      notifiedBorder: '1px solid rgba(52,211,153,0.3)',
+      notifiedBg: 'rgba(52,211,153,0.12)',
+      notifiedColor: '#34D399',
+      riskConfig: riskConfigDark,
+    };
+  }
+  return {
+    isVIP: false,
+    cardBg: '#FFFFFF',
+    cardBorder: '1px solid #E8ECF2',
+    shadow: '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03)',
+    shadowHover: '0 8px 32px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06)',
+    textPrimary: '#0F172A',
+    textSecondary: '#64748B',
+    textMuted: '#94A3B8',
+    pillBg: '#F8FAFC',
+    pillBorder: '1px solid #E8ECF2',
+    pillColor: '#64748B',
+    innerCardBg: '#F8FAFC',
+    innerCardBorder: '1px solid #F1F5F9',
+    progressTrackBg: '#F1F5F9',
+    progressGradient: 'linear-gradient(90deg, #1A3F73, #0891b2)',
+    ctaBg: 'linear-gradient(135deg, #0B1F3A 0%, #1A3F73 100%)',
+    fundedPctColor: '#14B8A6',
+    notifyBorder: '1px solid #C7D2FE',
+    notifyColor: '#6366F1',
+    notifiedBorder: '1px solid #BBF7D0',
+    notifiedBg: '#F0FDF4',
+    notifiedColor: '#2BB673',
+    riskConfig: riskConfigLight,
+  };
+}
 
 /* ── Card Component ── */
 
@@ -110,7 +175,9 @@ export function OpportunityCardCompact({
   const returnValue = netReturn || roi || 0;
   const [notified, setNotified] = useState(false);
   const [animatedProgress, setAnimatedProgress] = useState(0);
-  const rk = riskConfig[risk] || riskConfig.B;
+  const { personaId } = usePersona();
+  const tk = buildCardTokens(personaId === 'vip');
+  const rk = tk.riskConfig[risk] || tk.riskConfig.B;
 
   // Pick pattern by index or hash from ID
   const pIdx = patternIndex ?? (opportunityId.charCodeAt(opportunityId.length - 1) % 3);
@@ -127,14 +194,15 @@ export function OpportunityCardCompact({
   return (
     <div
       onClick={onClick}
-      className="group bg-white rounded-2xl overflow-hidden h-full flex flex-col cursor-pointer"
+      className="group rounded-2xl overflow-hidden h-full flex flex-col cursor-pointer"
       style={{
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03)',
-        border: '1px solid #E8ECF2',
+        background: tk.cardBg,
+        boxShadow: tk.shadow,
+        border: tk.cardBorder,
         transition: 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
       }}
-      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06)'; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03)'; }}
+      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = tk.shadowHover; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = tk.shadow; }}
     >
       {/* ── Cover Area (160px) ── */}
       <div className="relative h-[160px] overflow-hidden shrink-0" style={{ background: 'linear-gradient(135deg, #0B1F3A 0%, #1A3F73 50%, #2563EB 100%)' }}>
@@ -178,10 +246,10 @@ export function OpportunityCardCompact({
             <span className="w-1.5 h-1.5 rounded-full" style={{ background: rk.color }} />
             {rk.label}
           </span>
-          <span className="px-2 py-0.5 rounded-full text-[11px] text-[#64748B]" style={{ background: '#F8FAFC', border: '1px solid #E8ECF2', fontWeight: 500 }}>
+          <span className="px-2 py-0.5 rounded-full text-[11px]" style={{ background: tk.pillBg, border: tk.pillBorder, color: tk.pillColor, fontWeight: 500 }}>
             {financingType}
           </span>
-          <span className="px-2 py-0.5 rounded-full text-[11px] text-[#64748B]" style={{ background: '#F8FAFC', border: '1px solid #E8ECF2', fontWeight: 500 }}>
+          <span className="px-2 py-0.5 rounded-full text-[11px]" style={{ background: tk.pillBg, border: tk.pillBorder, color: tk.pillColor, fontWeight: 500 }}>
             {tenor}
           </span>
         </div>
@@ -191,10 +259,10 @@ export function OpportunityCardCompact({
           {comingSoon ? (
             /* ── Coming Soon ── */
             <>
-              <div className="rounded-xl p-3 mb-3" style={{ background: '#F8FAFC', border: '1px solid #F1F5F9' }}>
+              <div className="rounded-xl p-3 mb-3" style={{ background: tk.innerCardBg, border: tk.innerCardBorder }}>
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-[#64748B]" style={{ fontWeight: 500 }}>يفتح خلال</span>
-                  <span className="text-[20px] text-[#0F172A]" style={{ fontWeight: 700 }}>
+                  <span className="text-[11px]" style={{ fontWeight: 500, color: tk.textSecondary }}>يفتح خلال</span>
+                  <span className="text-[20px]" style={{ fontWeight: 700, color: tk.textPrimary }}>
                     {launchLabel?.replace('يفتح خلال ', '') || '5 أيام'}
                   </span>
                 </div>
@@ -205,8 +273,8 @@ export function OpportunityCardCompact({
                 style={{
                   fontWeight: 600,
                   ...(notified
-                    ? { background: '#F0FDF4', color: '#2BB673', border: '1px solid #BBF7D0' }
-                    : { background: 'transparent', color: '#6366F1', border: '1px solid #C7D2FE' }),
+                    ? { background: tk.notifiedBg, color: tk.notifiedColor, border: tk.notifiedBorder }
+                    : { background: 'transparent', color: tk.notifyColor, border: tk.notifyBorder }),
                 }}
                 disabled={notified}
               >
@@ -222,21 +290,21 @@ export function OpportunityCardCompact({
             <>
               {/* Funded + percentage */}
               <div className="flex items-baseline justify-between mb-2">
-                <div className="text-[11px] text-[#94A3B8]">
-                  <span className="text-[18px] text-[#0F172A]" style={{ fontWeight: 700 }}>{formatSAR(fundedAmount, { decimals: 0 })}</span>
+                <div className="text-[11px]" style={{ color: tk.textMuted }}>
+                  <span className="text-[18px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{formatSAR(fundedAmount, { decimals: 0 })}</span>
                   <span className="mx-1">/</span>
                   {formatSAR(totalAmount, { decimals: 0 })} ر.س
                 </div>
-                <span className="text-[14px] text-[#14B8A6] font-mono" style={{ fontWeight: 600 }}>{fundingProgress}%</span>
+                <span className="text-[14px] font-mono" style={{ fontWeight: 600, color: tk.fundedPctColor }}>{fundingProgress}%</span>
               </div>
 
               {/* Progress bar */}
-              <div className="w-full h-[7px] rounded-full overflow-hidden mb-3" style={{ background: '#F1F5F9' }}>
+              <div className="w-full h-[7px] rounded-full overflow-hidden mb-3" style={{ background: tk.progressTrackBg }}>
                 <div
                   className="h-full rounded-full"
                   style={{
                     width: `${animatedProgress}%`,
-                    background: 'linear-gradient(90deg, #1A3F73, #0891b2)',
+                    background: tk.progressGradient,
                     transition: 'width 1.5s cubic-bezier(0.22, 1, 0.36, 1)',
                   }}
                 />
@@ -246,7 +314,7 @@ export function OpportunityCardCompact({
               <button
                 className="w-full h-10 rounded-xl text-[12px] text-white flex items-center justify-center gap-1.5 transition-all hover:shadow-lg"
                 style={{
-                  background: 'linear-gradient(135deg, #0B1F3A 0%, #1A3F73 100%)',
+                  background: tk.ctaBg,
                   fontWeight: 600,
                 }}
                 onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; }}
