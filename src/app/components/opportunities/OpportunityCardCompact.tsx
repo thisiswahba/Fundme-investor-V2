@@ -101,31 +101,32 @@ function TimeSegment({ value, unit, isAr, color, mutedColor }: {
   const word = pluralize(value, unit, isAr);
   const display = String(value);
   return (
-    <span className="inline-flex items-baseline gap-1">
-      <span
-        className="relative inline-block overflow-hidden align-baseline tabular-nums text-center"
-        style={{
-          height: '15px',
-          minWidth: `${Math.max(display.length, 1) * 9}px`,
-          lineHeight: '15px',
-        }}
+    <div className="flex flex-col items-center justify-center min-w-0 w-full">
+      <div
+        className="relative overflow-hidden tabular-nums text-center w-full"
+        style={{ height: '20px' }}
       >
         <AnimatePresence mode="popLayout" initial={false}>
-          <motion.span
+          <motion.div
             key={display}
-            initial={{ y: -13, opacity: 0 }}
+            initial={{ y: -18, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 13, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 380, damping: 30, mass: 0.45 }}
-            className="absolute inset-0 text-[13px]"
-            style={{ fontWeight: 700, color, letterSpacing: '-0.01em', lineHeight: '15px' }}
+            exit={{ y: 18, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 28, mass: 0.45 }}
+            className="absolute inset-0 text-[18px] flex items-center justify-center"
+            style={{ fontWeight: 700, color, letterSpacing: '-0.02em', lineHeight: 1 }}
           >
             {display}
-          </motion.span>
+          </motion.div>
         </AnimatePresence>
+      </div>
+      <span
+        className="text-[9px] mt-0.5 truncate"
+        style={{ fontWeight: 500, color: mutedColor, letterSpacing: '0.02em' }}
+      >
+        {word}
       </span>
-      <span className="text-[11px]" style={{ fontWeight: 500, color: mutedColor }}>{word}</span>
-    </span>
+    </div>
   );
 }
 
@@ -145,28 +146,24 @@ function CountdownBlock({ targetIso, isAr, color, mutedColor }: {
     );
   }
 
-  // Show only the two most significant non-zero units to keep the line tight
   const segments: { unit: Unit; value: number }[] = [
     { unit: 'd', value: days },
     { unit: 'h', value: hours },
     { unit: 'm', value: minutes },
     { unit: 's', value: seconds },
   ];
-  const firstNonZero = segments.findIndex((s) => s.value > 0);
-  const start = firstNonZero === -1 ? segments.length - 2 : firstNonZero;
-  const visible = segments.slice(start, start + 2);
 
   return (
-    <span className="inline-flex items-baseline gap-2 whitespace-nowrap" dir={isAr ? 'rtl' : 'ltr'}>
-      {visible.map((s, i) => (
-        <span key={s.unit} className="inline-flex items-baseline gap-1">
+    <div
+      className="grid grid-cols-4 gap-1 w-full"
+      dir={isAr ? 'rtl' : 'ltr'}
+    >
+      {segments.map((s) => (
+        <div key={s.unit} className="flex flex-col items-center justify-center">
           <TimeSegment value={s.value} unit={s.unit} isAr={isAr} color={color} mutedColor={mutedColor} />
-          {i < visible.length - 1 && (
-            <span className="text-[10px] mx-0.5 opacity-30" style={{ color }}>·</span>
-          )}
-        </span>
+        </div>
       ))}
-    </span>
+    </div>
   );
 }
 
@@ -420,20 +417,22 @@ export function OpportunityCardCompact({
             /* ── Coming Soon ── */
             <>
               <div
-                className="rounded-xl px-3 py-2.5 mb-3 flex items-center justify-between gap-3"
+                className="rounded-xl px-3 py-2.5 mb-3"
                 style={{ background: tk.innerCardBg, border: tk.innerCardBorder }}
               >
-                <div className="flex items-center gap-1.5">
-                  <span
-                    className="w-1.5 h-1.5 rounded-full animate-pulse"
-                    style={{ background: tk.notifyColor }}
-                  />
-                  <span
-                    className="text-[10px] uppercase"
-                    style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.08em' }}
-                  >
-                    {isAr ? 'يفتح خلال' : 'Opens in'}
-                  </span>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className="w-1.5 h-1.5 rounded-full animate-pulse"
+                      style={{ background: tk.notifyColor }}
+                    />
+                    <span
+                      className="text-[10px] uppercase"
+                      style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.08em' }}
+                    >
+                      {isAr ? 'يفتح خلال' : 'Opens in'}
+                    </span>
+                  </div>
                 </div>
                 <CountdownBlock
                   targetIso={launchAt}
