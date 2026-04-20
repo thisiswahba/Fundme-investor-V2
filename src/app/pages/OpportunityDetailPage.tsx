@@ -654,7 +654,7 @@ export function OpportunityDetailPage() {
         <div className="flex-1 min-w-0">
 
           {/* HERO CARD — gradient (navy, same in both modes — already dark) */}
-          <div className="relative rounded-2xl overflow-hidden p-8" style={{ background: 'linear-gradient(155deg, #001D5A 0%, #0D82F9 100%)', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+          <div className="relative rounded-2xl overflow-hidden p-5 sm:p-6 lg:p-8" style={{ background: 'linear-gradient(155deg, #001D5A 0%, #0D82F9 100%)', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
               <div className="absolute w-[300px] h-[300px] rounded-full top-[-50px] left-[674px]" style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)' }} />
               <div className="absolute w-[400px] h-[400px] rounded-full top-[124px] left-[-100px]" style={{ background: 'radial-gradient(circle, rgba(13,130,249,0.3) 0%, transparent 70%)' }} />
@@ -689,10 +689,10 @@ export function OpportunityDetailPage() {
             </div>
 
             <div className="relative">
-              <h1 className="text-[32px] text-white text-start mb-2" style={{ fontWeight: 700 }}>{isAr ? opp.title : 'Residential Project Financing — Dammam'}</h1>
-              <p className="text-[16px] text-white/90 mb-8">{isAr ? opp.pitch : 'A premium residential complex in a prime location with secured returns'}</p>
+              <h1 className="text-[22px] sm:text-[26px] lg:text-[32px] text-white text-start mb-2" style={{ fontWeight: 700, letterSpacing: '-0.015em' }}>{isAr ? opp.title : 'Residential Project Financing — Dammam'}</h1>
+              <p className="text-[14px] lg:text-[16px] text-white/90 mb-6 lg:mb-8">{isAr ? opp.pitch : 'A premium residential complex in a prime location with secured returns'}</p>
 
-              <div className="grid grid-cols-4 gap-4 mb-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
                 <div>
                   <div className="text-[12px] text-white/70 mb-1.5" style={{ fontWeight: 500 }}>{t('opp.annualReturn')}</div>
                   <div className="text-[28px] text-white" style={{ fontWeight: 700 }}>+{opp.roi}%</div>

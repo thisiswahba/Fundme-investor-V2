@@ -254,7 +254,7 @@ function PortfolioHero() {
           {isAr ? 'إجمالي المحفظة' : 'Total Portfolio Value'}
         </div>
         <div className="flex items-baseline gap-3 mb-1.5">
-          <span className="text-[36px] leading-none" style={{ fontWeight: 700, letterSpacing: '-0.025em', fontVariantNumeric: 'tabular-nums', color: t.textPrimary }}>
+          <span className="text-[26px] sm:text-[32px] lg:text-[36px] leading-none" style={{ fontWeight: 700, letterSpacing: '-0.025em', fontVariantNumeric: 'tabular-nums', color: t.textPrimary }}>
             {formatSAR(summary.totalPortfolio, { decimals: 0 })}
           </span>
           <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[11px]" style={{ background: t.monthlyPillBg, color: t.monthlyPillColor, fontWeight: 600 }}>
@@ -287,7 +287,7 @@ function PortfolioHero() {
       <div style={{ flex: 1 }} />
 
       <div style={{ borderTop: t.heroDivider, margin: '0 -28px', padding: '16px 28px 0' }}>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <div className="rounded-xl p-4" style={{ background: t.statInnerBg, border: t.statInnerBorder }}>
             <div className="text-[10px] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600, color: t.textMuted }}>{isAr ? 'نشطة' : 'Active'}</div>
             <div className="text-[18px] leading-tight" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: t.textPrimary }}>{formatSAR(summary.activeInvested, { decimals: 0 })}</div>
@@ -686,8 +686,8 @@ function RepaymentsSection() {
       />
 
       {/* ── Header ── */}
-      <header className="relative px-7 pt-7 pb-6">
-        <div className="flex items-end justify-between gap-6 flex-wrap">
+      <header className="relative px-4 sm:px-7 pt-5 sm:pt-7 pb-5 sm:pb-6">
+        <div className="flex items-end justify-between gap-4 sm:gap-6 flex-wrap">
           <div>
             <div
               className="inline-flex items-center gap-1.5 px-2 h-5 rounded-md text-[10px] uppercase mb-2.5"
@@ -703,7 +703,7 @@ function RepaymentsSection() {
               {isAr ? 'جدول السداد' : 'Schedule'}
             </div>
             <h2
-              className="text-[22px] leading-none"
+              className="text-[18px] sm:text-[22px] leading-tight"
               style={{ fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.025em' }}
             >
               {isAr ? 'الدفعات القادمة' : 'Upcoming Repayments'}
@@ -743,7 +743,7 @@ function RepaymentsSection() {
             </div>
             <div className="flex items-baseline gap-2 justify-end">
               <span
-                className="text-[34px] tabular-nums leading-none"
+                className="text-[24px] sm:text-[28px] lg:text-[34px] tabular-nums leading-none"
                 dir="ltr"
                 style={{ fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.035em' }}
               >
@@ -761,12 +761,13 @@ function RepaymentsSection() {
       </header>
 
       {/* ── Table ── */}
-      <div className="px-7 pb-7">
+      <div className="px-4 sm:px-7 pb-7">
         <div
           className="rounded-xl overflow-hidden"
           style={{ border: `1px solid ${t.timelineDivider}` }}
         >
-          <table className="w-full" style={{ borderCollapse: 'collapse' }}>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[480px]" style={{ borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: t.nextDueNeutralBg, borderBottom: `1px solid ${t.timelineDivider}` }}>
                 <th className="text-start px-4 py-2.5 text-[10px] uppercase" style={{ fontWeight: 700, color: t.textMuted, letterSpacing: '0.08em' }}>
@@ -915,6 +916,7 @@ function RepaymentsSection() {
               </tr>
             </tfoot>
           </table>
+          </div>
         </div>
       </div>
     </section>

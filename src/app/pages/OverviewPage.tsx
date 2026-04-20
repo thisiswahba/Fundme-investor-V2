@@ -462,7 +462,7 @@ export function OverviewPage() {
       {/* Page Header */}
       <div className="flex items-start justify-between gap-6 mb-6">
         <div>
-          <h1 className="text-[28px] lg:text-[36px] leading-tight mb-2" style={{ color: '#002E83', fontWeight: 700, letterSpacing: '-0.02em' }}>
+          <h1 className="text-[22px] sm:text-[28px] lg:text-[36px] leading-tight mb-2" style={{ color: '#002E83', fontWeight: 700, letterSpacing: '-0.02em' }}>
             {isAr ? `مرحباً، ${firstName} 👋` : `Welcome, ${firstName} 👋`}
           </h1>
           <p className="text-[14px] leading-relaxed" style={{ color: 'rgba(0,0,0,0.6)', fontWeight: 400 }}>

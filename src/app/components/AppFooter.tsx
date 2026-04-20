@@ -41,7 +41,7 @@ export function AppFooter() {
         borderTop: `1px solid ${isVIP ? 'rgba(255,255,255,0.06)' : '#EEF1F5'}`,
       }}
     >
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-8 py-6">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           {/* Copyright */}
           <span

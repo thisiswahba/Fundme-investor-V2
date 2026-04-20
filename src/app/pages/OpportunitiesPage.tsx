@@ -236,7 +236,7 @@ export function OpportunitiesPage() {
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 md:pb-8">
       {/* Page Header */}
       <div className="mb-6">
-        <h1 className="text-[28px] mb-2" style={{ fontWeight: 700, color: tk.textPrimary }}>
+        <h1 className="text-[22px] sm:text-[28px] mb-2" style={{ fontWeight: 700, color: tk.textPrimary, letterSpacing: '-0.015em' }}>
           {isAr ? 'الفرص الاستثمارية' : 'Investment Opportunities'}
         </h1>
         <div className="flex items-center gap-2 text-[13px]">

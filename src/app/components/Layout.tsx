@@ -85,7 +85,7 @@ export function Layout() {
     <div className={`min-h-screen ${personaId === 'vip' ? 'bg-[#06111F] fundme-dark' : 'bg-[#F7F9FC]'}`} dir={dir}>
       {/* Top Navigation */}
       <nav className="border-b sticky top-0 z-50" style={{ background: personaId === 'vip' ? '#08162A' : '#FFFFFF', borderColor: personaId === 'vip' ? 'rgba(255,255,255,0.08)' : '#E5E7EB' }}>
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-8">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center">
@@ -363,7 +363,7 @@ export function Layout() {
       {/* ─── Demo Persona Switcher (floating) ─── */}
       <div
         ref={personaRef}
-        className="fixed bottom-6 z-[100] md:bottom-6"
+        className="fixed bottom-20 md:bottom-6 z-[100]"
         style={dir === 'rtl' ? { left: 24 } : { right: 24 }}
       >
         {/* Expanded panel */}
