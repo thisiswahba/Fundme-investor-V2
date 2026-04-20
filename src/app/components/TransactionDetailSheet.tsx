@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { toast } from 'sonner';
 import {
   X, ArrowDownRight, ArrowUpRight, Briefcase, TrendingUp, MoreHorizontal,
   Download, Copy, Calendar, Hash, FileText, CheckCircle, Clock, AlertCircle,
@@ -305,6 +306,10 @@ export function TransactionDetailSheet({ open, onClose, tx }: {
               style={{ borderTop: `1px solid ${tk.divider}` }}
             >
               <button
+                onClick={() => toast.success(
+                  isAr ? 'بدأ تنزيل الإيصال' : 'Receipt download started',
+                  { duration: 2400 },
+                )}
                 className="flex-1 h-11 rounded-xl flex items-center justify-center gap-2 text-[13px] text-white transition-all hover:scale-[1.02] cursor-pointer"
                 style={{
                   fontWeight: 600,

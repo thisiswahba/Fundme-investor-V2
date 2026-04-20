@@ -12,7 +12,7 @@ import {
 } from 'recharts';
 import {
   TrendingUp, AlertTriangle, ShieldAlert,
-  ChevronLeft, Download, Zap,
+  ChevronLeft, Download, Zap, Receipt,
 } from 'lucide-react';
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -547,7 +547,13 @@ function InvestmentsTable() {
             onMouseEnter={e => (e.currentTarget.style.background = t.tableRowHoverBg)}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
-            <div className="absolute left-0 top-4 bottom-4 w-[3px] rounded-full" style={{ background: riskColor[inv.risk] || '#94A3B8' }} />
+            <div
+              className="absolute top-4 bottom-4 w-[3px] rounded-full"
+              style={{
+                background: riskColor[inv.risk] || '#94A3B8',
+                [isAr ? 'right' : 'left']: 0,
+              } as React.CSSProperties}
+            />
 
             <div className="col-span-4 pr-2">
               <div className="text-[13px] truncate group-hover:text-[#3B82F6] transition-colors" style={{ fontWeight: 600, color: t.textPrimary }}>{isAr ? inv.project : inv.projectEn}</div>
@@ -555,7 +561,7 @@ function InvestmentsTable() {
             </div>
 
             <div className="col-span-1 flex justify-center">
-              <span className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] text-white" style={{ background: riskColor[inv.risk], fontWeight: 700 }}>{inv.risk}</span>
+              <GradePill grade={inv.risk} />
             </div>
 
             <div className="col-span-2 text-[13px]" style={{ fontWeight: 500, fontVariantNumeric: 'tabular-nums', color: t.textPrimary }}>{formatSAR(inv.amount, { decimals: 0 })}</div>
@@ -600,10 +606,19 @@ function InvestmentsTable() {
             onMouseEnter={e => (e.currentTarget.style.background = t.tableRowHoverBg)}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
-            <div className="absolute left-0 top-3 bottom-3 w-[3px] rounded-full" style={{ background: riskColor[inv.risk] }} />
+            <div
+              className="absolute top-3 bottom-3 w-[3px] rounded-full"
+              style={{
+                background: riskColor[inv.risk],
+                [isAr ? 'right' : 'left']: 0,
+              } as React.CSSProperties}
+            />
             <div className="flex items-start justify-between mb-2 pr-1 pl-2">
               <div>
-                <div className="text-[13px] truncate" style={{ fontWeight: 600, color: t.textPrimary }}>{isAr ? inv.project : inv.projectEn}</div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[13px] truncate" style={{ fontWeight: 600, color: t.textPrimary }}>{isAr ? inv.project : inv.projectEn}</span>
+                  <GradePill grade={inv.risk} />
+                </div>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-[10px] font-mono" style={{ color: t.linkBlue }}>{inv.id}</span>
                   {statusBadge(inv.status, isAr, t)}
@@ -633,72 +648,295 @@ function RepaymentsSection() {
   const isAr = lang === 'ar';
   const t = useTokens();
 
-  const upcoming = investments.filter(i => i.status === 'active' || i.status === 'late').sort((a, b) => {
-    if (a.status === 'late') return -1;
-    if (b.status === 'late') return 1;
-    return 0;
-  });
+  const upcoming = investments
+    .filter(i => i.status === 'active' || i.status === 'late')
+    .sort((a, b) => {
+      if (a.status === 'late') return -1;
+      if (b.status === 'late') return 1;
+      return 0;
+    });
+
   const totalDue = upcoming.reduce((s, i) => s + Math.abs(i.netReturn), 0);
-  const nextDue = upcoming[0];
+  const lateCount = upcoming.filter(i => i.status === 'late').length;
+
+  const extractDays = (text: string): string => {
+    const arabicMatch = text.match(/[٠-٩]+/);
+    const englishMatch = text.match(/\d+/);
+    if (arabicMatch) return arabicMatch[0];
+    if (englishMatch) return englishMatch[0];
+    return '—';
+  };
+
+  const isVIP = t.isVIP;
+  const brandInk = isVIP ? '#60A5FA' : '#1D4ED8';
 
   return (
-    <div className="rounded-2xl p-6" style={t.card}>
-      <h2 className="text-[15px] mb-5" style={{ fontWeight: 700, color: t.textPrimary }}>
-        {isAr ? 'الدفعات القادمة' : 'Upcoming Repayments'}
-      </h2>
+    <section className="rounded-[20px] overflow-hidden relative" style={t.card}>
+      {/* Atmospheric backdrop on the trailing edge */}
+      <div
+        className="absolute top-0 pointer-events-none"
+        style={{
+          [isAr ? 'left' : 'right']: 0,
+          width: 360,
+          height: 220,
+          background: isVIP
+            ? 'radial-gradient(ellipse at top, rgba(37,99,235,0.10) 0%, transparent 70%)'
+            : 'radial-gradient(ellipse at top, rgba(37,99,235,0.05) 0%, transparent 70%)',
+        } as React.CSSProperties}
+      />
 
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="p-4 rounded-xl" style={{ background: t.nextDueNeutralBg }}>
-          <div className="text-[10px] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600, color: t.textMuted }}>{isAr ? 'الإجمالي' : 'Total Due'}</div>
-          <div className="text-[18px]" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: t.textPrimary }}>{formatSAR(totalDue, { decimals: 0 })}</div>
+      {/* ── Header ── */}
+      <header className="relative px-7 pt-7 pb-6">
+        <div className="flex items-end justify-between gap-6 flex-wrap">
+          <div>
+            <div
+              className="inline-flex items-center gap-1.5 px-2 h-5 rounded-md text-[10px] uppercase mb-2.5"
+              style={{
+                background: isVIP ? 'rgba(96,165,250,0.12)' : 'rgba(29,78,216,0.07)',
+                color: brandInk,
+                border: `1px solid ${isVIP ? 'rgba(96,165,250,0.22)' : 'rgba(29,78,216,0.15)'}`,
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+              }}
+            >
+              <Receipt className="w-3 h-3" strokeWidth={2} />
+              {isAr ? 'جدول السداد' : 'Schedule'}
+            </div>
+            <h2
+              className="text-[22px] leading-none"
+              style={{ fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.025em' }}
+            >
+              {isAr ? 'الدفعات القادمة' : 'Upcoming Repayments'}
+            </h2>
+            <div className="flex items-center gap-2 mt-2 text-[12px]" style={{ color: t.textSecondary, fontWeight: 500 }}>
+              <span>
+                {isAr ? `${upcoming.length} دفعات مجدولة` : `${upcoming.length} payments scheduled`}
+              </span>
+              {lateCount > 0 && (
+                <>
+                  <span className="w-1 h-1 rounded-full" style={{ background: t.textMuted }} />
+                  <span className="inline-flex items-center gap-1.5" style={{ color: t.lateText, fontWeight: 600 }}>
+                    <span className="relative flex w-1.5 h-1.5">
+                      <span
+                        className="absolute inline-flex w-full h-full rounded-full opacity-70 animate-ping"
+                        style={{ background: t.lateText }}
+                      />
+                      <span
+                        className="relative inline-flex w-1.5 h-1.5 rounded-full"
+                        style={{ background: t.lateText }}
+                      />
+                    </span>
+                    {isAr ? `${lateCount} متأخرة` : `${lateCount} late`}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Hero total — display typography */}
+          <div className="text-end">
+            <div
+              className="text-[10px] uppercase mb-1.5"
+              style={{ fontWeight: 700, color: t.textMuted, letterSpacing: '0.12em' }}
+            >
+              {isAr ? 'إجمالي المستحق' : 'Total Receivable'}
+            </div>
+            <div className="flex items-baseline gap-2 justify-end">
+              <span
+                className="text-[34px] tabular-nums leading-none"
+                dir="ltr"
+                style={{ fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.035em' }}
+              >
+                {formatSAR(totalDue, { decimals: 0 })}
+              </span>
+              <span
+                className="text-[11px]"
+                style={{ color: t.textMuted, fontWeight: 700, letterSpacing: '0.06em' }}
+              >
+                SAR
+              </span>
+            </div>
+          </div>
         </div>
+      </header>
+
+      {/* ── Table ── */}
+      <div className="px-7 pb-7">
         <div
-          className="p-4 rounded-xl"
-          style={{
-            background: nextDue?.status === 'late' ? t.nextDueLateBg : t.nextDueNeutralBg,
-            border: nextDue?.status === 'late' ? t.nextDueLateBorder : 'none',
-          }}
+          className="rounded-xl overflow-hidden"
+          style={{ border: `1px solid ${t.timelineDivider}` }}
         >
-          <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600, color: nextDue?.status === 'late' ? t.lateText : t.textMuted }}>
-            {nextDue?.status === 'late' && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: t.lateText }} />}
-            {isAr ? 'التالي' : 'Next Due'}
-          </div>
-          <div className="text-[16px]" style={{ fontWeight: 700, color: t.textPrimary }}>
-            {nextDue ? (isAr ? nextDue.nextPaymentRelAr : nextDue.nextPaymentRel) : '—'}
-          </div>
-        </div>
-        <div className="p-4 rounded-xl" style={{ background: t.nextDueNeutralBg }}>
-          <div className="text-[10px] uppercase tracking-[0.06em] mb-1.5" style={{ fontWeight: 600, color: t.textMuted }}>{isAr ? 'عدد الدفعات' : 'Count'}</div>
-          <div className="text-[18px]" style={{ fontWeight: 700, color: t.textPrimary }}>{upcoming.length}</div>
-        </div>
-      </div>
+          <table className="w-full" style={{ borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: t.nextDueNeutralBg, borderBottom: `1px solid ${t.timelineDivider}` }}>
+                <th className="text-start px-4 py-2.5 text-[10px] uppercase" style={{ fontWeight: 700, color: t.textMuted, letterSpacing: '0.08em' }}>
+                  {isAr ? 'الفرصة' : 'Opportunity'}
+                </th>
+                <th className="px-3 py-2.5 text-[10px] uppercase" style={{ fontWeight: 700, color: t.textMuted, letterSpacing: '0.08em', textAlign: 'center' }}>
+                  {isAr ? 'التصنيف' : 'Grade'}
+                </th>
+                <th className="text-start px-4 py-2.5 text-[10px] uppercase" style={{ fontWeight: 700, color: t.textMuted, letterSpacing: '0.08em' }}>
+                  {isAr ? 'الاستحقاق' : 'Due'}
+                </th>
+                <th className="text-end px-4 py-2.5 text-[10px] uppercase" style={{ fontWeight: 700, color: t.textMuted, letterSpacing: '0.08em' }}>
+                  {isAr ? 'المبلغ' : 'Amount'}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {upcoming.map((inv, i) => {
+                const isLast = i === upcoming.length - 1;
+                const isLate = inv.status === 'late';
+                const dayNum = extractDays(isAr ? inv.nextPaymentRelAr : inv.nextPaymentRel);
+                return (
+                  <tr
+                    key={inv.id}
+                    style={{
+                      borderBottom: isLast ? 'none' : `1px solid ${t.timelineDivider}`,
+                      transition: 'background-color 0.15s',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = t.tableRowHoverBg; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    {/* Opportunity */}
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span
+                          className="w-1 h-7 rounded-full shrink-0"
+                          style={{ background: isLate ? t.lateText : riskColor[inv.risk] }}
+                        />
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className="text-[13px] truncate"
+                              style={{ fontWeight: 600, color: t.textPrimary, letterSpacing: '-0.005em' }}
+                            >
+                              {isAr ? inv.project : inv.projectEn}
+                            </span>
+                            {isLate && (
+                              <span
+                                className="inline-flex items-center gap-1 px-1.5 h-4 rounded text-[9px] uppercase shrink-0"
+                                style={{
+                                  background: t.lateBg,
+                                  color: t.lateText,
+                                  fontWeight: 700,
+                                  letterSpacing: '0.08em',
+                                }}
+                              >
+                                <AlertTriangle className="w-2.5 h-2.5" strokeWidth={2.5} />
+                                {isAr ? 'إجراء' : 'Action'}
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[10px] mt-0.5 font-mono" style={{ color: t.linkBlue }}>
+                            {inv.id}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
 
-      <div className="space-y-0">
-        {upcoming.map((inv, i) => (
-          <div key={inv.id} className="flex items-start gap-3 py-3.5" style={{ borderBottom: i < upcoming.length - 1 ? `1px solid ${t.timelineDivider}` : 'none' }}>
-            <div className="flex flex-col items-center shrink-0 pt-1.5">
-              <div className="w-2.5 h-2.5 rounded-full" style={{ background: inv.status === 'late' ? t.lateText : '#3B82F6' }} />
-              {i < upcoming.length - 1 && <div className="w-px flex-1 mt-1" style={{ background: t.timelineDivider }} />}
-            </div>
-            <div className="flex-1 flex items-center justify-between min-w-0">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[13px]" style={{ fontWeight: 600, color: t.textPrimary }}>{isAr ? inv.project : inv.projectEn}</span>
-                  <span className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] text-white" style={{ background: riskColor[inv.risk], fontWeight: 700 }}>{inv.risk}</span>
-                  {inv.status === 'late' && statusBadge('late', isAr, t)}
-                </div>
-                <div className="text-[10px] mt-0.5" style={{ color: t.textMuted }}>{isAr ? inv.nextPaymentRelAr : inv.nextPaymentRel}</div>
-              </div>
-              <div className="text-right shrink-0">
-                <div className="text-[14px]" style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: inv.netReturn >= 0 ? t.textPrimary : t.lateText }}>
-                  {formatSAR(Math.abs(inv.netReturn), { decimals: 0 })}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+                    {/* Grade */}
+                    <td className="px-3 py-3.5">
+                      <div className="flex items-center justify-center">
+                        <GradePill grade={inv.risk} />
+                      </div>
+                    </td>
+
+                    {/* Due */}
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-baseline gap-1.5">
+                        {isLate && (
+                          <span className="w-1.5 h-1.5 rounded-full animate-pulse shrink-0 self-center" style={{ background: t.lateText }} />
+                        )}
+                        <span
+                          className="text-[14px] tabular-nums"
+                          dir="ltr"
+                          style={{
+                            fontWeight: 700,
+                            color: isLate ? t.lateText : t.textPrimary,
+                            letterSpacing: '-0.01em',
+                          }}
+                        >
+                          {dayNum}
+                        </span>
+                        <span
+                          className="text-[10px]"
+                          style={{
+                            fontWeight: 600,
+                            color: isLate ? t.lateText : t.textMuted,
+                            letterSpacing: '0.02em',
+                          }}
+                        >
+                          {isLate ? (isAr ? 'متأخر' : 'late') : (isAr ? 'يوم' : 'days')}
+                        </span>
+                      </div>
+                    </td>
+
+                    {/* Amount */}
+                    <td className="px-4 py-3.5 text-end">
+                      <span
+                        className="text-[14px] tabular-nums"
+                        dir="ltr"
+                        style={{
+                          fontWeight: 700,
+                          color: isLate ? t.lateText : t.textPrimary,
+                          letterSpacing: '-0.005em',
+                        }}
+                      >
+                        {formatSAR(Math.abs(inv.netReturn), { decimals: 0 })}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot>
+              <tr style={{ background: t.nextDueNeutralBg, borderTop: `1px solid ${t.timelineDivider}` }}>
+                <td className="px-4 py-3" colSpan={3}>
+                  <div className="inline-flex items-center gap-2 text-[11px]" style={{ color: t.textMuted, fontWeight: 600, letterSpacing: '0.04em' }}>
+                    <Receipt className="w-3.5 h-3.5" strokeWidth={1.8} style={{ color: t.textMuted } as React.CSSProperties} />
+                    {isAr ? `${upcoming.length} دفعة قادمة` : `${upcoming.length} upcoming payments`}
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-end">
+                  <div className="flex items-baseline justify-end gap-2">
+                    <span className="text-[10px] uppercase" style={{ fontWeight: 700, color: t.textMuted, letterSpacing: '0.08em' }}>
+                      {isAr ? 'الإجمالي' : 'Total'}
+                    </span>
+                    <span
+                      className="text-[15px] tabular-nums"
+                      dir="ltr"
+                      style={{ fontWeight: 700, color: t.textPrimary, letterSpacing: '-0.015em' }}
+                    >
+                      {formatSAR(totalDue, { decimals: 0 })}
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       </div>
-    </div>
+    </section>
+  );
+}
+
+/** Unified grade pill — used by both InvestmentsTable and RepaymentsSection */
+function GradePill({ grade }: { grade: string }) {
+  const color = riskColor[grade] || '#94A3B8';
+  return (
+    <span
+      className="inline-flex items-center justify-center w-5 h-5 rounded text-[10px] tabular-nums shrink-0"
+      style={{
+        background: `${color}14`,
+        color,
+        border: `1px solid ${color}33`,
+        fontWeight: 800,
+        letterSpacing: '0.02em',
+      }}
+    >
+      {grade}
+    </span>
   );
 }
 
@@ -841,9 +1079,6 @@ export function PortfolioPage() {
       <div className="mb-6"><AnalyticsSection /></div>
       <div className="mb-6"><InvestmentsTable /></div>
       <div className="mb-8"><RepaymentsSection /></div>
-      <div className="text-center text-[11px] py-4" style={{ color: t.textMuted }}>
-        © 2026 FundMe. All rights reserved. · Privacy Policy · Terms of Service · Contact
-      </div>
       <AutoInvestModal open={autoInvestOpen} onClose={() => setAutoInvestOpen(false)} />
     </div>
   );

@@ -7,6 +7,9 @@ import {
 import { usePersona } from '../demoPersona';
 import { useI18n } from '../i18n';
 import { colors } from '../components/fundme';
+import { KycEditModal } from '../components/KycEditModal';
+import { ChangePasswordModal } from '../components/ChangePasswordModal';
+import { toast } from 'sonner';
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Persona-aware tokens
@@ -154,41 +157,57 @@ function Field({
   const isAr = lang === 'ar';
   const tk = useTokens();
   return (
-    <div className="flex items-start gap-3 py-3.5" style={{ borderBottom: `1px solid ${tk.divider}` }}>
+    <div
+      className="group flex items-start gap-3 py-3.5"
+      style={{ borderBottom: `1px solid ${tk.divider}` }}
+    >
       {Icon && (
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style={{ background: tk.innerBg }}>
+        <div
+          className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+          style={{ background: tk.innerBg }}
+        >
           <Icon className="w-[14px] h-[14px]" strokeWidth={1.6} style={{ color: tk.iconColor }} />
         </div>
       )}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-3">
-          <span
-            className="text-[10px] uppercase"
-            style={{ fontWeight: 600, color: tk.labelColor, letterSpacing: '0.08em' }}
-          >
-            {isAr ? label : labelEn}
-          </span>
-          {onEdit && (
-            <button
-              onClick={onEdit}
-              className="inline-flex items-center gap-1 h-6 px-2 rounded-md text-[10px] transition-colors cursor-pointer"
-              style={{ fontWeight: 600, color: tk.linkColor }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = tk.linkHoverBg)}
-              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-            >
-              <Pencil className="w-3 h-3" strokeWidth={2} />
-              {isAr ? editLabel || 'تعديل' : editLabelEn || 'Edit'}
-            </button>
-          )}
+        <div
+          className="text-[10px] uppercase"
+          style={{ fontWeight: 600, color: tk.labelColor, letterSpacing: '0.08em' }}
+        >
+          {isAr ? label : labelEn}
         </div>
         <div
-          className={`text-[14px] mt-0.5 ${mono ? 'font-mono tracking-wide' : ''}`}
-          dir={mono ? 'ltr' : undefined}
+          className={`text-[14px] mt-1 ${mono ? 'font-mono tracking-wide' : ''}`}
           style={{ fontWeight: 600, color: tk.textPrimary }}
         >
-          {isAr ? value : (valueEn || value)}
+          {mono ? (
+            <span dir="ltr" className="inline-block">
+              {isAr ? value : (valueEn || value)}
+            </span>
+          ) : (
+            isAr ? value : (valueEn || value)
+          )}
         </div>
       </div>
+      {onEdit && (
+        <button
+          onClick={onEdit}
+          aria-label={isAr ? editLabel || 'تعديل' : editLabelEn || 'Edit'}
+          title={isAr ? editLabel || 'تعديل' : editLabelEn || 'Edit'}
+          className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+          style={{ color: tk.iconColor, background: 'transparent' }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = tk.linkHoverBg;
+            e.currentTarget.style.color = tk.linkColor;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.color = tk.iconColor;
+          }}
+        >
+          <Pencil className="w-3.5 h-3.5" strokeWidth={1.8} />
+        </button>
+      )}
     </div>
   );
 }
@@ -237,6 +256,16 @@ function EditPillButton({ label, labelEn, onClick }: { label: string; labelEn: s
 
 function PersonalInfo() {
   const { persona } = usePersona();
+  const { lang } = useI18n();
+  const isAr = lang === 'ar';
+  const notifyEdit = (labelAr: string, labelEn: string) => {
+    toast.success(
+      isAr
+        ? `سيتطلب تعديل ${labelAr} التحقق عبر رمز SMS`
+        : `Editing ${labelEn} requires SMS verification`,
+      { duration: 2400 },
+    );
+  };
   return (
     <SectionCard icon={User} title="المعلومات الشخصية" titleEn="Personal Information" rightSlot={<VerifiedPill />}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
@@ -244,8 +273,8 @@ function PersonalInfo() {
         <Field icon={Shield} label="رقم الهوية" labelEn="National ID" value="1098 •••• 7890" mono />
         <Field icon={Calendar} label="تاريخ الميلاد" labelEn="Date of Birth" value="١٥ مارس ١٩٩٠" valueEn="March 15, 1990" />
         <Field icon={MapPin} label="العنوان الوطني" labelEn="National Address" value="طريق الملك فهد، الرياض — ص.ب ١٢٣٤٥" valueEn="123 King Fahd Rd, Riyadh — P.O. Box 12345" />
-        <Field icon={Mail} label="البريد الإلكتروني" labelEn="Email Address" value={persona.profile.email} mono onEdit={() => {}} />
-        <Field icon={Phone} label="رقم الجوال" labelEn="Phone Number" value="+966 50 123 4567" mono onEdit={() => {}} />
+        <Field icon={Mail} label="البريد الإلكتروني" labelEn="Email Address" value={persona.profile.email} mono onEdit={() => notifyEdit('البريد الإلكتروني', 'email address')} />
+        <Field icon={Phone} label="رقم الجوال" labelEn="Phone Number" value="+966 50 123 4567" mono onEdit={() => notifyEdit('رقم الجوال', 'phone number')} />
       </div>
     </SectionCard>
   );
@@ -283,34 +312,63 @@ function KYC() {
   const { lang } = useI18n();
   const isAr = lang === 'ar';
   const tk = useTokens();
-  return (
-    <SectionCard
-      icon={Briefcase}
-      title="اعرف عميلك (KYC)"
-      titleEn="KYC"
-      rightSlot={<EditPillButton label="تعديل" labelEn="Edit" />}
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
-        <Field icon={GraduationCap} label="المستوى التعليمي" labelEn="Education Level" value="بكالوريوس" valueEn="Bachelor's Degree" />
-        <Field icon={Briefcase} label="الحالة الوظيفية" labelEn="Employment Status" value="موظف" valueEn="Employed" />
-        <Field icon={TrendingUp} label="خبرة الاستثمار" labelEn="Investment Experience" value="نعم" valueEn="Yes" />
-        <Field icon={Banknote} label="الدخل السنوي" labelEn="Annual Income" value="٢٠٠٬٠٠٠ – ٥٠٠٬٠٠٠ ﷼" valueEn="SAR 200,000 – 500,000" />
-        <Field icon={Wallet} label="صافي الثروة" labelEn="Net Worth" value="١٬٠٠٠٬٠٠٠ – ٣٬٠٠٠٬٠٠٠ ﷼" valueEn="SAR 1M – 3M" />
-        <Field icon={Banknote} label="مصدر الدخل" labelEn="Income Source" value="راتب وظيفي" valueEn="Employment Salary" />
-      </div>
+  const [editOpen, setEditOpen] = useState(false);
 
-      {/* PEP Sub-section */}
-      <div className="mt-6 pt-5" style={{ borderTop: `1px solid ${tk.divider}` }}>
-        <h3 className="text-[12px] mb-3" style={{ fontWeight: 700, color: tk.textPrimary }}>
-          {isAr ? 'حالة الشخص المكشوف سياسياً (PEP)' : 'Politically Exposed Person (PEP) Status'}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-          <KycPepCell label="منصب حكومي بارز" labelEn="Senior Public Position" clean />
-          <KycPepCell label="منصب في منظمة دولية" labelEn="International Org Position" clean />
-          <KycPepCell label="صلة قرابة بشخص PEP" labelEn="Family Relationship with PEP" clean />
+  const [answers, setAnswers] = useState({
+    education: 'bachelor',
+    employment: 'employed',
+    experience: 'yes',
+    income: '200k-500k',
+    netWorth: '1m-3m',
+    incomeSource: 'salary',
+  });
+  const [pep, setPep] = useState({ pos: false, org: false, kin: false });
+
+  const educationLabel    = { bachelor: { ar: 'بكالوريوس', en: "Bachelor's Degree" }, 'high-school': { ar: 'ثانوية عامة', en: 'High School' }, diploma: { ar: 'دبلوم', en: 'Diploma' }, master: { ar: 'ماجستير', en: "Master's Degree" }, phd: { ar: 'دكتوراه', en: 'PhD' } } as const;
+  const employmentLabel   = { employed: { ar: 'موظف', en: 'Employed' }, 'self-employed': { ar: 'يعمل لحسابه الخاص', en: 'Self-Employed' }, 'business-owner': { ar: 'صاحب عمل', en: 'Business Owner' }, retired: { ar: 'متقاعد', en: 'Retired' }, student: { ar: 'طالب', en: 'Student' }, unemployed: { ar: 'غير عامل', en: 'Unemployed' } } as const;
+  const yesNoLabel        = { yes: { ar: 'نعم', en: 'Yes' }, no: { ar: 'لا', en: 'No' } } as const;
+  const incomeLabel       = { 'lt-100k': { ar: 'أقل من ١٠٠٬٠٠٠ ﷼', en: 'Less than SAR 100,000' }, '100k-200k': { ar: '١٠٠٬٠٠٠ – ٢٠٠٬٠٠٠ ﷼', en: 'SAR 100,000 – 200,000' }, '200k-500k': { ar: '٢٠٠٬٠٠٠ – ٥٠٠٬٠٠٠ ﷼', en: 'SAR 200,000 – 500,000' }, '500k-1m': { ar: '٥٠٠٬٠٠٠ – ١٬٠٠٠٬٠٠٠ ﷼', en: 'SAR 500,000 – 1M' }, 'gt-1m': { ar: 'أكثر من ١٬٠٠٠٬٠٠٠ ﷼', en: 'More than SAR 1M' } } as const;
+  const netWorthLabel     = { 'lt-500k': { ar: 'أقل من ٥٠٠٬٠٠٠ ﷼', en: 'Less than SAR 500,000' }, '500k-1m': { ar: '٥٠٠٬٠٠٠ – ١٬٠٠٠٬٠٠٠ ﷼', en: 'SAR 500,000 – 1M' }, '1m-3m': { ar: '١٬٠٠٠٬٠٠٠ – ٣٬٠٠٠٬٠٠٠ ﷼', en: 'SAR 1M – 3M' }, '3m-10m': { ar: '٣٬٠٠٠٬٠٠٠ – ١٠٬٠٠٠٬٠٠٠ ﷼', en: 'SAR 3M – 10M' }, 'gt-10m': { ar: 'أكثر من ١٠٬٠٠٠٬٠٠٠ ﷼', en: 'More than SAR 10M' } } as const;
+  const incomeSourceLabel = { salary: { ar: 'راتب وظيفي', en: 'Employment Salary' }, business: { ar: 'دخل تجاري', en: 'Business Income' }, investments: { ar: 'استثمارات', en: 'Investments' }, rental: { ar: 'عوائد إيجارية', en: 'Rental Income' }, inheritance: { ar: 'إرث', en: 'Inheritance' }, other: { ar: 'أخرى', en: 'Other' } } as const;
+
+  return (
+    <>
+      <SectionCard
+        icon={Briefcase}
+        title="اعرف عميلك (KYC)"
+        titleEn="KYC"
+        rightSlot={<EditPillButton label="تعديل" labelEn="Edit" onClick={() => setEditOpen(true)} />}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+          <Field icon={GraduationCap} label="المستوى التعليمي" labelEn="Education Level"         value={educationLabel[answers.education as keyof typeof educationLabel].ar}      valueEn={educationLabel[answers.education as keyof typeof educationLabel].en} />
+          <Field icon={Briefcase}     label="الحالة الوظيفية"  labelEn="Employment Status"        value={employmentLabel[answers.employment as keyof typeof employmentLabel].ar} valueEn={employmentLabel[answers.employment as keyof typeof employmentLabel].en} />
+          <Field icon={TrendingUp}    label="خبرة الاستثمار"   labelEn="Investment Experience"    value={yesNoLabel[answers.experience as keyof typeof yesNoLabel].ar}            valueEn={yesNoLabel[answers.experience as keyof typeof yesNoLabel].en} />
+          <Field icon={Banknote}      label="الدخل السنوي"     labelEn="Annual Income"            value={incomeLabel[answers.income as keyof typeof incomeLabel].ar}              valueEn={incomeLabel[answers.income as keyof typeof incomeLabel].en} />
+          <Field icon={Wallet}        label="صافي الثروة"      labelEn="Net Worth"                value={netWorthLabel[answers.netWorth as keyof typeof netWorthLabel].ar}        valueEn={netWorthLabel[answers.netWorth as keyof typeof netWorthLabel].en} />
+          <Field icon={Banknote}      label="مصدر الدخل"       labelEn="Income Source"            value={incomeSourceLabel[answers.incomeSource as keyof typeof incomeSourceLabel].ar} valueEn={incomeSourceLabel[answers.incomeSource as keyof typeof incomeSourceLabel].en} />
         </div>
-      </div>
-    </SectionCard>
+
+        {/* PEP Sub-section */}
+        <div className="mt-6 pt-5" style={{ borderTop: `1px solid ${tk.divider}` }}>
+          <h3 className="text-[12px] mb-3" style={{ fontWeight: 700, color: tk.textPrimary }}>
+            {isAr ? 'حالة الشخص المكشوف سياسياً (PEP)' : 'Politically Exposed Person (PEP) Status'}
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+            <KycPepCell label="منصب حكومي بارز"   labelEn="Senior Public Position"          clean={!pep.pos} />
+            <KycPepCell label="منصب في منظمة دولية" labelEn="International Org Position"      clean={!pep.org} />
+            <KycPepCell label="صلة قرابة بشخص PEP" labelEn="Family Relationship with PEP"     clean={!pep.kin} />
+          </div>
+        </div>
+      </SectionCard>
+
+      <KycEditModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        initialAnswers={answers}
+        initialPep={pep}
+        onSave={(a, p) => { setAnswers(a); setPep(p); }}
+      />
+    </>
   );
 }
 
@@ -341,58 +399,66 @@ function Security() {
   const isAr = lang === 'ar';
   const tk = useTokens();
   const [smsOn, setSmsOn] = useState(true);
+  const [pwdModalOpen, setPwdModalOpen] = useState(false);
 
   return (
-    <SectionCard icon={Shield} title="الأمان" titleEn="Security">
-      <div className="space-y-3">
-        {/* Password row */}
-        <div
-          className="flex items-center gap-4 rounded-xl p-4"
-          style={{ background: tk.innerBg, border: tk.innerBorder }}
-        >
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: tk.cardBg }}>
-            <Lock className="w-4 h-4" strokeWidth={1.6} style={{ color: tk.iconColor }} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>
-              {isAr ? 'كلمة المرور' : 'Password'}
-            </div>
-            <div className="text-[12px] mt-0.5" style={{ color: tk.textMuted }}>
-              {isAr ? 'آخر تغيير قبل ٣٠ يوماً' : 'Last changed 30 days ago'}
-            </div>
-          </div>
-          <button
-            className="h-9 px-4 rounded-lg text-[12px] transition-colors cursor-pointer"
-            style={{ fontWeight: 600, color: tk.linkColor, border: `1px solid ${tk.isVIP ? 'rgba(96,165,250,0.2)' : '#DBEAFE'}` }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = tk.linkHoverBg)}
-            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+    <div className="space-y-4">
+      <SectionCard icon={Shield} title="الأمان" titleEn="Security">
+        <div className="space-y-3">
+          {/* Password row */}
+          <div
+            className="flex items-center gap-4 rounded-xl p-4"
+            style={{ background: tk.innerBg, border: tk.innerBorder }}
           >
-            {isAr ? 'تغيير كلمة المرور' : 'Change password'}
-          </button>
-        </div>
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: tk.cardBg }}>
+              <Lock className="w-4 h-4" strokeWidth={1.6} style={{ color: tk.iconColor }} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>
+                {isAr ? 'كلمة المرور' : 'Password'}
+              </div>
+              <div className="text-[12px] mt-0.5" style={{ color: tk.textMuted }}>
+                {isAr ? 'آخر تغيير قبل ٣٠ يوماً' : 'Last changed 30 days ago'}
+              </div>
+            </div>
+            <button
+              onClick={() => setPwdModalOpen(true)}
+              className="h-9 px-4 rounded-lg text-[12px] transition-colors cursor-pointer"
+              style={{ fontWeight: 600, color: tk.linkColor, border: `1px solid ${tk.isVIP ? 'rgba(96,165,250,0.2)' : '#DBEAFE'}` }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = tk.linkHoverBg)}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+            >
+              {isAr ? 'تغيير كلمة المرور' : 'Change password'}
+            </button>
+          </div>
 
-        {/* SMS notifications */}
-        <div
-          className="flex items-center gap-4 rounded-xl p-4"
-          style={{ background: tk.innerBg, border: tk.innerBorder }}
-        >
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: tk.cardBg }}>
-            <Bell className="w-4 h-4" strokeWidth={1.6} style={{ color: tk.iconColor }} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>
-              {isAr ? 'إشعارات SMS والعروض' : 'SMS & Promotional Notifications'}
+          {/* SMS notifications */}
+          <div
+            className="flex items-center gap-4 rounded-xl p-4"
+            style={{ background: tk.innerBg, border: tk.innerBorder }}
+          >
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: tk.cardBg }}>
+              <Bell className="w-4 h-4" strokeWidth={1.6} style={{ color: tk.iconColor }} />
             </div>
-            <div className="text-[12px] mt-0.5 leading-relaxed" style={{ color: tk.textMuted }}>
-              {isAr
-                ? 'استقبل نصائح استثمارية وفرصاً جديدة وعروضاً حصرية عبر SMS'
-                : 'Receive investment tips, new opportunities, and exclusive offers via SMS'}
+            <div className="flex-1 min-w-0">
+              <div className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>
+                {isAr ? 'إشعارات SMS والعروض' : 'SMS & Promotional Notifications'}
+              </div>
+              <div className="text-[12px] mt-0.5 leading-relaxed" style={{ color: tk.textMuted }}>
+                {isAr
+                  ? 'استقبل نصائح استثمارية وفرصاً جديدة وعروضاً حصرية عبر SMS'
+                  : 'Receive investment tips, new opportunities, and exclusive offers via SMS'}
+              </div>
             </div>
+            <Toggle on={smsOn} onChange={setSmsOn} />
           </div>
-          <Toggle on={smsOn} onChange={setSmsOn} />
         </div>
-      </div>
-    </SectionCard>
+      </SectionCard>
+
+      <DangerZone />
+
+      <ChangePasswordModal open={pwdModalOpen} onClose={() => setPwdModalOpen(false)} />
+    </div>
   );
 }
 
@@ -429,47 +495,45 @@ function EliteUpgradeCard() {
         style={{ background: 'radial-gradient(circle, rgba(245,191,89,0.10) 0%, transparent 70%)' }}
       />
 
-      <div className="relative p-6">
+      <div className="relative p-4">
         {/* Crown medallion */}
-        <div className="flex items-start justify-between mb-5">
+        <div className="flex items-start justify-between mb-3">
           <div
-            className="w-14 h-14 rounded-2xl flex items-center justify-center"
+            className="w-10 h-10 rounded-xl flex items-center justify-center"
             style={{
               background: 'linear-gradient(135deg, #F5BF59 0%, #E0A132 100%)',
-              boxShadow: '0 8px 24px rgba(245,191,89,0.35), inset 0 1px 0 rgba(255,255,255,0.4)',
+              boxShadow: '0 6px 16px rgba(245,191,89,0.3), inset 0 1px 0 rgba(255,255,255,0.4)',
             }}
           >
-            <Crown className="w-7 h-7" strokeWidth={2} style={{ color: '#1A1404' }} />
+            <Crown className="w-5 h-5" strokeWidth={2} style={{ color: '#1A1404' }} />
           </div>
-          <Sparkles className="w-4 h-4" strokeWidth={1.5} style={{ color: 'rgba(245,191,89,0.6)' }} />
+          <Sparkles className="w-3.5 h-3.5" strokeWidth={1.5} style={{ color: 'rgba(245,191,89,0.6)' }} />
         </div>
 
         {/* Title */}
         <h3
-          className="text-[22px] mb-1.5"
-          style={{ fontWeight: 700, color: '#F5BF59', letterSpacing: '-0.02em' }}
+          className="text-[16px] mb-1"
+          style={{ fontWeight: 700, color: '#F5BF59', letterSpacing: '-0.015em' }}
         >
           {isAr ? 'كن مستثمراً مؤهلاً' : 'Become Elite'}
         </h3>
-        <p className="text-[12px] mb-5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
-          {isAr
-            ? 'افتح مزايا حصرية وفرصاً متميزة'
-            : 'Unlock exclusive benefits and premium opportunities'}
+        <p className="text-[11.5px] mb-3.5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
+          {isAr ? 'افتح مزايا حصرية وفرصاً متميزة' : 'Unlock exclusive benefits and premium opportunities'}
         </p>
 
         {/* Benefits */}
-        <ul className="space-y-2.5 mb-6">
+        <ul className="space-y-1.5 mb-3.5">
           {benefits.map((b, i) => (
-            <li key={i} className="flex items-start gap-2.5 text-[13px]" style={{ color: 'rgba(255,255,255,0.85)' }}>
-              <Sparkles className="w-3.5 h-3.5 shrink-0 mt-0.5" strokeWidth={2} style={{ color: '#F5BF59' }} />
+            <li key={i} className="flex items-start gap-2 text-[12px]" style={{ color: 'rgba(255,255,255,0.85)' }}>
+              <Sparkles className="w-3 h-3 shrink-0 mt-0.5" strokeWidth={2} style={{ color: '#F5BF59' }} />
               <span>{b}</span>
             </li>
           ))}
         </ul>
 
         {/* Usage meter */}
-        <div className="mb-5">
-          <div className="flex items-center justify-between mb-2 text-[11px]">
+        <div className="mb-3.5">
+          <div className="flex items-center justify-between mb-1.5 text-[10.5px]">
             <span style={{ color: 'rgba(255,255,255,0.55)', fontWeight: 500 }}>
               {isAr ? 'الحد المستخدم' : 'Limit used'}
             </span>
@@ -477,39 +541,31 @@ function EliteUpgradeCard() {
               {used.toLocaleString()} / {cap.toLocaleString()} ﷼
             </span>
           </div>
-          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
+          <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
             <div
               className="h-full rounded-full"
               style={{
                 width: `${pct}%`,
                 background: 'linear-gradient(90deg, #F5BF59 0%, #E0A132 100%)',
-                boxShadow: '0 0 12px rgba(245,191,89,0.5)',
+                boxShadow: '0 0 10px rgba(245,191,89,0.5)',
               }}
             />
-          </div>
-          <div className="text-[10px] mt-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            {isAr ? '٢٥٬٠٠٠ ﷼ متبقّي' : '25,000 SAR remaining'}
           </div>
         </div>
 
         {/* CTA */}
         <button
-          className="w-full h-11 rounded-xl flex items-center justify-center gap-2 text-[14px] transition-all hover:scale-[1.02] cursor-pointer"
+          className="w-full h-9 rounded-lg flex items-center justify-center gap-1.5 text-[12.5px] transition-all hover:scale-[1.02] cursor-pointer"
           style={{
             fontWeight: 700,
             color: '#1A1404',
             background: 'linear-gradient(135deg, #F5BF59 0%, #E0A132 100%)',
-            boxShadow: '0 6px 20px rgba(245,191,89,0.35)',
+            boxShadow: '0 4px 14px rgba(245,191,89,0.32)',
           }}
         >
-          <Crown className="w-4 h-4" strokeWidth={2.5} />
+          <Crown className="w-3.5 h-3.5" strokeWidth={2.5} />
           {isAr ? 'الترقية الآن' : 'Upgrade Now'}
         </button>
-
-        {/* Member since */}
-        <div className="mt-4 pt-4 text-center text-[11px]" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }}>
-          {isAr ? 'عضو منذ ١٥ يناير ٢٠٢٤' : 'Member since January 15, 2024'}
-        </div>
       </div>
     </section>
   );
@@ -530,19 +586,19 @@ function EliteMemberCard() {
         className="absolute -top-20 -right-12 w-56 h-56 rounded-full pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(245,191,89,0.22) 0%, transparent 70%)', filter: 'blur(8px)' }}
       />
-      <div className="relative p-6">
-        <div className="flex items-center justify-between mb-5">
+      <div className="relative p-4">
+        <div className="flex items-center justify-between mb-3">
           <div
-            className="w-14 h-14 rounded-2xl flex items-center justify-center"
+            className="w-10 h-10 rounded-xl flex items-center justify-center"
             style={{
               background: 'linear-gradient(135deg, #F5BF59 0%, #E0A132 100%)',
-              boxShadow: '0 8px 24px rgba(245,191,89,0.35), inset 0 1px 0 rgba(255,255,255,0.4)',
+              boxShadow: '0 6px 16px rgba(245,191,89,0.3), inset 0 1px 0 rgba(255,255,255,0.4)',
             }}
           >
-            <Crown className="w-7 h-7" strokeWidth={2} style={{ color: '#1A1404' }} />
+            <Crown className="w-5 h-5" strokeWidth={2} style={{ color: '#1A1404' }} />
           </div>
           <span
-            className="inline-flex items-center gap-1 h-6 px-2.5 rounded-md text-[10px] tracking-wide"
+            className="inline-flex items-center gap-1 h-5 px-2 rounded-md text-[9.5px] tracking-wide"
             style={{ fontWeight: 700, background: 'rgba(245,191,89,0.15)', color: '#F5BF59', border: '1px solid rgba(245,191,89,0.25)' }}
           >
             <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#F5BF59', boxShadow: '0 0 8px rgba(245,191,89,0.8)' }} />
@@ -550,34 +606,30 @@ function EliteMemberCard() {
           </span>
         </div>
 
-        <h3 className="text-[22px] mb-1" style={{ fontWeight: 700, color: '#F5BF59', letterSpacing: '-0.02em' }}>
+        <h3 className="text-[16px] mb-1" style={{ fontWeight: 700, color: '#F5BF59', letterSpacing: '-0.015em' }}>
           {isAr ? 'عضو مؤهل' : 'Elite Member'}
         </h3>
-        <p className="text-[12px] mb-5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
+        <p className="text-[11.5px] mb-3.5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
           {isAr ? 'تتمتع بكامل المزايا الحصرية' : 'Enjoying full premium privileges'}
         </p>
 
-        <div className="grid grid-cols-2 gap-3 mb-5">
-          <div className="rounded-lg p-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
-            <div className="text-[10px] mb-1" style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-lg p-2.5" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div className="text-[9.5px] mb-0.5" style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>
               {isAr ? 'الحد الاستثماري' : 'Investment Limit'}
             </div>
-            <div className="text-[14px]" style={{ fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>
+            <div className="text-[12.5px]" style={{ fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>
               {isAr ? 'بلا حدود' : 'Unlimited'}
             </div>
           </div>
-          <div className="rounded-lg p-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
-            <div className="text-[10px] mb-1" style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>
+          <div className="rounded-lg p-2.5" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <div className="text-[9.5px] mb-0.5" style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>
               {isAr ? 'مدير الحساب' : 'Account Manager'}
             </div>
-            <div className="text-[14px]" style={{ fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>
+            <div className="text-[12.5px]" style={{ fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>
               {isAr ? 'مخصّص' : 'Dedicated'}
             </div>
           </div>
-        </div>
-
-        <div className="text-center text-[11px] pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }}>
-          {isAr ? 'عضو منذ ١٥ يناير ٢٠٢٤' : 'Member since January 15, 2024'}
         </div>
       </div>
     </section>
@@ -594,30 +646,38 @@ function POAAgreementCard() {
   const tk = useTokens();
   return (
     <section
-      className="rounded-2xl p-6 text-center"
+      className="rounded-2xl p-4"
       style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}
     >
-      <div
-        className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center"
-        style={{ background: tk.isVIP ? 'rgba(96,165,250,0.1)' : '#EFF6FF' }}
-      >
-        <FileText className="w-6 h-6" strokeWidth={1.6} style={{ color: tk.linkColor }} />
+      <div className="flex items-center gap-3 mb-3">
+        <div
+          className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+          style={{ background: tk.isVIP ? 'rgba(96,165,250,0.1)' : '#EFF6FF' }}
+        >
+          <FileText className="w-[16px] h-[16px]" strokeWidth={1.7} style={{ color: tk.linkColor }} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-[13.5px] leading-tight" style={{ fontWeight: 700, color: tk.textPrimary }}>
+            {isAr ? 'اتفاقية الوكالة' : 'POA Agreement'}
+          </h3>
+          <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: tk.textMuted }}>
+            {isAr ? 'اتفاقية التوكيل الموقّعة' : 'Your signed POA document'}
+          </p>
+        </div>
       </div>
-      <h3 className="text-[15px] mb-1.5" style={{ fontWeight: 700, color: tk.textPrimary }}>
-        {isAr ? 'اتفاقية الوكالة' : 'POA Agreement'}
-      </h3>
-      <p className="text-[12px] mb-5 leading-relaxed" style={{ color: tk.textMuted }}>
-        {isAr ? 'حمّل اتفاقية التوكيل الموقّعة الخاصة بك' : 'Download your signed Power of Attorney agreement'}
-      </p>
       <button
-        className="w-full h-11 rounded-xl flex items-center justify-center gap-2 text-[13px] text-white transition-all hover:scale-[1.02] cursor-pointer"
+        onClick={() => toast.success(
+          isAr ? 'بدأ تنزيل اتفاقية الوكالة' : 'POA agreement download started',
+          { duration: 2400 },
+        )}
+        className="w-full h-9 rounded-lg flex items-center justify-center gap-1.5 text-[12.5px] text-white transition-all hover:opacity-95 cursor-pointer"
         style={{
           fontWeight: 600,
           background: 'linear-gradient(135deg, #1D4ED8 0%, #2563EB 100%)',
-          boxShadow: '0 4px 16px rgba(37,99,235,0.25)',
+          boxShadow: '0 3px 10px rgba(37,99,235,0.22)',
         }}
       >
-        <Download className="w-4 h-4" strokeWidth={2} />
+        <Download className="w-3.5 h-3.5" strokeWidth={2} />
         {isAr ? 'تحميل PDF' : 'Download PDF'}
       </button>
     </section>
@@ -641,29 +701,34 @@ function QuickLinks() {
 
   return (
     <section
-      className="rounded-2xl p-6"
+      className="rounded-2xl p-4"
       style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}
     >
-      <h3 className="text-[14px] mb-4" style={{ fontWeight: 700, color: tk.textPrimary, letterSpacing: '-0.01em' }}>
+      <h3 className="text-[12px] uppercase mb-2.5 px-1" style={{ fontWeight: 700, color: tk.textMuted, letterSpacing: '0.06em' }}>
         {isAr ? 'روابط مهمة' : 'Quick Links'}
       </h3>
-      <div className="space-y-1">
+      <div className="space-y-0.5">
         {links.map((l, i) => (
           <a
             key={i}
             href="#"
-            className="flex items-center gap-3 p-3 rounded-xl transition-colors group"
+            onClick={(e) => {
+              e.preventDefault();
+              toast.success(
+                isAr ? `سيتم فتح ${l.label} في نافذة جديدة` : `${l.labelEn} opens in a new window`,
+                { duration: 2200 },
+              );
+            }}
+            className="flex items-center gap-2.5 px-2 py-2 rounded-lg transition-colors group cursor-pointer"
             style={{ color: tk.textPrimary }}
             onMouseEnter={(e) => (e.currentTarget.style.background = tk.innerBg)}
             onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
           >
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: tk.innerBg }}>
-              <l.icon className="w-4 h-4" strokeWidth={1.6} style={{ color: tk.iconColor }} />
-            </div>
-            <span className="flex-1 text-[13px]" style={{ fontWeight: 500 }}>
+            <l.icon className="w-3.5 h-3.5 shrink-0" strokeWidth={1.7} style={{ color: tk.iconColor }} />
+            <span className="flex-1 text-[12.5px]" style={{ fontWeight: 500 }}>
               {isAr ? l.label : l.labelEn}
             </span>
-            <ExternalLink className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={1.8} style={{ color: tk.textMuted }} />
+            <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={1.8} style={{ color: tk.textMuted }} />
           </a>
         ))}
       </div>
@@ -681,23 +746,36 @@ function DangerZone() {
   const tk = useTokens();
   return (
     <section
-      className="rounded-2xl p-6"
+      className="rounded-2xl p-4"
       style={{ background: tk.dangerBg, border: tk.dangerBorder }}
     >
-      <div className="flex items-center gap-2 mb-3">
-        <AlertTriangle className="w-4 h-4" strokeWidth={2} style={{ color: tk.dangerText }} />
-        <h3 className="text-[14px]" style={{ fontWeight: 700, color: tk.dangerText }}>
+      <div className="flex items-center gap-2 mb-2">
+        <AlertTriangle className="w-3.5 h-3.5" strokeWidth={2} style={{ color: tk.dangerText }} />
+        <h3 className="text-[12.5px]" style={{ fontWeight: 700, color: tk.dangerText }}>
           {isAr ? 'منطقة الخطر' : 'Danger Zone'}
         </h3>
       </div>
-      <p className="text-[12px] leading-relaxed mb-4" style={{ color: tk.textSecondary }}>
+      <p className="text-[11.5px] leading-relaxed mb-3" style={{ color: tk.textSecondary }}>
         {isAr
-          ? 'إلغاء تنشيط حسابك يوقف مؤقتاً جميع الخدمات المرتبطة به.'
-          : 'Deactivate your account and temporarily suspend all associated services.'}
+          ? 'إلغاء تنشيط حسابك يوقف جميع الخدمات المرتبطة به.'
+          : 'Deactivate your account and suspend associated services.'}
       </p>
       <button
-        className="w-full h-11 rounded-xl text-[13px] text-white transition-all hover:opacity-90 cursor-pointer"
-        style={{ fontWeight: 600, background: tk.dangerBtn, boxShadow: '0 4px 14px rgba(220,38,38,0.25)' }}
+        onClick={() => {
+          const confirmed = window.confirm(
+            isAr
+              ? 'هل أنت متأكد من إلغاء تنشيط حسابك؟ يمكنك التراجع لاحقاً عبر الدعم.'
+              : 'Are you sure you want to deactivate your account? You can reverse this later via support.',
+          );
+          if (confirmed) {
+            toast.success(
+              isAr ? 'تم استلام طلب إلغاء التنشيط' : 'Deactivation request received',
+              { duration: 2600 },
+            );
+          }
+        }}
+        className="w-full h-9 rounded-lg text-[12.5px] text-white transition-all hover:opacity-90 cursor-pointer"
+        style={{ fontWeight: 600, background: tk.dangerBtn, boxShadow: '0 3px 10px rgba(220,38,38,0.22)' }}
       >
         {isAr ? 'إلغاء تنشيط الحساب' : 'Deactivate Account'}
       </button>
@@ -767,11 +845,10 @@ export function ProfilePage() {
         </div>
 
         {/* Right rail — 1/3 */}
-        <div className="space-y-5">
+        <div className="space-y-4">
           {isVIP ? <EliteMemberCard /> : <EliteUpgradeCard />}
           <POAAgreementCard />
           <QuickLinks />
-          <DangerZone />
         </div>
       </div>
     </div>
@@ -790,45 +867,139 @@ function MainColumnTabs() {
   const tk = useTokens();
   const [active, setActive] = useState<TabId>('personal');
 
-  const tabs: { id: TabId; label: string; labelEn: string; icon: React.FC<{ className?: string; strokeWidth?: number }> }[] = [
-    { id: 'personal', label: 'المعلومات الشخصية', labelEn: 'Personal', icon: User },
-    { id: 'kyc', label: 'اعرف عميلك', labelEn: 'KYC', icon: Briefcase },
-    { id: 'security', label: 'الأمان', labelEn: 'Security', icon: Shield },
+  const tabs: {
+    id: TabId;
+    label: string;
+    labelEn: string;
+    icon: React.FC<{ className?: string; strokeWidth?: number }>;
+    statusAr: string;
+    statusEn: string;
+    tone: 'success' | 'info';
+  }[] = [
+    { id: 'personal', label: 'المعلومات الشخصية', labelEn: 'Personal',  icon: User,      statusAr: 'موثّق',  statusEn: 'Verified', tone: 'success' },
+    { id: 'kyc',      label: 'اعرف عميلك',         labelEn: 'KYC',       icon: Briefcase, statusAr: 'مكتمل',  statusEn: 'Complete', tone: 'success' },
+    { id: 'security', label: 'الأمان',              labelEn: 'Security',  icon: Shield,    statusAr: 'قوي',    statusEn: 'Strong',   tone: 'info'    },
   ];
+
+  const toneFor = (tone: 'success' | 'info') =>
+    tone === 'success'
+      ? { dot: tk.isVIP ? '#34D399' : '#10B981', text: tk.isVIP ? '#34D399' : '#047857' }
+      : { dot: tk.isVIP ? '#60A5FA' : '#1D4ED8', text: tk.isVIP ? '#60A5FA' : '#1D4ED8' };
+
+  const accentSoftBg = tk.isVIP
+    ? 'linear-gradient(180deg, rgba(37,99,235,0.14) 0%, rgba(37,99,235,0.04) 100%)'
+    : 'linear-gradient(180deg, #EFF6FF 0%, #FFFFFF 100%)';
+  const accentBorder = tk.isVIP ? 'rgba(96,165,250,0.32)' : '#BFDBFE';
+  const accentShadow = tk.isVIP
+    ? '0 6px 18px rgba(37,99,235,0.22), 0 0 0 1px rgba(96,165,250,0.18)'
+    : '0 6px 14px rgba(29,78,216,0.09), 0 1px 2px rgba(15,23,42,0.05)';
+  const activeTileBg = tk.isVIP
+    ? 'linear-gradient(135deg, rgba(96,165,250,0.22) 0%, rgba(37,99,235,0.28) 100%)'
+    : 'linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%)';
+  const brandInk = tk.isVIP ? '#60A5FA' : '#1D4ED8';
+  const accentBar = tk.isVIP
+    ? 'linear-gradient(90deg, transparent 0%, #60A5FA 50%, transparent 100%)'
+    : 'linear-gradient(90deg, transparent 0%, #1D4ED8 50%, transparent 100%)';
 
   return (
     <div className="space-y-4">
-      {/* Tab strip */}
-      <div
-        className="rounded-2xl p-1.5 flex items-center gap-1"
-        style={{
-          background: tk.cardBg,
-          border: tk.cardBorder,
-          boxShadow: tk.cardShadow,
-        }}
-      >
-        {tabs.map((tab) => {
+      {/* Chapter plate tab strip */}
+      <div className="grid grid-cols-3 gap-2.5">
+        {tabs.map((tab, idx) => {
           const isActive = active === tab.id;
+          const tone = toneFor(tab.tone);
+
           return (
             <button
               key={tab.id}
               onClick={() => setActive(tab.id)}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl transition-all cursor-pointer"
+              className="relative rounded-2xl overflow-hidden cursor-pointer text-start"
               style={{
-                background: isActive
-                  ? tk.isVIP
-                    ? 'rgba(96,165,250,0.12)'
-                    : '#EFF6FF'
-                  : 'transparent',
-                color: isActive ? tk.linkColor : tk.textMuted,
+                background: isActive ? accentSoftBg : tk.cardBg,
+                border: `1px solid ${isActive ? accentBorder : (tk.isVIP ? 'rgba(255,255,255,0.06)' : '#EEF1F5')}`,
+                boxShadow: isActive ? accentShadow : tk.cardShadow,
+                transition: 'transform 160ms ease, background 160ms ease, border-color 160ms ease, box-shadow 160ms ease',
               }}
-              onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = tk.isVIP ? 'rgba(255,255,255,0.03)' : '#FBFCFD'; }}
-              onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
+              onMouseEnter={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.background = tk.isVIP ? 'rgba(255,255,255,0.03)' : '#FBFCFD';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.background = tk.cardBg;
+                }
+              }}
             >
-              <tab.icon className="w-4 h-4 shrink-0" strokeWidth={isActive ? 2.2 : 1.8} />
-              <span className="text-[12px] truncate" style={{ fontWeight: isActive ? 700 : 500 }}>
-                {isAr ? tab.label : tab.labelEn}
-              </span>
+              <div className="p-4">
+                {/* Header row: icon tile · sequence numeral */}
+                <div className="flex items-center justify-between mb-3">
+                  <div
+                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                    style={{
+                      background: isActive ? activeTileBg : tk.iconBg,
+                      border: isActive ? `1px solid ${accentBorder}` : '1px solid transparent',
+                      transition: 'background 160ms ease, border-color 160ms ease',
+                    }}
+                  >
+                    <tab.icon
+                      className="w-[16px] h-[16px]"
+                      strokeWidth={isActive ? 2 : 1.7}
+                      style={{ color: isActive ? brandInk : tk.iconColor } as React.CSSProperties}
+                    />
+                  </div>
+                  <span
+                    className="text-[10px] tabular-nums"
+                    dir="ltr"
+                    style={{
+                      fontWeight: 700,
+                      letterSpacing: '0.1em',
+                      color: isActive ? brandInk : tk.textFaint,
+                    }}
+                  >
+                    {String(idx + 1).padStart(2, '0')}
+                  </span>
+                </div>
+
+                {/* Label */}
+                <div
+                  className="text-[13px] truncate mb-1.5"
+                  style={{
+                    fontWeight: 700,
+                    color: isActive ? tk.textPrimary : tk.textSecondary,
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  {isAr ? tab.label : tab.labelEn}
+                </div>
+
+                {/* Status meta */}
+                <div className="inline-flex items-center gap-1.5">
+                  <span
+                    className="w-1.5 h-1.5 rounded-full shrink-0"
+                    style={{
+                      background: tone.dot,
+                      boxShadow: `0 0 0 2px ${tk.isVIP ? 'rgba(255,255,255,0.04)' : 'rgba(16,185,129,0.08)'}`,
+                    }}
+                  />
+                  <span
+                    className="text-[10.5px]"
+                    style={{ color: tone.text, fontWeight: 600, letterSpacing: '0.01em' }}
+                  >
+                    {isAr ? tab.statusAr : tab.statusEn}
+                  </span>
+                </div>
+              </div>
+
+              {/* Active accent bar */}
+              {isActive && (
+                <div
+                  className="absolute bottom-0 left-0 right-0 h-[2px]"
+                  style={{ background: accentBar }}
+                />
+              )}
             </button>
           );
         })}

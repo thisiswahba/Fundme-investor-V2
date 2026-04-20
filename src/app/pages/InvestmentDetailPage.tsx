@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router';
+import { toast } from 'sonner';
 import { useI18n } from '../i18n';
 import { usePersona } from '../demoPersona';
 import { colors } from '../components/fundme';
@@ -219,6 +220,10 @@ export function InvestmentDetailPage() {
           </div>
 
           <button
+            onClick={() => toast.success(
+              isAr ? 'بدأ تنزيل تقرير الاستثمار' : 'Investment report download started',
+              { duration: 2400 },
+            )}
             className="h-9 px-4 rounded-lg text-[12px] transition-colors cursor-pointer shrink-0 flex items-center gap-1.5"
             style={{ border: tk.secondaryBtnBorder, fontWeight: 500, color: tk.secondaryBtnText, background: 'transparent' }}
             onMouseEnter={e => (e.currentTarget.style.background = tk.secondaryBtnHover)}

@@ -1,3 +1,43 @@
+/* Default — Arabic (RTL) uses IBM Plex Sans Arabic */
 * {
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+/* English (LTR) — switch to Poppins. Scope by the [dir="ltr"] wrapper applied in Layout.
+   Apply font-smoothing so Poppins doesn't render too heavy on macOS. */
+[dir="ltr"],
+[dir="ltr"] * {
+  font-family: 'Poppins', 'IBM Plex Sans Arabic', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Poppins reads visually heavier than IBM Plex at every numerical weight.
+   Shift each weight down by one stop in LTR mode so the visual weight matches the Arabic baseline. */
+[dir="ltr"] [style*="font-weight:700"],
+[dir="ltr"] [style*="font-weight: 700"],
+[dir="ltr"] [style*="fontWeight: 700"],
+[dir="ltr"] .font-bold {
+  font-weight: 600 !important;
+}
+
+[dir="ltr"] [style*="font-weight:600"],
+[dir="ltr"] [style*="font-weight: 600"],
+[dir="ltr"] [style*="fontWeight: 600"],
+[dir="ltr"] .font-semibold {
+  font-weight: 500 !important;
+}
+
+[dir="ltr"] [style*="font-weight:500"],
+[dir="ltr"] [style*="font-weight: 500"],
+[dir="ltr"] [style*="fontWeight: 500"],
+[dir="ltr"] .font-medium {
+  font-weight: 400 !important;
+}
+
+/* Within an LTR wrapper, individual elements re-flagged as RTL keep the Arabic face */
+[dir="ltr"] [dir="rtl"],
+[dir="ltr"] [dir="rtl"] * {
   font-family: 'IBM Plex Sans Arabic', sans-serif;
 }

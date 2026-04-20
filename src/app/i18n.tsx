@@ -17,8 +17,10 @@ const translations: Record<string, Record<Lang, string>> = {
   'nav.wallet': { ar: 'المحفظة المالية', en: 'Wallet' },
 
   // User menu
-  'user.settings': { ar: 'الإعدادات', en: 'Settings' },
-  'user.profile': { ar: 'الملف الشخصي', en: 'Profile' },
+  'user.profile': { ar: 'إعدادات الملف الشخصي', en: 'Profile Settings' },
+  'user.switchAccount': { ar: 'تبديل الحساب', en: 'Switch account' },
+  'user.addAccount': { ar: 'إضافة حساب', en: 'Add account' },
+  'user.activeAccount': { ar: 'الحساب النشط', en: 'Active' },
   'user.logout': { ar: 'تسجيل الخروج', en: 'Log out' },
   'user.name': { ar: 'أحمد المالكي', en: 'Ahmed Al-Malki' },
 

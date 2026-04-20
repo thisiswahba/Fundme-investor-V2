@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router';
-import { Bell, User, ChevronDown, Settings, LogOut, UserCircle, Globe, Users, FlaskConical, Crown, ShieldCheck } from 'lucide-react';
+import { Bell, User, ChevronDown, LogOut, UserCircle, Globe, Users, FlaskConical, Crown, ShieldCheck, Check, Plus, Building2 } from 'lucide-react';
+import { toast } from 'sonner';
 import logoLight from '../../assets/logo-light.png';
 import logoDark from '../../assets/logo-dark.png';
 import { useI18n } from '../i18n';
 import { usePersona, type PersonaId } from '../demoPersona';
 import { SupportChat } from './SupportChat';
+import { NotificationSheet } from './NotificationSheet';
+import { AppFooter } from './AppFooter';
 
 export function Layout() {
   const { lang, setLang, t, dir } = useI18n();
@@ -13,11 +16,49 @@ export function Layout() {
   const navigate = useNavigate();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [personaSwitcherOpen, setPersonaSwitcherOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const personaRef = useRef<HTMLDivElement>(null);
 
   const isAr = lang === 'ar';
   const userName = isAr ? persona.profile.nameAr : persona.profile.nameEn;
+
+  // Linked accounts for multi-account switching (mock — same login, multiple profiles)
+  const linkedAccounts = [
+    {
+      id: 'personal',
+      nameAr: persona.profile.nameAr,
+      nameEn: persona.profile.nameEn,
+      typeAr: 'شخصي',
+      typeEn: 'Personal',
+      initialsAr: persona.profile.avatarInitialsAr,
+      initialsEn: persona.profile.avatarInitialsEn,
+      kind: 'individual' as const,
+    },
+    {
+      id: 'corp',
+      nameAr: 'مؤسسة الرياض التجارية',
+      nameEn: 'Al-Riyadh Trading Co.',
+      typeAr: 'مؤسسة',
+      typeEn: 'Corporate',
+      initialsAr: 'مر',
+      initialsEn: 'RT',
+      kind: 'corporate' as const,
+    },
+  ];
+  const [activeAccountId, setActiveAccountId] = useState<string>('personal');
+
+  function handleSwitchAccount(acc: typeof linkedAccounts[number]) {
+    if (acc.id === activeAccountId) return;
+    setActiveAccountId(acc.id);
+    setUserMenuOpen(false);
+    toast.success(
+      isAr
+        ? `تم التبديل إلى ${acc.nameAr}`
+        : `Switched to ${acc.nameEn}`,
+      { duration: 2400 },
+    );
+  }
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -85,7 +126,11 @@ export function Layout() {
               </button>
 
               {/* Notifications */}
-              <button className={`relative p-2 rounded-lg transition-colors ${personaId === 'vip' ? 'hover:bg-white/[0.06]' : 'hover:bg-[#F1F4F9]'}`}>
+              <button
+                onClick={() => setNotificationsOpen(true)}
+                aria-label={isAr ? 'الإشعارات' : 'Notifications'}
+                className={`relative p-2 rounded-lg transition-colors cursor-pointer ${personaId === 'vip' ? 'hover:bg-white/[0.06]' : 'hover:bg-[#F1F4F9]'}`}
+              >
                 <Bell className={`w-5 h-5 ${personaId === 'vip' ? 'text-white/40' : 'text-[#6B7280]'}`} strokeWidth={1.5} />
                 <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#16A34A] rounded-full" />
               </button>
@@ -124,11 +169,11 @@ export function Layout() {
                 {/* Dropdown */}
                 {userMenuOpen && (
                   <div
-                    className="absolute top-full mt-2 w-64 bg-white rounded-xl overflow-hidden z-50"
+                    className="absolute top-full mt-2 w-[288px] max-w-[calc(100vw-24px)] bg-white rounded-xl overflow-hidden z-50"
                     style={{
                       boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
                       border: '1px solid #E5E7EB',
-                      ...(dir === 'rtl' ? { right: 0 } : { left: 0 }),
+                      ...(dir === 'rtl' ? { left: 0 } : { right: 0 }),
                     }}
                   >
                     {/* User info */}
@@ -165,6 +210,84 @@ export function Layout() {
                       <div className="text-[11px] text-[#94A3B8] mt-1.5">{persona.profile.email}</div>
                     </div>
 
+                    {/* Switch account */}
+                    <div className="px-2 pt-2 pb-1.5 border-b" style={{ borderColor: '#F1F5F9' }}>
+                      <div
+                        className="px-2 pb-1.5 text-[10px] uppercase"
+                        style={{ fontWeight: 600, color: '#94A3B8', letterSpacing: '0.08em' }}
+                      >
+                        {t('user.switchAccount')}
+                      </div>
+                      {linkedAccounts.map((acc) => {
+                        const isActive = acc.id === activeAccountId;
+                        const initials = isAr ? acc.initialsAr : acc.initialsEn;
+                        const accName = isAr ? acc.nameAr : acc.nameEn;
+                        return (
+                          <button
+                            key={acc.id}
+                            onClick={() => handleSwitchAccount(acc)}
+                            className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-[#F8FAFC] transition-colors cursor-pointer"
+                          >
+                            <div
+                              className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-[10px] text-white"
+                              style={{
+                                fontWeight: 700,
+                                letterSpacing: '0.02em',
+                                background: acc.kind === 'corporate'
+                                  ? 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)'
+                                  : 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)',
+                              }}
+                            >
+                              {acc.kind === 'corporate' ? (
+                                <Building2 className="w-3 h-3" strokeWidth={2} />
+                              ) : (
+                                initials
+                              )}
+                            </div>
+                            <span
+                              className="flex-1 min-w-0 text-start text-[13px] truncate"
+                              style={{ fontWeight: isActive ? 600 : 500, color: '#0F172A' }}
+                            >
+                              {accName}
+                            </span>
+                            {isActive && (
+                              <Check
+                                className="w-3.5 h-3.5 shrink-0"
+                                strokeWidth={2.5}
+                                style={{ color: '#1D4ED8' }}
+                              />
+                            )}
+                          </button>
+                        );
+                      })}
+                      <button
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          toast.success(
+                            isAr ? 'سيتم توجيهك لإضافة حساب جديد' : 'Add account flow opening soon',
+                            { duration: 2400 },
+                          );
+                        }}
+                        className="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-[#F8FAFC] transition-colors cursor-pointer"
+                      >
+                        <div
+                          className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+                          style={{
+                            background: '#F8FAFC',
+                            border: '1px dashed #CBD5E1',
+                          }}
+                        >
+                          <Plus className="w-3 h-3 text-[#94A3B8]" strokeWidth={2} />
+                        </div>
+                        <span
+                          className="flex-1 text-[13px] text-start"
+                          style={{ fontWeight: 500, color: '#64748B' }}
+                        >
+                          {t('user.addAccount')}
+                        </span>
+                      </button>
+                    </div>
+
                     {/* Menu items */}
                     <div className="py-1">
                       <button
@@ -175,21 +298,16 @@ export function Layout() {
                         <UserCircle className="w-4 h-4 text-[#94A3B8]" strokeWidth={1.5} />
                         {t('user.profile')}
                       </button>
-                      <button
-                        onClick={() => setUserMenuOpen(false)}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] text-[#334155] hover:bg-[#F8FAFC] transition-colors"
-                        style={{ fontWeight: 500 }}
-                      >
-                        <Settings className="w-4 h-4 text-[#94A3B8]" strokeWidth={1.5} />
-                        {t('user.settings')}
-                      </button>
                     </div>
 
                     {/* Logout */}
                     <div className="border-t py-1" style={{ borderColor: '#F1F5F9' }}>
                       <button
-                        onClick={() => setUserMenuOpen(false)}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] text-[#DC2626] hover:bg-[#FEF2F2] transition-colors"
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          navigate('/login');
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] text-[#DC2626] hover:bg-[#FEF2F2] transition-colors cursor-pointer"
                         style={{ fontWeight: 500 }}
                       >
                         <LogOut className="w-4 h-4" strokeWidth={1.5} />
@@ -208,6 +326,9 @@ export function Layout() {
       <main>
         <Outlet />
       </main>
+
+      {/* Footer (hidden behind mobile bottom nav via pb-20 inside the footer) */}
+      <AppFooter />
 
       {/* Mobile Bottom Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 px-2 py-2 z-50" style={{ background: personaId === 'vip' ? '#08162A' : '#FFFFFF', borderTop: `1px solid ${personaId === 'vip' ? 'rgba(255,255,255,0.08)' : '#E5E7EB'}` }}>
@@ -232,6 +353,9 @@ export function Layout() {
           ))}
         </div>
       </div>
+
+      {/* ─── Notifications side sheet ─── */}
+      <NotificationSheet open={notificationsOpen} onClose={() => setNotificationsOpen(false)} />
 
       {/* ─── Support Chat (opposite corner of persona switcher) ─── */}
       <SupportChat />

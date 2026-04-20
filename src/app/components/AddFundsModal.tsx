@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import {
   Plus, Building2, CreditCard, Download, ArrowUpRight, Shield, Clock,
   Star, X, CheckCircle, AlertCircle,
@@ -142,7 +143,14 @@ export function AddFundsModal({ open, onClose, isAr }: { open: boolean; onClose:
                 >
                   {copied === 'all' ? <><CheckCircle className="w-4 h-4" strokeWidth={1.5} />{isAr ? 'تم النسخ!' : 'Copied!'}</> : <><CopyIcon />{isAr ? 'نسخ الكل' : 'Copy All'}</>}
                 </button>
-                <button className="flex-1 h-11 rounded-[12px] flex items-center justify-center gap-2 text-[13px] text-[#1D4ED8] transition-all hover:bg-[#EFF6FF]" style={{ fontWeight: 600, border: '1px solid #DBEAFE' }}>
+                <button
+                  onClick={() => toast.success(
+                    isAr ? 'بدأ تنزيل تفاصيل التحويل' : 'Transfer details download started',
+                    { duration: 2400 },
+                  )}
+                  className="flex-1 h-11 rounded-[12px] flex items-center justify-center gap-2 text-[13px] text-[#1D4ED8] transition-all hover:bg-[#EFF6FF] cursor-pointer"
+                  style={{ fontWeight: 600, border: '1px solid #DBEAFE' }}
+                >
                   <Download className="w-4 h-4" strokeWidth={1.5} />
                   {isAr ? 'تحميل PDF' : 'Download PDF'}
                 </button>

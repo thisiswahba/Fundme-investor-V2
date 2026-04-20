@@ -5,9 +5,13 @@ import {
   FileText, Users, Banknote, MapPin, Calendar,
   DollarSign, Repeat, AlertTriangle, Download,
   X, Info, Loader2, ShieldCheck, Plus,
+  ArrowUpRight, TrendingUp, Receipt, Landmark,
+  CalendarRange, FileStack, ChartLine, Cpu, Sparkles,
+  ClockArrowUp, BadgeCheck, Layers, ScrollText,
 } from 'lucide-react';
 import { formatSAR } from '../utils/currency';
 import confetti from 'canvas-confetti';
+import { toast } from 'sonner';
 import { useI18n } from '../i18n';
 import { usePersona } from '../demoPersona';
 import { colors } from '../components/fundme';
@@ -620,8 +624,8 @@ export function OpportunityDetailPage() {
   const BackArrow = isAr ? ArrowRight : ArrowLeft;
   const tk = useTokens();
   const [amount, setAmount] = useState(5000);
-  const [chartTab, setChartTab] = useState<'returns' | 'growth'>('returns');
-  const [sectionTab, setSectionTab] = useState<'overview' | 'returns' | 'risk' | 'borrower'>('overview');
+  const [sectionTab, setSectionTab] = useState<'details' | 'repayments' | 'financials' | 'documents'>('details');
+  const [financialsTab, setFinancialsTab] = useState<'income' | 'balance' | 'cashflow'>('income');
   const [modalOpen, setModalOpen] = useState(false);
   const [invested, setInvested] = useState(false);
   const [investedAmount, setInvestedAmount] = useState(0);
@@ -629,7 +633,6 @@ export function OpportunityDetailPage() {
   const [reinvesting, setReinvesting] = useState(false);
 
   const expectedReturn = Math.round(amount * (opp.roi / 100) * (opp.duration / 12));
-  const grades = ['E', 'D', 'C', 'B', 'A'];
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 pb-24 md:pb-8">
@@ -730,456 +733,821 @@ export function OpportunityDetailPage() {
             </div>
           </div>
 
-          {/* SECTION TABS */}
-          <div className="flex items-center gap-1 mt-6 mb-6 border-b" style={{ borderColor: tk.tabBorder }}>
+          {/* SECTION TABS — segmented with sliding active indicator */}
+          <div
+            className="flex items-center gap-1 mt-6 mb-5 p-1.5 rounded-[14px]"
+            style={{
+              background: tk.isVIP ? colors.dark.hover : '#F1F5F9',
+              border: `1px solid ${tk.divider}`,
+            }}
+          >
             {([
-              { key: 'overview' as const, label: isAr ? 'نظرة عامة' : 'Overview' },
-              { key: 'returns' as const, label: isAr ? 'العوائد والدفعات' : 'Returns & Payments' },
-              { key: 'risk' as const, label: isAr ? 'المخاطر' : 'Risk' },
-              { key: 'borrower' as const, label: isAr ? 'المقترض والمستندات' : 'Borrower & Documents' },
-            ] as const).map(tab => {
+              { key: 'details' as const, icon: ScrollText, labelAr: 'التفاصيل', labelEn: 'Details' },
+              { key: 'repayments' as const, icon: CalendarRange, labelAr: 'جدول السداد', labelEn: 'Repayments' },
+              { key: 'financials' as const, icon: ChartLine, labelAr: 'البيانات المالية', labelEn: 'Financials' },
+              { key: 'documents' as const, icon: FileStack, labelAr: 'المستندات', labelEn: 'Documents', count: 5 },
+            ]).map((tab) => {
               const active = sectionTab === tab.key;
               return (
                 <button
                   key={tab.key}
                   onClick={() => setSectionTab(tab.key)}
-                  className="px-4 py-3 text-[13px] border-b-2 -mb-px transition-all"
+                  className="relative flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-[10px] cursor-pointer"
                   style={{
-                    fontWeight: active ? 600 : 500,
-                    borderColor: active ? tk.tabActiveBorder : 'transparent',
-                    color: active ? tk.tabActiveText : tk.tabInactiveText,
+                    background: active ? tk.cardBg : 'transparent',
+                    color: active ? (tk.isVIP ? '#60A5FA' : '#1D4ED8') : tk.textMuted,
+                    boxShadow: active
+                      ? (tk.isVIP
+                        ? '0 4px 14px -4px rgba(96,165,250,0.25), 0 0 0 1px rgba(96,165,250,0.18)'
+                        : '0 4px 14px -4px rgba(37,99,235,0.18), 0 0 0 1px rgba(37,99,235,0.1)')
+                      : 'none',
+                    transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
                   }}
+                  onMouseEnter={(e) => { if (!active) { e.currentTarget.style.color = tk.textPrimary; e.currentTarget.style.background = tk.isVIP ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.6)'; } }}
+                  onMouseLeave={(e) => { if (!active) { e.currentTarget.style.color = tk.textMuted; e.currentTarget.style.background = 'transparent'; } }}
                 >
-                  {tab.label}
+                  <tab.icon className="w-4 h-4 shrink-0" strokeWidth={active ? 2.4 : 1.8} />
+                  <span className="text-[13px]" style={{ fontWeight: active ? 700 : 500, letterSpacing: active ? '-0.01em' : '0' }}>
+                    {isAr ? tab.labelAr : tab.labelEn}
+                  </span>
+                  {tab.count !== undefined && (
+                    <span
+                      className="inline-flex items-center justify-center min-w-[20px] h-[20px] px-1.5 rounded-full text-[10px] tabular-nums"
+                      style={{
+                        background: active
+                          ? (tk.isVIP ? 'rgba(96,165,250,0.18)' : '#1D4ED8')
+                          : (tk.isVIP ? colors.dark.elevated : '#E2E8F0'),
+                        color: active ? (tk.isVIP ? '#A5B4FC' : '#FFFFFF') : tk.textMuted,
+                        fontWeight: 700,
+                      }}
+                    >
+                      {tab.count}
+                    </span>
+                  )}
                 </button>
               );
             })}
           </div>
 
           {/* TAB CONTENT */}
-          <div className="space-y-6">
+          <div className="space-y-5">
 
-          {/* OVERVIEW TAB */}
-          {sectionTab === 'overview' && (
-          <>
-          <div>
-            <h2 className="text-[18px] mb-6" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.whyThis')}</h2>
-            <div className="grid grid-cols-3 gap-5">
-              {[
-                { icon: DollarSign, title: t('opp.useOfFunds'), desc: isAr ? opp.whyCards[0].text : 'Construction and development of an integrated residential complex with 45 premium units in Al Nakheel district, Dammam.' },
-                { icon: Building2, title: t('opp.projectSummary'), desc: isAr ? opp.whyCards[1].text : 'The project targets the upper-middle class in the Eastern Region, offering modern residential units and integrated facilities.' },
-                { icon: MapPin, title: t('opp.locationSector'), desc: isAr ? 'الدمام، المملكة العربية السعودية — قطاع التطوير العقاري' : 'Dammam, Saudi Arabia — Real Estate Development sector' },
-              ].map((card, i) => (
-                <div
-                  key={i}
-                  className="rounded-[14px] p-6 transition-all duration-200 cursor-default"
-                  style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = tk.cardHoverBorder; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = tk.isVIP ? 'rgba(255,255,255,0.06)' : '#E5E7EB'; }}
-                >
-                  <div className="w-10 h-10 rounded-[12px] flex items-center justify-center mb-4" style={{ backgroundColor: tk.infoBg }}>
-                    <card.icon className="w-5 h-5" strokeWidth={1.5} style={{ color: tk.infoText }} />
-                  </div>
-                  <div className="text-[14px] mb-2" style={{ fontWeight: 600, color: tk.textPrimary }}>{card.title}</div>
-                  <p className="text-[13px] leading-relaxed" style={{ color: tk.textSecondary }}>{card.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-[16px] p-6" style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}>
-            <h2 className="text-[18px] mb-5" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.projectDetails')}</h2>
-            <div className="flex items-center">
-              {[
-                { label: t('opp.totalFinancing'), value: isAr ? '500,000 ﷼' : 'SAR 500,000', icon: Banknote },
-                { label: t('opp.investorCount'), value: isAr ? '42 مستثمر' : '42 investors', icon: Users },
-                { label: t('opp.repaymentFreq'), value: t('opp.monthly'), icon: Repeat },
-                { label: t('opp.minInvestment'), value: isAr ? '5,000 ﷼' : 'SAR 5,000', icon: DollarSign },
-              ].map((item, i, arr) => (
-                <div key={i} className="flex items-center flex-1">
-                  <div className="flex items-center gap-3">
-                    <item.icon className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} style={{ color: tk.textMuted }} />
-                    <div>
-                      <div className="text-[16px] leading-tight" style={{ fontWeight: 700, color: tk.textPrimary }}>{item.value}</div>
-                      <div className="text-[11px] mt-0.5" style={{ fontWeight: 500, color: tk.textMuted }}>{item.label}</div>
-                    </div>
-                  </div>
-                  {i < arr.length - 1 && (
-                    <div className="w-px h-8 mx-auto" style={{ backgroundColor: tk.divider }} />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-          </>
-          )}
-
-          {/* RETURNS TAB */}
-          {sectionTab === 'returns' && (
-          <>
-          <div className="rounded-[16px] p-6" style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}>
-            <h2 className="text-[18px] mb-6" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.expectedReturns')}</h2>
-
-            <div className="rounded-[12px] p-5 mb-6" style={{ backgroundColor: tk.successBg, border: `1px solid ${tk.successBorder}` }}>
-              <div className="text-[12px] mb-3" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.totalExpectedReturns')}</div>
-              <div className="text-[32px] leading-none" style={{ fontWeight: 700, color: tk.successText }}>
-                {formatSAR(opp.totalReturns, { decimals: 0 })}
-              </div>
-            </div>
-
-            <div className="rounded-[12px] p-5 mb-6" style={{ backgroundColor: tk.infoBg, border: `1px solid ${tk.infoBorder}` }}>
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="text-[12px] mb-3" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.nextPayment')}</div>
-                  <div className="text-[24px] leading-none" style={{ fontWeight: 700, color: tk.infoText }}>
-                    {formatSAR(opp.nextPaymentAmount, { decimals: 0 })}
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5 text-[12px] mt-1" style={{ fontWeight: 500, color: tk.textSecondary }}>
-                  <Calendar className="w-3.5 h-3.5" strokeWidth={1.5} />
-                  {isAr ? '١٥ يونيو ٢٠٢٦' : 'Jun 15, 2026'}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-6">
-              <div className="flex-1 flex items-center justify-between py-3 px-4 rounded-[10px]" style={{ backgroundColor: tk.innerSurface }}>
-                <span className="text-[12px]" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.paymentCount')}</span>
-                <span className="text-[16px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{opp.paymentCount}</span>
-              </div>
-              <div className="flex-1 flex items-center justify-between py-3 px-4 rounded-[10px]" style={{ backgroundColor: tk.innerSurface }}>
-                <span className="text-[12px]" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.avgPayment')}</span>
-                <span className="text-[16px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{formatSAR(opp.avgPayment, { decimals: 0 })}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-[16px] p-6" style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[18px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.insights')}</h2>
-              <select
-                className="h-8 px-3 rounded-lg text-[12px] outline-none cursor-pointer appearance-none pr-8"
-                style={{
-                  fontWeight: 500,
-                  color: tk.textSecondary,
-                  background: tk.selectBg,
-                  border: `1px solid ${tk.innerBorder}`,
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='${encodeURIComponent(tk.textMuted)}' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'left 10px center',
-                }}
+          {/* ── DETAILS TAB ───────────────────────────────────────────── */}
+          {sectionTab === 'details' && (
+            <>
+              {/* Financing Overview */}
+              <section
+                className="relative rounded-2xl overflow-hidden"
+                style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}
               >
-                <option>{isAr ? '٦ أشهر' : '6 Months'}</option>
-                <option>{isAr ? '٣ أشهر' : '3 Months'}</option>
-                <option>{isAr ? 'سنة' : '1 Year'}</option>
-                <option>{isAr ? 'الكل' : 'All'}</option>
-              </select>
-            </div>
-
-            <div className="flex items-center gap-5 mb-6 border-b" style={{ borderColor: tk.divider }}>
-              {([
-                { key: 'returns', label: t('opp.returnForecast') },
-                { key: 'growth', label: t('opp.fundingGrowth') },
-              ] as const).map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setChartTab(tab.key)}
-                  className="relative pb-3 text-[13px] transition-colors"
+                {/* Subtle brand accent strip */}
+                <div
+                  className="absolute top-0 inset-x-0 h-[3px] pointer-events-none"
                   style={{
-                    fontWeight: chartTab === tab.key ? 600 : 400,
-                    color: chartTab === tab.key ? tk.textPrimary : tk.textMuted,
+                    background: tk.isVIP
+                      ? 'linear-gradient(90deg, transparent 0%, rgba(96,165,250,0.5) 50%, transparent 100%)'
+                      : 'linear-gradient(90deg, transparent 0%, #2563EB 50%, transparent 100%)',
                   }}
-                >
-                  {tab.label}
-                  {chartTab === tab.key && (
-                    <div className="absolute bottom-0 right-0 left-0 h-[2px] rounded-full" style={{ backgroundColor: tk.primary }} />
-                  )}
-                </button>
-              ))}
-            </div>
-
-            <div style={{ height: 300 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={tk.chartFillStart} stopOpacity={tk.chartFillAlpha} />
-                      <stop offset="100%" stopColor={tk.chartFillStart} stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke={tk.gridStroke} vertical={false} />
-                  <XAxis dataKey="month" tick={{ fill: tk.axisTick, fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: tk.axisTick, fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `${(v / 1000).toFixed(1)}K`} />
-                  <Tooltip content={<ChartTip tk={tk} />} cursor={{ stroke: tk.gridStroke, strokeDasharray: '4 4' }} />
-                  <Area type="monotone" dataKey="value" stroke={tk.chartStroke} strokeWidth={1.5} fill="url(#chartFill)" dot={false} activeDot={{ r: 3, fill: tk.chartStroke, strokeWidth: 1.5, stroke: tk.cardBg }} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          <div className="rounded-[16px] p-6" style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}>
-            <h2 className="text-[18px] mb-5" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.schedule')}</h2>
-
-            <div className="rounded-[12px] p-5 mb-6 flex items-center justify-between" style={{ backgroundColor: tk.infoBg, border: `1px solid ${tk.infoBorder}` }}>
-              <div>
-                <div className="text-[12px] mb-1" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.nextPaymentLabel')}</div>
-                <div className="text-[28px] leading-none" style={{ fontWeight: 700, color: tk.infoText }}>
-                  {formatSAR(opp.nextPaymentAmount, { decimals: 0 })}
-                </div>
-              </div>
-              <div className="text-end">
-                <div className="flex items-center gap-1.5 text-[12px] mb-1" style={{ fontWeight: 600, color: tk.infoText }}>
-                  <Calendar className="w-3.5 h-3.5" strokeWidth={1.5} />
-                  {isAr ? '١٥ يونيو ٢٠٢٦' : 'Jun 15, 2026'}
-                </div>
-                <div className="text-[11px]" style={{ fontWeight: 500, color: tk.textSecondary }}>{isAr ? 'خلال ٥ أيام' : 'In 5 days'}</div>
-              </div>
-            </div>
-
-            {(() => {
-              const current = opp.schedule.filter(r => r.status === 'current');
-              const future = opp.schedule.filter(r => r.status === 'future');
-              const remainingCount = current.length + future.length;
-              const remainingAmount = [...current, ...future].reduce((s, r) => s + r.amount, 0);
-
-              function statusLabel(s: string) {
-                if (s === 'current') return isAr ? 'مستحق' : 'Due';
-                if (s === 'upcoming') return isAr ? 'تم السداد' : 'Paid';
-                return isAr ? 'قادم' : 'Upcoming';
-              }
-              function statusStyle(s: string) {
-                if (s === 'current') return { bg: tk.infoBg, text: tk.infoText };
-                if (s === 'upcoming') return { bg: tk.successBg, text: tk.successText };
-                return { bg: tk.scheduleFutureBg, text: tk.scheduleFutureColor };
-              }
-
-              const monthEnMap: Record<string, string> = {
-                'يناير': 'January', 'فبراير': 'February', 'مارس': 'March', 'أبريل': 'April',
-                'مايو': 'May', 'يونيو': 'June', 'يوليو': 'July', 'أغسطس': 'August',
-                'سبتمبر': 'September', 'أكتوبر': 'October', 'نوفمبر': 'November', 'ديسمبر': 'December',
-              };
-
-              return (
-                <div>
-                  {/* Table */}
-                  <div
-                    className="rounded-[12px] overflow-hidden"
-                    style={{ border: `1px solid ${tk.divider}` }}
-                  >
-                    <div className="overflow-x-auto">
-                      <table className="w-full" style={{ borderCollapse: 'collapse' }}>
-                        <thead>
-                          <tr style={{ backgroundColor: tk.innerSurface, borderBottom: `1px solid ${tk.divider}` }}>
-                            <th className="text-start px-4 py-3 text-[11px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em', width: '60px' }}>
-                              #
-                            </th>
-                            <th className="text-start px-4 py-3 text-[11px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em' }}>
-                              {isAr ? 'الشهر' : 'Month'}
-                            </th>
-                            <th className="text-start px-4 py-3 text-[11px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em' }}>
-                              {isAr ? 'تاريخ الاستحقاق' : 'Due Date'}
-                            </th>
-                            <th className="text-end px-4 py-3 text-[11px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em' }}>
-                              {isAr ? 'المبلغ' : 'Amount'}
-                            </th>
-                            <th className="text-end px-4 py-3 text-[11px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em' }}>
-                              {isAr ? 'الحالة' : 'Status'}
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {opp.schedule.map((row, i) => {
-                            const st = statusStyle(row.status);
-                            const monthLabel = isAr ? row.month : (monthEnMap[row.month] || row.month);
-                            const isCurrent = row.status === 'current';
-                            const isLast = i === opp.schedule.length - 1;
-                            return (
-                              <tr
-                                key={`${row.date}-${i}`}
-                                style={{
-                                  borderBottom: isLast ? 'none' : `1px solid ${tk.divider}`,
-                                  backgroundColor: isCurrent ? tk.scheduleCurrentRowBg : 'transparent',
-                                  transition: 'background-color 0.15s',
-                                }}
-                                onMouseEnter={(e) => { if (!isCurrent) e.currentTarget.style.backgroundColor = tk.innerSurface; }}
-                                onMouseLeave={(e) => { if (!isCurrent) e.currentTarget.style.backgroundColor = 'transparent'; }}
-                              >
-                                <td className="px-4 py-3 text-[12px] font-mono tabular-nums" style={{ color: tk.textMuted, fontWeight: 500 }}>
-                                  {String(i + 1).padStart(2, '0')}
-                                </td>
-                                <td className="px-4 py-3 text-[13px]" style={{ fontWeight: isCurrent ? 700 : 600, color: tk.textPrimary }}>
-                                  {monthLabel}
-                                </td>
-                                <td className="px-4 py-3 text-start text-[12px] font-mono" style={{ color: tk.textSecondary, fontWeight: 500 }}>
-                                  <span dir="ltr">{row.date}</span>
-                                </td>
-                                <td className="px-4 py-3 text-end text-[14px] tabular-nums" style={{ fontWeight: 700, color: tk.textPrimary }}>
-                                  {formatSAR(row.amount, { decimals: 0 })}
-                                </td>
-                                <td className="px-4 py-3 text-end">
-                                  <span
-                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px]"
-                                    style={{ backgroundColor: st.bg, color: st.text, fontWeight: 600 }}
-                                  >
-                                    {isCurrent && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: st.text }} />}
-                                    {statusLabel(row.status)}
-                                  </span>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-
-                  {/* Totals footer */}
-                  <div className="flex items-center gap-3 mt-4">
-                    <div className="flex-1 flex items-center justify-between py-2.5 px-3 rounded-[8px]" style={{ backgroundColor: tk.innerSurface }}>
-                      <span className="text-[11px]" style={{ fontWeight: 500, color: tk.textMuted }}>{t('opp.totalPayments')}</span>
-                      <span className="text-[13px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{opp.paymentCount}</span>
-                    </div>
-                    <div className="flex-1 flex items-center justify-between py-2.5 px-3 rounded-[8px]" style={{ backgroundColor: tk.innerSurface }}>
-                      <span className="text-[11px]" style={{ fontWeight: 500, color: tk.textMuted }}>{t('opp.remaining')}</span>
-                      <span className="text-[13px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{remainingCount}</span>
-                    </div>
-                    <div className="flex-1 flex items-center justify-between py-2.5 px-3 rounded-[8px]" style={{ backgroundColor: tk.innerSurface }}>
-                      <span className="text-[11px]" style={{ fontWeight: 500, color: tk.textMuted }}>{t('opp.remainingAmount')}</span>
-                      <span className="text-[13px]" style={{ fontWeight: 700, color: tk.textPrimary }}>{formatSAR(remainingAmount, { decimals: 0 })}</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
-          </>
-          )}
-
-          {/* RISK TAB */}
-          {sectionTab === 'risk' && (
-          <>
-          <div className="rounded-2xl p-6" style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}>
-            <h2 className="text-[20px] mb-6" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.riskAssessment')}</h2>
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <div className="text-[14px] mb-4" style={{ fontWeight: 600, color: tk.textPrimary }}>{t('opp.creditRating')}</div>
-                <div className="flex items-center gap-1 mb-4">
-                  {grades.map((g) => (
+                />
+                <header className="px-7 pt-6 pb-5 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
                     <div
-                      key={g}
-                      className="flex-1 h-10 rounded-lg flex items-center justify-center text-[14px] transition-all"
+                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                       style={{
-                        fontWeight: g === opp.risk ? 700 : 500,
-                        background: g === opp.risk ? tk.gradeActiveBg : tk.gradeInactiveBg,
-                        color: g === opp.risk ? tk.gradeActiveText : tk.gradeInactiveText,
+                        background: tk.isVIP
+                          ? 'linear-gradient(135deg, rgba(96,165,250,0.15) 0%, rgba(37,99,235,0.18) 100%)'
+                          : 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
+                        border: `1px solid ${tk.isVIP ? 'rgba(96,165,250,0.25)' : '#BFDBFE'}`,
                       }}
                     >
-                      {g}
+                      <Banknote className="w-[18px] h-[18px]" strokeWidth={1.8} style={{ color: tk.isVIP ? '#60A5FA' : '#1D4ED8' }} />
                     </div>
-                  ))}
-                </div>
-                <p className="text-[13px] mb-4 leading-relaxed" style={{ color: tk.textSecondary }}>
-                  {isAr
-                    ? 'التصنيف الائتماني B يعكس مستوى مخاطر متوسط مع ضمانات كافية.'
-                    : 'A B credit rating reflects a moderate risk level with sufficient guarantees in place.'}
-                </p>
-                <div className="text-[13px] mb-2" style={{ fontWeight: 600, color: tk.textPrimary }}>{t('opp.riskFactors')}:</div>
-                <ul className="space-y-1.5">
-                  {(isAr ? opp.riskFactors : ['Real estate market risk', 'Potential execution delays', 'Raw material price volatility']).map((f, i) => (
-                    <li key={i} className="flex items-center gap-2 text-[13px]" style={{ color: tk.textSecondary }}>
-                      <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} style={{ color: tk.warningText }} />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <div className="text-[14px] mb-3" style={{ fontWeight: 600, color: tk.textPrimary }}>{t('opp.guarantees')}</div>
-                <div className="flex items-start gap-2 mb-6 p-3 rounded-xl" style={{ backgroundColor: tk.successBg, border: `1px solid ${tk.successBorder}` }}>
-                  <Shield className="w-4 h-4 mt-0.5 flex-shrink-0" strokeWidth={1.5} style={{ color: tk.successText }} />
-                  <span className="text-[13px]" style={{ color: tk.successDeep }}>{isAr ? opp.guarantee : 'Bank guarantee for 30% of total financing'}</span>
-                </div>
-                <div className="text-[14px] mb-3" style={{ fontWeight: 600, color: tk.textPrimary }}>{t('opp.riskDistribution')}</div>
-                <div className="space-y-2">
-                  {[
-                    { label: t('opp.low'), pct: 20, color: tk.successText },
-                    { label: t('opp.medium'), pct: 50, color: tk.warningText },
-                    { label: t('opp.high'), pct: 30, color: tk.dangerText },
-                  ].map((r) => (
-                    <div key={r.label}>
-                      <div className="flex items-center justify-between text-[12px] mb-1">
-                        <span style={{ color: tk.textSecondary }}>{r.label}</span>
-                        <span style={{ fontWeight: 600, color: tk.textPrimary }}>{r.pct}%</span>
-                      </div>
-                      <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: tk.progressTrack }}>
-                        <div className="h-full rounded-full" style={{ width: `${r.pct}%`, backgroundColor: r.color }} />
+                    <div>
+                      <h2 className="text-[16px] leading-tight" style={{ fontWeight: 700, color: tk.textPrimary, letterSpacing: '-0.015em' }}>
+                        {isAr ? 'نظرة عامة على التمويل' : 'Financing Overview'}
+                      </h2>
+                      <div className="text-[11px] mt-0.5" style={{ color: tk.textMuted, fontWeight: 500 }}>
+                        {isAr ? 'الشروط الأساسية للتمويل' : 'Core financing terms'}
                       </div>
                     </div>
-                  ))}
+                  </div>
+                  <span
+                    className="inline-flex items-center gap-1 h-6 px-2 rounded-md text-[10px]"
+                    style={{
+                      background: tk.successBg,
+                      color: tk.successText,
+                      border: `1px solid ${tk.successBorder}`,
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                    }}
+                  >
+                    <BadgeCheck className="w-3 h-3" strokeWidth={2.2} />
+                    {isAr ? 'متوافق مع الشريعة' : 'SHARIA-COMPLIANT'}
+                  </span>
+                </header>
+                <div className="px-7 pb-6">
+                  <p className="text-[13px] leading-relaxed mb-6" style={{ color: tk.textSecondary }}>
+                    {isAr
+                      ? 'تمويل معدات لمشروع توسعة البنية التحتية لتقنية المعلومات.'
+                      : 'Equipment financing for IT infrastructure expansion project.'}
+                  </p>
+                  <div
+                    className="rounded-xl overflow-hidden grid grid-cols-2 lg:grid-cols-4"
+                    style={{ background: tk.innerSurface, border: `1px solid ${tk.innerBorder}` }}
+                  >
+                    {[
+                      { icon: Layers, labelAr: 'النوع', labelEn: 'Type', valueAr: 'تمويل معدات', valueEn: 'Equipment Finance' },
+                      { icon: Repeat, labelAr: 'السداد', labelEn: 'Repayment', valueAr: 'شهري', valueEn: 'Monthly' },
+                      { icon: Landmark, labelAr: 'الهيكل', labelEn: 'Structure', valueAr: 'مرابحة', valueEn: 'Murabaha', info: true },
+                      { icon: ShieldCheck, labelAr: 'الضمانات', labelEn: 'Guarantees', valueAr: 'المعدات الممولة', valueEn: 'Financed equipment' },
+                    ].map((f, i, arr) => (
+                      <div
+                        key={i}
+                        className="px-4 py-4"
+                        style={{
+                          borderInlineEnd: i < arr.length - 1 ? `1px solid ${tk.innerBorder}` : undefined,
+                          borderBlockEnd: undefined,
+                        }}
+                      >
+                        <f.icon className="w-3.5 h-3.5 mb-2" strokeWidth={1.8} style={{ color: tk.isVIP ? '#60A5FA' : '#2563EB' }} />
+                        <div
+                          className="text-[10px] uppercase mb-1.5 inline-flex items-center gap-1"
+                          style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.08em' }}
+                        >
+                          {isAr ? f.labelAr : f.labelEn}
+                          {f.info && <Info className="w-3 h-3 opacity-70" strokeWidth={1.8} />}
+                        </div>
+                        <div className="text-[14px] leading-snug" style={{ fontWeight: 700, color: tk.textPrimary, letterSpacing: '-0.01em' }}>
+                          {isAr ? f.valueAr : f.valueEn}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-          </>
+              </section>
+
+              {/* Company Profile */}
+              <section
+                className="rounded-2xl overflow-hidden"
+                style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}
+              >
+                <header className="px-7 pt-6 pb-5 flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{
+                      background: tk.isVIP
+                        ? 'linear-gradient(135deg, rgba(96,165,250,0.15) 0%, rgba(37,99,235,0.18) 100%)'
+                        : 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
+                      border: `1px solid ${tk.isVIP ? 'rgba(96,165,250,0.25)' : '#BFDBFE'}`,
+                    }}
+                  >
+                    <Building2 className="w-[18px] h-[18px]" strokeWidth={1.8} style={{ color: tk.isVIP ? '#60A5FA' : '#1D4ED8' }} />
+                  </div>
+                  <div>
+                    <h2 className="text-[16px] leading-tight" style={{ fontWeight: 700, color: tk.textPrimary, letterSpacing: '-0.015em' }}>
+                      {isAr ? 'ملف الشركة' : 'Company Profile'}
+                    </h2>
+                    <div className="text-[11px] mt-0.5" style={{ color: tk.textMuted, fontWeight: 500 }}>
+                      {isAr ? 'بيانات المقترض' : 'Borrower information'}
+                    </div>
+                  </div>
+                </header>
+                <div className="px-7 pb-6">
+                  {/* Company hero row */}
+                  <div
+                    className="rounded-xl p-5 mb-4 flex items-center gap-4"
+                    style={{
+                      background: tk.isVIP
+                        ? 'linear-gradient(135deg, rgba(11,31,58,0.6) 0%, rgba(15,42,77,0.4) 100%)'
+                        : 'linear-gradient(135deg, #FAFBFD 0%, #F1F5F9 100%)',
+                      border: `1px solid ${tk.innerBorder}`,
+                    }}
+                  >
+                    <div
+                      className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
+                      style={{
+                        background: tk.isVIP
+                          ? 'linear-gradient(135deg, #1E40AF 0%, #2563EB 100%)'
+                          : 'linear-gradient(135deg, #1D4ED8 0%, #2563EB 100%)',
+                        boxShadow: '0 6px 16px -4px rgba(37,99,235,0.35)',
+                      }}
+                    >
+                      <Building2 className="w-6 h-6 text-white" strokeWidth={1.8} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-[17px]" style={{ fontWeight: 700, color: tk.textPrimary, letterSpacing: '-0.015em' }}>
+                          {isAr ? 'الحلول التقنية السعودية' : 'Saudi Tech Solutions'}
+                        </span>
+                        <span
+                          className="inline-flex items-center gap-1 h-5 px-1.5 rounded-md text-[9px]"
+                          style={{ background: tk.successBg, color: tk.successText, border: `1px solid ${tk.successBorder}`, fontWeight: 700, letterSpacing: '0.05em' }}
+                        >
+                          <CheckCircle className="w-2.5 h-2.5" strokeWidth={2.5} />
+                          {isAr ? 'موثّقة' : 'VERIFIED'}
+                        </span>
+                      </div>
+                      <div className="text-[12px] mt-1 flex items-center gap-1.5" style={{ color: tk.textMuted }}>
+                        <Sparkles className="w-3 h-3" strokeWidth={1.8} style={{ color: tk.isVIP ? '#A5B4FC' : '#6366F1' }} />
+                        <span>{isAr ? 'تأسست 2015' : 'Est. 2015'}</span>
+                        <span style={{ color: tk.textFaint }}>·</span>
+                        <span>{isAr ? 'مؤسسة متوسطة' : 'Medium Enterprise'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 4 stat tiles */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+                    {[
+                      { icon: Layers, labelAr: 'الحجم', labelEn: 'Size', valueAr: 'متوسط', valueEn: 'Medium', tint: '#A78BFA', tintBg: tk.isVIP ? 'rgba(167,139,250,0.12)' : '#F5F3FF' },
+                      { icon: CalendarRange, labelAr: 'تاريخ التأسيس', labelEn: 'Founded', valueAr: '2015', valueEn: '2015', tint: tk.isVIP ? '#60A5FA' : '#2563EB', tintBg: tk.infoBg },
+                      { icon: Users, labelAr: 'الموظفون', labelEn: 'Employees', valueAr: '50-100', valueEn: '50-100', tint: tk.successText, tintBg: tk.successBg },
+                      { icon: Cpu, labelAr: 'القطاع', labelEn: 'Sector', valueAr: 'التقنية', valueEn: 'Technology', tint: '#F59E0B', tintBg: tk.isVIP ? 'rgba(245,158,11,0.12)' : '#FEF3C7' },
+                    ].map((tile, i) => (
+                      <div
+                        key={i}
+                        className="rounded-xl p-4 transition-all"
+                        style={{ background: tk.cardBg, border: `1px solid ${tk.innerBorder}` }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = tk.cardHoverBorder; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = tk.innerBorder; e.currentTarget.style.transform = 'translateY(0)'; }}
+                      >
+                        <div
+                          className="w-9 h-9 rounded-lg flex items-center justify-center mb-3"
+                          style={{ background: tile.tintBg }}
+                        >
+                          <tile.icon className="w-4 h-4" strokeWidth={1.8} style={{ color: tile.tint }} />
+                        </div>
+                        <div className="text-[10px] uppercase mb-1" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.08em' }}>
+                          {isAr ? tile.labelAr : tile.labelEn}
+                        </div>
+                        <div className="text-[15px]" style={{ fontWeight: 700, color: tk.textPrimary, letterSpacing: '-0.01em' }}>
+                          {isAr ? tile.valueAr : tile.valueEn}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            </>
           )}
 
-          {/* BORROWER TAB */}
-          {sectionTab === 'borrower' && (
-          <>
-          <div className="rounded-2xl p-6" style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}>
-            <h2 className="text-[20px] mb-4" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.borrowerInfo')}</h2>
-            <div className="grid grid-cols-3 gap-4 mb-4">
-              <div>
-                <div className="text-[12px]" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.companyName')}</div>
-                <div className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{isAr ? opp.borrower.name : 'Al Nakheel Real Estate Co.'}</div>
-              </div>
-              <div>
-                <div className="text-[12px]" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.experience')}</div>
-                <div className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{opp.borrower.experience} {t('opp.years')}</div>
-              </div>
-              <div>
-                <div className="text-[12px]" style={{ fontWeight: 500, color: tk.textSecondary }}>{t('opp.sector')}</div>
-                <div className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{isAr ? opp.borrower.sector : 'Real Estate Development'}</div>
-              </div>
-            </div>
-            <p className="text-[14px] leading-relaxed" style={{ color: tk.textSecondary }}>
-              {isAr ? opp.borrower.bio : 'A leading real estate company in the Eastern Region, founded in 2012 and specialized in developing premium residential and commercial projects. Has completed more than 12 projects with a total value exceeding SAR 200 million.'}
-            </p>
-          </div>
-
-          <div className="rounded-2xl p-6" style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}>
-            <h2 className="text-[20px] mb-4" style={{ fontWeight: 700, color: tk.textPrimary }}>{t('opp.documents')}</h2>
-            <div className="grid grid-cols-2 gap-3">
-              {opp.documents.map((doc, i) => {
-                const docNameMap: Record<string, string> = {
-                  'عقد التمويل': 'Financing Contract',
-                  'دراسة الجدوى': 'Feasibility Study',
-                  'التقرير المالي': 'Financial Report',
-                  'رخصة البناء': 'Building Permit',
-                };
-                const docName = isAr ? doc.name : (docNameMap[doc.name] || doc.name);
-                return (
-                <button
-                  key={i}
-                  className="flex items-center gap-3 p-4 rounded-xl transition-colors text-start"
-                  style={{ border: `1px solid ${tk.innerBorder}`, background: 'transparent' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = tk.innerSurface)}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          {/* ── REPAYMENTS TAB ─────────────────────────────────────────── */}
+          {sectionTab === 'repayments' && (
+            <section
+              className="rounded-2xl overflow-hidden"
+              style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}
+            >
+              <header className="px-7 pt-6 pb-5 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{
+                      background: tk.isVIP
+                        ? 'linear-gradient(135deg, rgba(96,165,250,0.15) 0%, rgba(37,99,235,0.18) 100%)'
+                        : 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
+                      border: `1px solid ${tk.isVIP ? 'rgba(96,165,250,0.25)' : '#BFDBFE'}`,
+                    }}
+                  >
+                    <CalendarRange className="w-[18px] h-[18px]" strokeWidth={1.8} style={{ color: tk.isVIP ? '#60A5FA' : '#1D4ED8' }} />
+                  </div>
+                  <div>
+                    <h2 className="text-[16px] leading-tight" style={{ fontWeight: 700, color: tk.textPrimary, letterSpacing: '-0.015em' }}>
+                      {isAr ? 'جدول السداد' : 'Repayment Schedule'}
+                    </h2>
+                    <p className="text-[11px] mt-0.5" style={{ color: tk.textMuted, fontWeight: 500 }}>
+                      {isAr ? 'الجدول الزمني المتوقع لسداد هذه الفرصة' : 'Expected repayment timeline for this opportunity'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="text-end">
+                    <div className="text-[10px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.08em' }}>
+                      {isAr ? 'إجمالي الدفعات' : 'Total Payments'}
+                    </div>
+                    <div className="text-[14px] font-mono tabular-nums" style={{ fontWeight: 700, color: tk.textPrimary }}>
+                      {opp.schedule.length}
+                    </div>
+                  </div>
+                  <div className="w-px h-8" style={{ background: tk.divider }} />
+                  <div className="text-end">
+                    <div className="text-[10px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.08em' }}>
+                      {isAr ? 'الإجمالي' : 'Grand Total'}
+                    </div>
+                    <div className="text-[14px] font-mono tabular-nums" style={{ fontWeight: 700, color: tk.isVIP ? '#60A5FA' : '#1D4ED8' }}>
+                      {formatSAR(opp.schedule.reduce((s, r) => s + r.amount, 0), { decimals: 0 })}
+                    </div>
+                  </div>
+                </div>
+              </header>
+              <div className="px-7 pb-7">
+                <div
+                  className="rounded-xl overflow-hidden"
+                  style={{ border: `1px solid ${tk.divider}` }}
                 >
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: tk.infoBg }}>
-                    <FileText className="w-5 h-5" strokeWidth={1.5} style={{ color: tk.infoText }} />
+                  <div className="overflow-x-auto">
+                    <table className="w-full" style={{ borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr style={{ background: tk.innerSurface, borderBottom: `1px solid ${tk.divider}` }}>
+                          <th className="text-start px-4 py-3 text-[11px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em', width: 60 }}>#</th>
+                          <th className="text-start px-4 py-3 text-[11px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em' }}>
+                            {isAr ? 'تاريخ الاستحقاق' : 'Due Date'}
+                          </th>
+                          <th className="text-end px-4 py-3 text-[11px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em' }}>
+                            {isAr ? 'الأصل' : 'Principal'}
+                          </th>
+                          <th className="text-end px-4 py-3 text-[11px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em' }}>
+                            {isAr ? 'الربح' : 'Profit'}
+                          </th>
+                          <th className="text-end px-4 py-3 text-[11px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em' }}>
+                            {isAr ? 'الإجمالي' : 'Total'}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {opp.schedule.map((row, i) => {
+                          const principal = Math.round(row.amount * 0.88);
+                          const profit = row.amount - principal;
+                          const isLast = i === opp.schedule.length - 1;
+                          return (
+                            <tr
+                              key={`${row.date}-${i}`}
+                              style={{
+                                borderBottom: isLast ? 'none' : `1px solid ${tk.divider}`,
+                                transition: 'background-color 0.15s',
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = tk.innerSurface; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                            >
+                              <td className="px-4 py-3.5 text-[12px] font-mono tabular-nums" style={{ color: tk.textMuted, fontWeight: 500 }}>
+                                {String(i + 1).padStart(2, '0')}
+                              </td>
+                              <td className="px-4 py-3.5 text-start text-[13px] font-mono" style={{ color: tk.textSecondary, fontWeight: 500 }}>
+                                <span dir="ltr">{row.date}</span>
+                              </td>
+                              <td className="px-4 py-3.5 text-end text-[14px] tabular-nums" style={{ fontWeight: 600, color: tk.textPrimary }}>
+                                {formatSAR(principal, { decimals: 0 })}
+                              </td>
+                              <td className="px-4 py-3.5 text-end text-[14px] tabular-nums" style={{ fontWeight: 600, color: tk.infoText }}>
+                                {formatSAR(profit, { decimals: 0 })}
+                              </td>
+                              <td className="px-4 py-3.5 text-end text-[14px] tabular-nums" style={{ fontWeight: 700, color: tk.textPrimary }}>
+                                {formatSAR(row.amount, { decimals: 0 })}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
-                  <div className="flex-1">
-                    <div className="text-[14px]" style={{ fontWeight: 600, color: tk.textPrimary }}>{docName}</div>
-                    <div className="text-[12px]" style={{ color: tk.textSecondary }}>{doc.size}</div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* ── FINANCIALS TAB ─────────────────────────────────────────── */}
+          {sectionTab === 'financials' && (
+            <section
+              className="rounded-2xl overflow-hidden"
+              style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}
+            >
+              <header className="px-7 pt-6 pb-5 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{
+                      background: tk.isVIP
+                        ? 'linear-gradient(135deg, rgba(96,165,250,0.15) 0%, rgba(37,99,235,0.18) 100%)'
+                        : 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
+                      border: `1px solid ${tk.isVIP ? 'rgba(96,165,250,0.25)' : '#BFDBFE'}`,
+                    }}
+                  >
+                    <ChartLine className="w-[18px] h-[18px]" strokeWidth={1.8} style={{ color: tk.isVIP ? '#60A5FA' : '#1D4ED8' }} />
                   </div>
-                  <Download className="w-4 h-4" strokeWidth={1.5} style={{ color: tk.textSecondary }} />
+                  <div>
+                    <h2 className="text-[16px] leading-tight" style={{ fontWeight: 700, color: tk.textPrimary, letterSpacing: '-0.015em' }}>
+                      {isAr ? 'البيانات المالية' : 'Financial Statements'}
+                    </h2>
+                    <p className="text-[11px] mt-0.5" style={{ color: tk.textMuted, fontWeight: 500 }}>
+                      {isAr ? 'آخر ثلاث سنوات (مدققة)' : 'Last three fiscal years (audited)'}
+                    </p>
+                  </div>
+                </div>
+                <span
+                  className="inline-flex items-center gap-1 h-6 px-2 rounded-md text-[10px]"
+                  style={{
+                    background: tk.successBg,
+                    color: tk.successText,
+                    border: `1px solid ${tk.successBorder}`,
+                    fontWeight: 700,
+                    letterSpacing: '0.04em',
+                  }}
+                >
+                  <BadgeCheck className="w-3 h-3" strokeWidth={2.2} />
+                  {isAr ? 'مدقّق' : 'AUDITED'}
+                </span>
+              </header>
+
+              <div className="px-7 pb-7">
+                {/* Sub-tab pill row */}
+                <div
+                  className="inline-flex items-center gap-1 p-1 rounded-xl mb-5"
+                  style={{ background: tk.innerSurface, border: `1px solid ${tk.divider}` }}
+                >
+                  {([
+                    { key: 'income' as const, labelAr: 'قائمة الدخل', labelEn: 'Income Statement' },
+                    { key: 'balance' as const, labelAr: 'الميزانية', labelEn: 'Balance Sheet' },
+                    { key: 'cashflow' as const, labelAr: 'التدفقات النقدية', labelEn: 'Cash Flow' },
+                  ]).map((s) => {
+                    const isActive = financialsTab === s.key;
+                    return (
+                      <button
+                        key={s.key}
+                        onClick={() => setFinancialsTab(s.key)}
+                        className="px-3.5 py-1.5 rounded-lg text-[12px] transition-all cursor-pointer"
+                        style={{
+                          background: isActive ? tk.cardBg : 'transparent',
+                          color: isActive ? tk.textPrimary : tk.textMuted,
+                          boxShadow: isActive
+                            ? (tk.isVIP
+                              ? '0 1px 2px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05)'
+                              : '0 1px 2px rgba(15,23,42,0.06), 0 0 0 1px rgba(15,23,42,0.04)')
+                            : 'none',
+                          fontWeight: isActive ? 600 : 500,
+                        }}
+                      >
+                        {isAr ? s.labelAr : s.labelEn}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {(() => {
+                  type StatementRow =
+                    | { kind: 'group'; labelAr: string; labelEn: string }
+                    | { kind: 'item'; labelAr: string; labelEn: string; values: [number, number, number]; negative?: boolean }
+                    | { kind: 'total'; labelAr: string; labelEn: string; values: [number, number, number]; tone?: 'green' | 'red' | 'neutral'; showTrend?: boolean };
+
+                  const incomeRows: StatementRow[] = [
+                    { kind: 'item', labelAr: 'الإيرادات', labelEn: 'Revenue', values: [8500000, 7200000, 6100000] },
+                    { kind: 'item', labelAr: 'تكلفة البضاعة المباعة', labelEn: 'Cost of Goods Sold', values: [5950000, 5040000, 4270000] },
+                    { kind: 'item', labelAr: 'إجمالي الربح', labelEn: 'Gross Profit', values: [2550000, 2160000, 1830000] },
+                    { kind: 'item', labelAr: 'المصروفات التشغيلية', labelEn: 'Operating Expenses', values: [1530000, 1350000, 1170000] },
+                    { kind: 'item', labelAr: 'الربح التشغيلي', labelEn: 'Operating Income', values: [1020000, 810000, 660000] },
+                    { kind: 'total', labelAr: 'صافي الربح', labelEn: 'Net Profit', values: [680000, 540000, 420000], tone: 'green', showTrend: true },
+                  ];
+
+                  const balanceRows: StatementRow[] = [
+                    { kind: 'group', labelAr: 'الأصول', labelEn: 'ASSETS' },
+                    { kind: 'item', labelAr: 'الأصول المتداولة', labelEn: 'Current Assets', values: [2800000, 2500000, 2100000] },
+                    { kind: 'item', labelAr: 'الأصول غير المتداولة', labelEn: 'Non-Current Assets', values: [2400000, 2300000, 2100000] },
+                    { kind: 'total', labelAr: 'إجمالي الأصول', labelEn: 'Total Assets', values: [5200000, 4800000, 4200000], tone: 'neutral', showTrend: true },
+                    { kind: 'group', labelAr: 'الخصوم وحقوق الملكية', labelEn: 'LIABILITIES & EQUITY' },
+                    { kind: 'item', labelAr: 'الخصوم المتداولة', labelEn: 'Current Liabilities', values: [1200000, 1100000, 950000] },
+                    { kind: 'item', labelAr: 'الخصوم غير المتداولة', labelEn: 'Non-Current Liabilities', values: [900000, 900000, 850000] },
+                    { kind: 'total', labelAr: 'إجمالي الخصوم', labelEn: 'Total Liabilities', values: [2100000, 2000000, 1800000], tone: 'neutral' },
+                    { kind: 'total', labelAr: 'حقوق الملكية', labelEn: 'Equity', values: [3100000, 2800000, 2400000], tone: 'neutral' },
+                  ];
+
+                  const cashflowRows: StatementRow[] = [
+                    { kind: 'group', labelAr: 'الأنشطة التشغيلية', labelEn: 'OPERATING ACTIVITIES' },
+                    { kind: 'item', labelAr: 'صافي الدخل', labelEn: 'Net Income', values: [680000, 540000, 420000] },
+                    { kind: 'item', labelAr: 'الإهلاك', labelEn: 'Depreciation', values: [120000, 110000, 100000] },
+                    { kind: 'item', labelAr: 'التغيرات في رأس المال العامل', labelEn: 'Changes in Working Capital', values: [120000, 130000, 130000] },
+                    { kind: 'total', labelAr: 'التدفق النقدي التشغيلي', labelEn: 'Operating Cash Flow', values: [920000, 780000, 650000], tone: 'green' },
+                    { kind: 'group', labelAr: 'الأنشطة الاستثمارية', labelEn: 'INVESTING ACTIVITIES' },
+                    { kind: 'item', labelAr: 'النفقات الرأسمالية', labelEn: 'Capital Expenditures', values: [-300000, -250000, -180000], negative: true },
+                    { kind: 'item', labelAr: 'استثمارات أخرى', labelEn: 'Other Investments', values: [-50000, -30000, -20000], negative: true },
+                    { kind: 'total', labelAr: 'التدفق النقدي الاستثماري', labelEn: 'Investing Cash Flow', values: [-350000, -280000, -200000], tone: 'red' },
+                    { kind: 'group', labelAr: 'الأنشطة التمويلية', labelEn: 'FINANCING ACTIVITIES' },
+                    { kind: 'item', labelAr: 'سداد الديون', labelEn: 'Debt Repayment', values: [-100000, -80000, -70000], negative: true },
+                    { kind: 'item', labelAr: 'توزيعات الأرباح', labelEn: 'Dividends Paid', values: [-80000, -70000, -50000], negative: true },
+                    { kind: 'total', labelAr: 'التدفق النقدي التمويلي', labelEn: 'Financing Cash Flow', values: [-180000, -150000, -120000], tone: 'red' },
+                    { kind: 'total', labelAr: 'صافي التغير في النقد', labelEn: 'Net Change in Cash', values: [390000, 350000, 330000], tone: 'green' },
+                  ];
+
+                  const incomeMetrics = [
+                    { labelAr: 'هامش الربح الإجمالي', labelEn: 'Gross Margin', value: '30%', accent: '#F59E0B' },
+                    { labelAr: 'هامش الربح التشغيلي', labelEn: 'Operating Margin', value: '12%', accent: '#10B981' },
+                    { labelAr: 'هامش الربح الصافي', labelEn: 'Net Margin', value: '8%', accent: '#10B981' },
+                    { labelAr: 'النمو السنوي', labelEn: 'YoY Growth', value: '+18%', accent: '#10B981' },
+                  ];
+
+                  const balanceMetrics = [
+                    { labelAr: 'النسبة الجارية', labelEn: 'Current Ratio', value: '2.33x', accent: '#10B981' },
+                    { labelAr: 'الديون إلى حقوق الملكية', labelEn: 'Debt-to-Equity', value: '0.68x', accent: '#10B981' },
+                    { labelAr: 'النسبة السريعة', labelEn: 'Quick Ratio', value: '1.85x', accent: '#10B981' },
+                    { labelAr: 'دوران الأصول', labelEn: 'Asset Turnover', value: '1.63x', accent: '#F59E0B' },
+                  ];
+
+                  const cashflowMetrics = [
+                    { labelAr: 'نسبة التدفق التشغيلي', labelEn: 'Operating Cash Ratio', value: '0.77x', accent: '#10B981' },
+                    { labelAr: 'التدفق النقدي الحر', labelEn: 'Free Cash Flow', value: '620K', accent: '#10B981' },
+                    { labelAr: 'تحويل النقد', labelEn: 'Cash Conversion', value: '135%', accent: '#10B981' },
+                    { labelAr: 'الإنفاق الرأسمالي/الإيرادات', labelEn: 'CapEx to Revenue', value: '3.5%', accent: '#F59E0B' },
+                  ];
+
+                  const rows = financialsTab === 'income' ? incomeRows : financialsTab === 'balance' ? balanceRows : cashflowRows;
+                  const metrics = financialsTab === 'income' ? incomeMetrics : financialsTab === 'balance' ? balanceMetrics : cashflowMetrics;
+                  const negativeColor = tk.isVIP ? '#FCA5A5' : '#DC2626';
+                  const totalTone = (tone?: 'green' | 'red' | 'neutral') =>
+                    tone === 'green' ? tk.successText : tone === 'red' ? negativeColor : tk.textPrimary;
+
+                  return (
+                    <>
+                      {/* Statement table */}
+                      <div
+                        className="rounded-xl overflow-hidden mb-5"
+                        style={{ border: `1px solid ${tk.divider}` }}
+                      >
+                        <div className="overflow-x-auto">
+                          <table className="w-full" style={{ borderCollapse: 'collapse' }}>
+                            <thead>
+                              <tr style={{ background: tk.innerSurface, borderBottom: `1px solid ${tk.divider}` }}>
+                                <th className="text-start px-4 py-3 text-[11px] uppercase" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em' }}>
+                                  {isAr ? 'البند' : 'Item'}
+                                </th>
+                                {[2023, 2022, 2021].map((y) => (
+                                  <th key={y} className="text-end px-4 py-3 text-[11px] tabular-nums" style={{ fontWeight: 600, color: tk.textMuted, letterSpacing: '0.06em' }}>
+                                    {y}
+                                  </th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {rows.map((row, i) => {
+                                const isLast = i === rows.length - 1;
+
+                                if (row.kind === 'group') {
+                                  return (
+                                    <tr
+                                      key={i}
+                                      style={{
+                                        background: tk.innerSurface,
+                                        borderBottom: `1px solid ${tk.divider}`,
+                                      }}
+                                    >
+                                      <td
+                                        colSpan={4}
+                                        className="px-4 py-2 text-[10.5px] uppercase"
+                                        style={{ fontWeight: 700, color: tk.textMuted, letterSpacing: '0.08em' }}
+                                      >
+                                        {isAr ? row.labelAr : row.labelEn}
+                                      </td>
+                                    </tr>
+                                  );
+                                }
+
+                                if (row.kind === 'total') {
+                                  const tone = totalTone(row.tone);
+                                  const isHighlight = row.tone === 'green';
+                                  return (
+                                    <tr
+                                      key={i}
+                                      style={{
+                                        borderBottom: isLast ? 'none' : `1px solid ${tk.divider}`,
+                                        background: isHighlight
+                                          ? (tk.isVIP ? 'rgba(43,182,115,0.06)' : '#F0FDF4')
+                                          : 'transparent',
+                                      }}
+                                    >
+                                      <td className="px-4 py-3.5 text-[13px]" style={{ color: tone, fontWeight: 700 }}>
+                                        {isAr ? row.labelAr : row.labelEn}
+                                      </td>
+                                      {row.values.map((v, j) => (
+                                        <td
+                                          key={j}
+                                          className="px-4 py-3.5 text-end text-[13px] tabular-nums"
+                                          style={{ fontWeight: 700, color: tone }}
+                                        >
+                                          <span className="inline-flex items-center gap-1" dir="ltr">
+                                            {v < 0 ? '- ' : ''}{formatSAR(Math.abs(v), { decimals: 0 })}
+                                            {row.showTrend && j === 0 && (
+                                              <ArrowUpRight className="w-3 h-3 opacity-80" strokeWidth={2.2} style={{ color: tk.successText }} />
+                                            )}
+                                          </span>
+                                        </td>
+                                      ))}
+                                    </tr>
+                                  );
+                                }
+
+                                const itemColor = row.negative ? negativeColor : tk.textPrimary;
+                                return (
+                                  <tr
+                                    key={i}
+                                    style={{
+                                      borderBottom: isLast ? 'none' : `1px solid ${tk.divider}`,
+                                      transition: 'background-color 0.15s',
+                                    }}
+                                    onMouseEnter={(e) => { e.currentTarget.style.background = tk.innerSurface; }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                                  >
+                                    <td
+                                      className={`${isAr ? 'pe-4 ps-8' : 'ps-8 pe-4'} py-3 text-[13px]`}
+                                      style={{ color: tk.textSecondary, fontWeight: 500 }}
+                                    >
+                                      {isAr ? row.labelAr : row.labelEn}
+                                    </td>
+                                    {row.values.map((v, j) => (
+                                      <td
+                                        key={j}
+                                        className="px-4 py-3 text-end text-[13px] tabular-nums"
+                                        style={{ fontWeight: 600, color: itemColor }}
+                                      >
+                                        <span dir="ltr">
+                                          {v < 0 ? '- ' : ''}{formatSAR(Math.abs(v), { decimals: 0 })}
+                                        </span>
+                                      </td>
+                                    ))}
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+
+                      {/* 4 metric cards */}
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+                        {metrics.map((m, i) => (
+                          <div
+                            key={i}
+                            className="rounded-xl overflow-hidden"
+                            style={{ background: tk.cardBg, border: `1px solid ${tk.divider}` }}
+                          >
+                            <div className="p-4">
+                              <div className="text-[11px] mb-1.5" style={{ fontWeight: 500, color: tk.textMuted }}>
+                                {isAr ? m.labelAr : m.labelEn}
+                              </div>
+                              <div className="text-[22px] tabular-nums" style={{ fontWeight: 700, color: tk.textPrimary, letterSpacing: '-0.02em' }}>
+                                {m.value}
+                              </div>
+                            </div>
+                            <div className="h-[2px]" style={{ background: m.accent }} />
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Disclaimer */}
+                      <div
+                        className="flex items-start gap-2.5 p-3 rounded-xl"
+                        style={{ background: tk.innerSurface, border: `1px solid ${tk.divider}` }}
+                      >
+                        <Info className="w-4 h-4 mt-0.5 shrink-0" strokeWidth={1.8} style={{ color: tk.textMuted }} />
+                        <p className="text-[11.5px] leading-relaxed" style={{ color: tk.textSecondary }}>
+                          <span style={{ fontWeight: 700, color: tk.textPrimary }}>
+                            {isAr ? 'إخلاء مسؤولية:' : 'Disclaimer:'}
+                          </span>{' '}
+                          {isAr
+                            ? 'البيانات المالية مبنية على قوائم مدققة. الأداء السابق لا يضمن النتائج المستقبلية.'
+                            : "Financial information based on audited statements. Past performance doesn't guarantee future results."}
+                        </p>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            </section>
+          )}
+
+          {/* ── DOCUMENTS TAB ──────────────────────────────────────────── */}
+          {sectionTab === 'documents' && (
+            <section
+              className="rounded-2xl overflow-hidden"
+              style={{ background: tk.cardBg, border: tk.cardBorder, boxShadow: tk.cardShadow }}
+            >
+              <header className="px-7 pt-6 pb-5 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{
+                      background: tk.isVIP
+                        ? 'linear-gradient(135deg, rgba(96,165,250,0.15) 0%, rgba(37,99,235,0.18) 100%)'
+                        : 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)',
+                      border: `1px solid ${tk.isVIP ? 'rgba(96,165,250,0.25)' : '#BFDBFE'}`,
+                    }}
+                  >
+                    <FileStack className="w-[18px] h-[18px]" strokeWidth={1.8} style={{ color: tk.isVIP ? '#60A5FA' : '#1D4ED8' }} />
+                  </div>
+                  <div>
+                    <h2 className="text-[16px] leading-tight" style={{ fontWeight: 700, color: tk.textPrimary, letterSpacing: '-0.015em' }}>
+                      {isAr ? 'المستندات المتاحة' : 'Available Documents'}
+                    </h2>
+                    <p className="text-[11px] mt-0.5" style={{ color: tk.textMuted, fontWeight: 500 }}>
+                      {isAr ? '5 مستندات مدققة جاهزة للتنزيل' : '5 audited documents ready to download'}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => toast.success(
+                    isAr ? 'بدأ تنزيل جميع المستندات' : 'Downloading all documents',
+                    { duration: 2400 },
+                  )}
+                  className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] cursor-pointer transition-colors"
+                  style={{
+                    fontWeight: 600,
+                    color: tk.isVIP ? '#60A5FA' : '#1D4ED8',
+                    border: `1px solid ${tk.isVIP ? 'rgba(96,165,250,0.25)' : '#DBEAFE'}`,
+                    background: 'transparent',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = tk.isVIP ? 'rgba(96,165,250,0.08)' : '#EFF6FF'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                >
+                  <Download className="w-3.5 h-3.5" strokeWidth={2} />
+                  {isAr ? 'تنزيل الكل' : 'Download all'}
                 </button>
-                );
-              })}
-            </div>
-          </div>
-          </>
+              </header>
+              <div className="px-7 pb-7">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {([
+                    { nameAr: 'مذكرة المعلومات', nameEn: 'Information Memorandum', size: '2.4 MB', icon: ScrollText },
+                    { nameAr: 'القوائم المالية المدققة', nameEn: 'Financial Statements (Audited)', size: '1.8 MB', icon: ChartLine },
+                    { nameAr: 'نموذج عقد الاستثمار', nameEn: 'Investment Contract Template', size: '890 KB', icon: FileText },
+                    { nameAr: 'سند إذني', nameEn: 'Promissory Note', size: '450 KB', icon: Receipt },
+                    { nameAr: 'وثائق الضمانات', nameEn: 'Collateral Documentation', size: '1.2 MB', icon: ShieldCheck },
+                  ]).map((doc, i) => (
+                    <a
+                      key={i}
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toast.success(
+                          isAr ? `بدأ تنزيل ${doc.nameAr}` : `Downloading ${doc.nameEn}`,
+                          { duration: 2400 },
+                        );
+                      }}
+                      className="relative flex items-center gap-3.5 p-4 rounded-xl transition-all group overflow-hidden cursor-pointer"
+                      style={{ background: tk.cardBg, border: `1px solid ${tk.innerBorder}`, textDecoration: 'none' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = tk.cardHoverBorder;
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                        e.currentTarget.style.boxShadow = tk.isVIP ? '0 6px 20px -8px rgba(96,165,250,0.2)' : '0 6px 20px -8px rgba(37,99,235,0.15)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = tk.innerBorder;
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    >
+                      <div
+                        className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 relative"
+                        style={{
+                          background: tk.isVIP
+                            ? 'linear-gradient(135deg, rgba(248,113,113,0.12) 0%, rgba(220,38,38,0.16) 100%)'
+                            : 'linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%)',
+                          border: `1px solid ${tk.isVIP ? 'rgba(248,113,113,0.22)' : '#FECACA'}`,
+                        }}
+                      >
+                        <doc.icon className="w-[18px] h-[18px]" strokeWidth={1.7} style={{ color: tk.isVIP ? '#F87171' : '#DC2626' }} />
+                        <span
+                          className="absolute -bottom-1 -right-1 inline-flex items-center justify-center h-[14px] px-1 rounded text-[8px]"
+                          style={{
+                            background: tk.isVIP ? '#7F1D1D' : '#DC2626',
+                            color: '#fff',
+                            fontWeight: 700,
+                            letterSpacing: '0.04em',
+                            boxShadow: '0 2px 4px rgba(220,38,38,0.4)',
+                          }}
+                        >
+                          PDF
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[13.5px] truncate" style={{ fontWeight: 700, color: tk.textPrimary, letterSpacing: '-0.01em' }}>
+                          {isAr ? doc.nameAr : doc.nameEn}
+                        </div>
+                        <div className="text-[11px] mt-0.5 flex items-center gap-1.5" style={{ color: tk.textMuted, fontWeight: 500 }}>
+                          <span>{doc.size}</span>
+                          <span style={{ color: tk.textFaint }}>·</span>
+                          <span>{isAr ? 'محدّث' : 'Updated Jan 2026'}</span>
+                        </div>
+                      </div>
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+                        style={{
+                          background: tk.innerSurface,
+                          color: tk.textMuted,
+                        }}
+                      >
+                        <Download className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform" strokeWidth={1.8} />
+                      </div>
+                    </a>
+                  ))}
+                </div>
+                <div
+                  className="flex items-center justify-between mt-5 pt-4 text-[11px]"
+                  style={{ color: tk.textFaint, borderTop: `1px solid ${tk.divider}` }}
+                >
+                  <span className="flex items-center gap-1.5">
+                    <ClockArrowUp className="w-3 h-3" strokeWidth={1.8} />
+                    {isAr ? 'آخر تحديث: يناير 2026' : 'Last updated: January 2026'}
+                  </span>
+                  <span style={{ color: tk.textMuted, fontWeight: 500 }}>
+                    {isAr ? '5 ملفات · 6.7 ميجابايت إجمالي' : '5 files · 6.7 MB total'}
+                  </span>
+                </div>
+              </div>
+            </section>
           )}
 
           </div>
