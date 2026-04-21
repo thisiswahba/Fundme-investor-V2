@@ -387,7 +387,6 @@ export function Layout() {
             </div>
             <div className="p-2">
               {([
-                { id: 'vip' as PersonaId, label: 'VIP Investor', labelAr: 'مستثمر VIP', desc: 'Premium dashboard, high-value portfolio, exclusive access', descAr: 'لوحة متميزة، محفظة عالية القيمة، وصول حصري', color: '#6366F1' },
                 { id: 'completed' as PersonaId, label: 'Regular Investor', labelAr: 'مستثمر عادي', desc: 'Active portfolio, funded wallet, full data', descAr: 'محفظة نشطة، رصيد متوفر، بيانات كاملة', color: '#16A34A' },
                 { id: 'new' as PersonaId, label: 'New Investor', labelAr: 'مستثمر جديد', desc: 'First login, empty state, guided onboarding', descAr: 'أول دخول، حالة فارغة، إعداد موجّه', color: '#3B82F6' },
               ]).map((p) => (
