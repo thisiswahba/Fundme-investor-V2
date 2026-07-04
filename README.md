@@ -43,3 +43,27 @@ A "Demo Personas" switcher (flask icon, bottom-right of the dashboard) toggles a
 - `/app?persona=vip` — VIP (dark theme, larger portfolio)
 
 The VIP theme propagates to Wallet, Portfolio, Opportunities, and Profile too while `?persona=vip` is set.
+
+## Language (EN/AR)
+
+The app defaults to Arabic. Every page under `/app/*` has a language toggle in the top nav (globe icon, labeled `EN`); the Login page has its own toggle in the top corner (labeled `English`). Both call the same `setLang()` — no page reload, no URL param.
+
+Onboarding is Arabic-only: its steps are hardcoded strings with no `t()`/i18n hook at all, so there is no English mode to switch to there (would require a code change, not a toggle).
+
+Some mock content (company names, a few modal labels like "Invest Now") stays Arabic even in English mode — that's genuinely hardcoded in the current app, not a bug in these instructions.
+
+## Reproducing the Figma screens exactly
+
+To land on the same states captured in the Figma file:
+
+| Figma frame | Steps |
+|---|---|
+| Dashboard / Overview / Opportunities / Opportunity Detail / Portfolio / Investment Detail / Wallet / Profile | Visit the route from **Routes** above. Toggle language if you need the `(EN)` variant. |
+| Dashboard — First-Time User | `/app?persona=new` |
+| Dashboard — VIP | `/app?persona=vip` |
+| Popup — Add Funds | Go to `/app/wallet`, click **Add Funds** (`إضافة أموال` in Arabic) |
+| Popup — Withdraw | Go to `/app/wallet`, click **Withdraw** (`سحب` in Arabic — it's the button in the dark balance card, not the "سحب" transaction filter chip lower on the page) |
+| Popup — Auto Invest | Go to `/app/portfolio`, click **Activate Auto Invest** (`تفعيل الاستثمار التلقائي`) inside the Auto Invest card |
+| Popup — Invest Now | Go to `/app/opportunities/1`, click the bottom sticky button `استثمر الآن` (Arabic-only, no English label) |
+
+All popup/state screenshots in Figma were captured at 1440×900 viewport, 2x device scale.
